@@ -47,3 +47,11 @@ reporting:
   overwrite_same_day: false
   second_run_suffix: HHMMSS
   preserve_reviewer_disposition_separately: true
+
+legal:
+  human_acceptance_required: true
+  acceptance_receipt: state/HUMAN_ACCEPTANCE_RECEIPT.json
+  ai_may_accept_terms: false
+  require_fresh_acceptance_on_reinstall: true
+  terms_version: 1.0.0
+  installer_transmits_receipt: false

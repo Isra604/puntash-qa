@@ -1,0 +1,20 @@
+# Changelog
+
+## 1.1.0 — 2026-08-26
+
+- Added mandatory human acceptance before installation.
+- Added Windows interactive clickwrap GUI with three attestations, exact `I ACCEPT` phrase, and manual `Accept & Install` click.
+- Added non-interactive refusal and manual acceptance workflow for macOS/Linux shell installation.
+- Added `TERMS_OF_USE.md`, `DISCLAIMER.md`, `DATA_RESPONSIBILITY_NOTICE.md`, and `HUMAN_ACCEPTANCE.md`.
+- Added local `HUMAN_ACCEPTANCE_RECEIPT.json` with Terms version and SHA-256 document hashes.
+- Added `LEGAL_MANIFEST.json` for package-level legal-document integrity.
+- Added agent precondition: AI/automation may not accept terms or fabricate the receipt on a human's behalf.
+- Preserved MIT licensing, creator attribution, and first-run attribution notice.
+
+## 1.0.1 — 2026-08-26
+
+- Added creator attribution, MIT license, NOTICE, CREDITS, and first-run attribution.
+
+## 1.0.0 — 2026-08-26
+
+- Initial portable Universal Comprehensive 25-Gate QA system.

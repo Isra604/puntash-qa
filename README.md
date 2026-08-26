@@ -17,6 +17,17 @@ The 25 gates are universal responsibility domains. The checks inside each gate a
 
 The system never turns an unexecuted or irrelevant check into a PASS. It uses PASS, FAIL, BLOCKED, NOT_RUN, and NOT_APPLICABLE with evidence.
 
+## Human acceptance before installation
+
+Version 1.1.0 requires affirmative human acceptance before the installer writes the QA runtime into a target project.
+
+- Windows uses an interactive GUI showing the legal documents, three explicit attestations, the exact phrase `I ACCEPT`, and a manual `Accept & Install` button.
+- macOS/Linux refuses non-interactive execution and requires a natural person to review the terms and manually answer the acceptance prompts.
+- There is no official silent, `--yes`, `--accept`, unattended, CI, or AI-agent acceptance path.
+- A local acceptance receipt records the package/terms versions, timestamp, acceptance method, and SHA-256 hashes of the legal documents. The installer does not transmit that receipt.
+
+An AI agent may inspect the package, explain it, and launch the installer, but the package instructions prohibit the AI agent from accepting the terms on behalf of a person.
+
 ## Install into any project
 
 Windows PowerShell:
@@ -78,9 +89,15 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 - `scripts/verify-install.ps1` / `verify-install.sh` — installation verification.
 - `docs/OPERATING_MODEL.md` — detailed lifecycle.
 - `docs/TOOL_REQUIREMENTS.md` — capability model.
+- `LICENSE` — MIT software license and warranty/liability disclaimer.
+- `TERMS_OF_USE.md` — affirmative installation terms and responsibility allocation.
+- `DISCLAIMER.md` — QA/AI/production risk disclaimer.
+- `DATA_RESPONSIBILITY_NOTICE.md` — local receipt and project-data responsibility notice.
+- `HUMAN_ACCEPTANCE.md` — mandatory natural-person acceptance protocol.
+- `LEGAL_MANIFEST.json` — SHA-256 manifest of the presented legal documents.
 
 ## Safety principle
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.0.1
+Version: 1.1.0

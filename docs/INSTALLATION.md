@@ -1,5 +1,13 @@
 # Installation Guide
 
+## Mandatory human acceptance
+
+Installation through the supplied installers is intentionally interactive. An AI agent may launch the installer but must hand control to a natural person for acceptance. The person must review and accept `LICENSE`, `TERMS_OF_USE.md`, `DISCLAIMER.md`, `DATA_RESPONSIBILITY_NOTICE.md`, and `HUMAN_ACCEPTANCE.md`.
+
+Windows requires the exact phrase `I ACCEPT` plus a manual `Accept & Install` click. macOS/Linux requires an interactive terminal and the same exact phrase. The package intentionally provides no official silent/CI acceptance bypass. If the user declines or closes the Windows dialog, the installer exits before writing the QA runtime into the target project.
+
+A local acceptance receipt is created at `.comprehensive-qa/state/HUMAN_ACCEPTANCE_RECEIPT.json`. It records the terms version and SHA-256 hashes of the accepted legal documents and is not transmitted by the installer.
+
 **Original creator and project architect: Ofir Israeli**  
 Copyright © 2026 Ofir Israeli. Licensed under the MIT License.
 

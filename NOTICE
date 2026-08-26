@@ -6,3 +6,5 @@ Original creator and project architect: Ofir Israeli
 This distribution includes the Universal 25-Gate QA framework, project discovery, evidence collection, finding management, bounded remediation, validation, and reporting architecture.
 
 Redistributions should preserve this NOTICE together with the LICENSE file so the project's original authorship remains clear.
+
+Installer distributions include Terms of Use, Disclaimer, Data Responsibility Notice, and a Human Acceptance Requirement. These documents are designed to make responsibility allocation and affirmative installation consent conspicuous; they do not guarantee immunity from claims or enforceability in every jurisdiction.

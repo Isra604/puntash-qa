@@ -4,7 +4,7 @@
 
 Send the recipient the ZIP file from `dist/`.
 
-They extract it outside their project and run the installer against the project they want audited.
+They extract it outside their project and run the installer against the project they want audited. The AI agent may prepare or launch the installer, but a natural person must personally complete the acceptance step. The package does not authorize an AI agent or unattended tool to accept the terms for the recipient.
 
 ## Windows
 

@@ -11,8 +11,15 @@ $required = @(
   'state\FINDING_LEDGER.jsonl',
   'INSTALLATION.json',
   'LICENSE',
+  'TERMS_OF_USE.md',
+  'DISCLAIMER.md',
+  'DATA_RESPONSIBILITY_NOTICE.md',
+  'HUMAN_ACCEPTANCE.md',
+  'TERMS_VERSION',
+  'LEGAL_MANIFEST.json',
   'NOTICE',
   'CREDITS.md',
+  'state\HUMAN_ACCEPTANCE_RECEIPT.json',
   'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 )
 foreach ($i in 1..25) { $required += ('gates\GATE-{0:D2}.md' -f $i) }
