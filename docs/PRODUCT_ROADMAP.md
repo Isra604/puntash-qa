@@ -43,18 +43,18 @@ Goal: turn the project from an expert-oriented QA runtime package into a product
 
 ## v1.4.0 — Local QA Dashboard
 
-Status: IN PROGRESS
+Status: COMPLETED
 
 Goal: make QA status understandable to project owners and managers without requiring them to read long Markdown reports.
 
-Planned scope:
-- Local dashboard generated from QA state/report files.
-- Overall QA score/health summary without hiding BLOCKED/NOT_RUN states.
+Delivered scope:
+- Local dashboard generated from structured QA run history.
+- QA Health plus separate execution coverage so BLOCKED/NOT_RUN cannot be hidden.
 - Gate counts: PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE.
 - Finding counts by severity.
 - Current unresolved findings.
-- Trend between runs.
-- Last run, current version and update status.
+- Health trend and explicit run-to-run new/resolved/gate-status changes.
+- Last run, installed QA version and known update status.
 - Links to reports/evidence stored locally.
 - No cloud account required for the basic dashboard.
 
