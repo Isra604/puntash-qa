@@ -3,6 +3,9 @@
 ## Executive Summary
 - Verdict:
 - Total gates: 25
+- Reliability lenses: 9
+- Overall evidence assurance:
+- Test trustworthiness status:
 - PASS:
 - FAIL:
 - BLOCKED:
@@ -35,6 +38,29 @@
 | Gate | Name | Status | Checks executed | Evidence | Findings | Fixes | Post-fix validation | Remaining risk |
 |---|---|---|---|---|---|---|---|---|
 
+
+## Reliability Lens Summary
+| Lens | Status | Applicable | Evidence assurance | Gates affected | Findings | Remaining risk |
+|---|---|---|---|---|---|---|
+
+## Evidence Assurance Summary
+- Overall: STRONG / MODERATE / WEAK / INSUFFICIENT
+- STRONG conclusions:
+- MODERATE conclusions and explicit non-material gaps:
+- WEAK conclusions that prevented material PASS:
+- INSUFFICIENT conclusions / blockers:
+- PASS ceilings applied:
+
+## Test Trustworthiness
+- Applicable:
+- Decisive suites:
+- Skipped/disabled/quarantined tests accounted for:
+- Oracle quality:
+- Flakiness/repeatability evidence:
+- Mock fidelity:
+- Defect sensitivity / mutation evidence:
+- Assurance:
+
 ## Finding Register
 
 Use one complete section per material finding based on `FINDING.md`.
@@ -45,6 +71,7 @@ Use one complete section per material finding based on `FINDING.md`.
 ### Regressions
 ### Recurring findings
 ### Contradictions
+### Lens-status changes and assurance changes
 ### Systemic patterns
 ### Protected-boundary findings
 ### Suspected false positives

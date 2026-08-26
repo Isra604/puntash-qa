@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "run_id": "RUN-YYYYMMDD-HHMMSS",
   "project": {
     "name": "",
@@ -17,6 +17,14 @@
     "not_run": 0,
     "not_applicable": 0
   },
+  "evidence_assurance": {
+    "overall": "INSUFFICIENT",
+    "strong": 0,
+    "moderate": 0,
+    "weak": 0,
+    "insufficient": 0,
+    "notes": []
+  },
   "findings_summary": {
     "open": 0,
     "critical": 0,
@@ -27,11 +35,21 @@
     "new_this_run": 0
   },
   "gates": [],
+  "lenses": [],
+  "test_trustworthiness": {
+    "applicable": false,
+    "status": "NOT_APPLICABLE",
+    "assurance": "INSUFFICIENT",
+    "decisive_suites": [],
+    "notes": []
+  },
   "findings": [],
   "changes": {
     "new_findings": [],
     "resolved_findings": [],
     "gate_changes": [],
+    "lens_changes": [],
+    "assurance_change": "",
     "notes": []
   },
   "report_path": "",

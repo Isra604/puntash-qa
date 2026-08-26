@@ -2,14 +2,15 @@
   "target_version": "2.0.0",
   "branch": "feature/v2-reliability",
   "status": "IN_PROGRESS",
-  "current_phase": 4,
-  "last_completed_phase": 3,
+  "current_phase": 5,
+  "last_completed_phase": 4,
   "completed_phases": [
     0,
     1,
     2,
-    3
+    3,
+    4
   ],
-  "next_action": "Phase 4: extend reports and dashboard schema/UI with compact lens history and evidence assurance while preserving v1 history readability.",
-  "updated_at": "2026-08-26T17:00:00+03:00"
+  "next_action": "Phase 5: enhance QA Doctor and install/update/rollback/verification tooling for v2 reliability files; set package version 2.0.0 without changing Terms version.",
+  "updated_at": "2026-08-26T17:20:00+03:00"
 }

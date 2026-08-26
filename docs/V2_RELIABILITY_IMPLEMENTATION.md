@@ -76,7 +76,7 @@ Status: COMPLETE
 - Add risk-based test depth and bounded rerun/flakiness logic.
 
 ### Phase 4 — Reporting and dashboard
-Status: IN PROGRESS
+Status: COMPLETE
 - Extend Project QA Profile with lens applicability and risk inventory.
 - Extend daily report with compact lens summary and evidence assurance.
 - Upgrade Dashboard run schema to preserve lens history.
@@ -84,7 +84,7 @@ Status: IN PROGRESS
 - Preserve historical v1 dashboard records gracefully.
 
 ### Phase 5 — Discovery and tooling
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Enhance QA Doctor with privacy/AI/i18n/third-party/compatibility/resource/accessibility signals.
 - Update installer/verify/update/rollback for lens/runtime additions.
 - Preserve local-only/no-telemetry behavior.
@@ -162,3 +162,13 @@ No phase is considered COMPLETE until implementation, tests/evidence, checkpoint
 - Updated completion contract: 25 gate statuses + 9 lens statuses + assurance classifications are required.
 - Updated portable skill, ChatGPT project instructions and START_HERE to enforce v2 runtime behavior.
 - Validation evidence: authoritative runtime tokens, skill numbering 1-21, ChatGPT lens/assurance/trust requirements all passed.
+
+### 2026-08-26 — Phase 4 COMPLETE
+- Upgraded dashboard run schema to v2 with 9 lens records, evidence-assurance summary, test-trustworthiness record and lens/assurance change history.
+- Extended daily report with compact Reliability Lens Summary, Evidence Assurance Summary, Test Trustworthiness section and PASS-ceiling record.
+- Added calm Dashboard Reliability Assurance strip: one overall assurance card plus 9 clickable lens chips, without changing gate-health scoring.
+- Added lens detail modal and lens-owned finding display.
+- Added lens and assurance changes to What Changed history.
+- Preserved legacy v1.x dashboard records; they display as Legacy rather than being misclassified as missing/failing v2 lenses.
+- Updated Dashboard documentation for v2 privacy/local-only and history semantics.
+- Validation evidence: v2 schema contract PASS, JS syntax PASS, mixed v1/v2 history refresh PASS.
