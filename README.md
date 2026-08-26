@@ -100,10 +100,10 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 
 Version 1.2.0 adds a GitHub Releases update channel. On Windows, installed projects can check for a newer version, show the project owner an update prompt, verify the downloaded package with SHA-256, create a backup, preserve QA data, update managed runtime files, and roll back if validation fails. See `docs/UPDATES.md`.
 
-While this repository remains private, update checks require GitHub authentication with access to the private repository. When the repository is made public, the same checker supports anonymous public release checks.
+This repository is public. Update checks and release downloads work anonymously through GitHub Releases; GitHub CLI authentication is not required for normal public updates.
 
 ## Safety principle
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.2.0
+Version: 1.2.1

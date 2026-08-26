@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1 - 2026-08-26
+
+- Switched the official update channel from private to public GitHub Releases.
+- Public update checks and release downloads no longer require GitHub authentication.
+- Performed pre-publication secret/history review and privacy hardening.
+
 ## 1.2.0 - 2026-08-26
 
 - Added private GitHub Releases development channel.

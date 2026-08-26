@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -40,7 +40,7 @@
   "updates": {
     "repository": "Isra604/comprehensive-qa-gate-system",
     "source": "github_releases",
-    "current_visibility": "private",
+    "current_visibility": "public",
     "windows_check": "runtime/tools/check-update.ps1",
     "windows_update": "runtime/tools/update.ps1",
     "windows_rollback": "runtime/tools/rollback.ps1",

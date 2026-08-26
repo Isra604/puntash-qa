@@ -20,9 +20,9 @@ The updater:
 
 `tools/rollback.ps1` can restore the managed runtime from the most recent update backup while preserving reports and evidence created later.
 
-## Private development channel
+## Public update channel
 
-While the GitHub repository is private, update checks/downloads require GitHub authentication with access to `Isra604/comprehensive-qa-gate-system`. This is intentional during private development. When the repository becomes public, the same Windows update checker can use GitHub's public API without authentication.
+The GitHub repository is public. Update checks and release downloads use GitHub's public API and public release assets without requiring repository access or GitHub authentication. GitHub CLI remains optional when present.
 
 ## Release process
 
