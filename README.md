@@ -4,6 +4,13 @@ A portable, repository-aware QA operating system for AI coding agents and human 
 
 It is designed to enter an unfamiliar project, discover how the project works, build a project-specific QA profile, execute a stable 25-gate quality model, preserve evidence, identify cross-gate root causes, perform only explicitly safe remediation, revalidate changes, and produce a complete audit-ready report.
 
+## Creator and attribution
+
+**Original creator and project architect: Ofir Israeli**  
+Copyright © 2026 Ofir Israeli.
+
+Licensed under the MIT License. The copyright and permission notice must be preserved in copies or substantial portions of the Software. See `LICENSE`, `NOTICE`, and `CREDITS.md`.
+
 ## What makes it portable
 
 The 25 gates are universal responsibility domains. The checks inside each gate are selected dynamically from the project that is discovered. A web application, API, mobile app, CLI, data pipeline, infrastructure repository, automation project, or mixed monorepo can therefore use the same QA architecture without pretending that every check is relevant.
@@ -76,4 +83,4 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.0.0
+Version: 1.0.1

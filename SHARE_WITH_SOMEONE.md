@@ -1,5 +1,7 @@
 # Give This QA System to Another Project Owner
 
+**Original creator and project architect: Ofir Israeli.** Copyright © 2026 Ofir Israeli. Licensed under MIT; keep `LICENSE`, `NOTICE`, and `CREDITS.md` with redistributed copies.
+
 Send the recipient the ZIP file from `dist/`.
 
 They extract it outside their project and run the installer against the project they want audited.

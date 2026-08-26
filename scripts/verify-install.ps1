@@ -9,7 +9,11 @@ $required = @(
   'config\default.yaml',
   'profile\PROJECT_QA_PROFILE.md',
   'state\FINDING_LEDGER.jsonl',
-  'INSTALLATION.json'
+  'INSTALLATION.json',
+  'LICENSE',
+  'NOTICE',
+  'CREDITS.md',
+  'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 )
 foreach ($i in 1..25) { $required += ('gates\GATE-{0:D2}.md' -f $i) }
 $missing = @()

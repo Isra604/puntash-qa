@@ -1,5 +1,9 @@
 # Skill: Universal Comprehensive QA Gate System
 
+**Original creator and project architect:** Ofir Israeli  
+**Copyright:** © 2026 Ofir Israeli  
+**License:** MIT
+
 ## Purpose
 
 Use this skill when asked to comprehensively audit, validate, quality-gate, release-gate, or continuously QA a software or technical project through its files, folders, repository state, tests, configuration, documentation, runtime evidence, and authorized connected systems.

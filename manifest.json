@@ -1,10 +1,15 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
   "finding_id_pattern": "UQ-YYYYMMDD-GXX-NNN",
   "statuses": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"],
-  "severities": ["Critical", "High", "Medium", "Low"]
+  "severities": ["Critical", "High", "Medium", "Low"],
+  "author": "Ofir Israeli",
+  "creator_role": "Original creator and project architect",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 Ofir Israeli",
+  "notice": "NOTICE"
 }

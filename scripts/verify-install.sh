@@ -3,7 +3,7 @@ set -euo pipefail
 if [[ $# -lt 1 ]]; then echo "Usage: $0 /path/to/project" >&2; exit 2; fi
 PROJECT="$(cd "$1" && pwd)"
 DEST="$PROJECT/.comprehensive-qa"
-for f in AGENT_INSTRUCTIONS.md config/default.yaml profile/PROJECT_QA_PROFILE.md state/FINDING_LEDGER.jsonl INSTALLATION.json; do
+for f in AGENT_INSTRUCTIONS.md config/default.yaml profile/PROJECT_QA_PROFILE.md state/FINDING_LEDGER.jsonl INSTALLATION.json LICENSE NOTICE CREDITS.md state/FIRST_RUN_ATTRIBUTION_PENDING.txt; do
   [[ -e "$DEST/$f" ]] || { echo "Missing: $DEST/$f" >&2; exit 1; }
 done
 for i in $(seq -w 1 25); do

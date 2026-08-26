@@ -1,5 +1,10 @@
 # Installation Guide
 
+**Original creator and project architect: Ofir Israeli**  
+Copyright © 2026 Ofir Israeli. Licensed under the MIT License.
+
+The installer displays creator attribution during installation and installs a one-time first-activation notice for the QA agent. Redistribution should keep `LICENSE`, `NOTICE`, and `CREDITS.md` with the package.
+
 ## Option A — Windows
 
 1. Extract the package anywhere outside the target project.
