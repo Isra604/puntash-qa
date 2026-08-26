@@ -29,3 +29,13 @@ Missing/empty/null; max/min; oversized; malformed; unicode; duplicate; wrong typ
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-04, LENS-07, LENS-09
+
+Negative/fuzz testing must include temporal, locale, Unicode, numeric precision and AI/prompt adversarial classes when applicable. Fuzz harnesses themselves require trustworthy oracles; random execution without meaningful assertions is not PASS evidence.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

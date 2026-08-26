@@ -29,3 +29,13 @@ Service-to-service; API contracts; database adapters; queues/events; external pr
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-03, LENS-05, LENS-07, LENS-09
+
+Integration QA must exercise compatibility and dependency reality: malformed/partial/slow/rate-limited responses, version drift, duplicate/reordered events and contract changes. Integration mocks cannot replace material live/representative contract evidence without an explicit assurance reduction.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

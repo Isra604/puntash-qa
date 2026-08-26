@@ -29,3 +29,13 @@ Backup existence/freshness; integrity; restore drill evidence; RPO/RTO; restore 
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-02, LENS-03, LENS-06, LENS-09
+
+Backup/restore/DR must include privacy deletion retention, schema/version compatibility and capacity/resource feasibility. A backup that exists but cannot restore within required semantics—or resurrects forbidden data—is not a PASS.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

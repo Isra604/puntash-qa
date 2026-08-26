@@ -29,3 +29,13 @@ Allow/deny rules; precedence; policy boundaries; restricted states; fail-safe be
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-02, LENS-07, LENS-08, LENS-09
+
+Restriction/safety authority includes privacy ownership boundaries, AI/tool authority boundaries and accessible error/denial behavior. A restriction that works only in one UI path or leaks data through another surface is not sufficient.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

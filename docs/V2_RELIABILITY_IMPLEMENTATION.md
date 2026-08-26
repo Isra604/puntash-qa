@@ -61,14 +61,14 @@ Status: COMPLETE
 - Add project-profile lens discovery fields.
 
 ### Phase 2 — Deepen the 25 gates
-Status: IN PROGRESS
+Status: COMPLETE
 - Strengthen gates that own or consume lens evidence.
 - Make test trustworthiness decisive for regression PASS evidence.
 - Explicitly deepen privacy/data lifecycle, compatibility, time/locale, third-party, cost/resource, AI, accessibility and blast-radius responsibilities.
 - Preserve the 25-gate count.
 
 ### Phase 3 — Runtime execution contract
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Update authoritative agent instructions with mandatory lens workflow.
 - Add lens applicability decision phase.
 - Add evidence-strength ceiling rules.
@@ -139,3 +139,15 @@ No phase is considered COMPLETE until implementation, tests/evidence, checkpoint
 - Extended Project QA Profile with lens applicability, reliability risk inventory, test trustworthiness profile and assurance overrides.
 - Upgraded default runtime config to reliability model version 2.
 - Validation evidence: exactly 9 lenses, numbering 01-09, all gate references bounded to 01-25, required applicability/assurance/status contracts present.
+
+### 2026-08-26 — Phase 2 COMPLETE
+- Deepened all 25 canonical gate files with explicit v2 cross-cutting reliability obligations.
+- Preserved canonical gate count at exactly 25.
+- Added gate-specific lens relationships and evidence-assurance ceilings.
+- Gate 04 now forbids material PASS based on WEAK/INSUFFICIENT decisive regression tests and rejects coverage-only confidence.
+- Gate 12 explicitly covers privacy lifecycle, migration, precision/time and resource pressure.
+- Gate 15 requires real accessibility depth for human UI and rejects scanner-only proof.
+- Gate 16 requires AI-specific eval/non-determinism/injection/model-drift evidence when applicable.
+- Gate 24 requires representative upgrade/rollback and release-risk evidence.
+- Gate 25 requires all nine lens decisions and blocks complete DoD PASS when applicable lens evidence is missing.
+- Validation evidence: 25/25 gates contain one v2 reliability section and evidence-assurance rule; critical-gate content assertions passed.

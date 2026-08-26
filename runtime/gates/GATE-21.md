@@ -29,3 +29,13 @@ SAST; secrets scanning; dependency/SCA; lockfiles; vulnerable packages; provenan
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-05, LENS-06, LENS-07, LENS-09
+
+Static security/supply-chain conclusions must account for test-tool trust, dependency/vendor reality, resource abuse paths, AI package/model supply chain and blast radius of dependency updates. Scanner success alone is not a security PASS.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

@@ -29,3 +29,13 @@ Logging; metrics; traces; correlation IDs; health/synthetic checks; dashboards/a
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-02, LENS-05, LENS-06, LENS-09
+
+Observability QA includes privacy-safe logs/traces, dependency/cost saturation signals and operator visibility of resource exhaustion. Logging more data is not automatically better observability if it leaks sensitive data or creates unbounded cost.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

@@ -29,3 +29,13 @@ AuthN/AuthZ runtime checks; input/output security; session/cookie/header control
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-02, LENS-05, LENS-07, LENS-09
+
+Dynamic security/authz must include privacy isolation and AI/prompt/tool boundary attacks when applicable, plus dependency credential expiry/revocation. Security automation needs trustworthy oracles and evidence that negative access actually remained denied across state transitions.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

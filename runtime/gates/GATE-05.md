@@ -29,3 +29,13 @@ Primary happy path; required outputs; state transitions; validation; error handl
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-04, LENS-05, LENS-07, LENS-08, LENS-09
+
+Validate the primary journey not only on the happy path but across relevant locale/time/precision, dependency degradation, AI variability and accessibility conditions. Use blast-radius evidence to select adjacent journeys after change.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

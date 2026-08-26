@@ -29,3 +29,13 @@ Secondary flows; alternate modes; privileged/admin flows; role variants; feature
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-04, LENS-05, LENS-07, LENS-08, LENS-09
+
+Apply the same reliability treatment to secondary/extended product contracts: relevant temporal/locale boundaries, dependency failures, AI variation and accessible interaction must not be hidden behind nominal contract success.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

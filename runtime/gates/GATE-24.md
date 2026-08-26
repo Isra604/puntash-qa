@@ -29,3 +29,13 @@ Release checklist; build artifacts; migrations readiness; config parity/drift; f
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-03, LENS-05, LENS-06, LENS-07, LENS-08, LENS-09
+
+Release readiness must explicitly consume upgrade/migration compatibility, dependency quota/version risk, resource/cost limits, AI/model drift, accessibility regressions and change blast radius. Clean install/build success cannot substitute for representative upgrade and rollback evidence.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

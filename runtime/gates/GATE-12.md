@@ -29,3 +29,13 @@ Constraints; relationships; consistency; nullability; uniqueness; referential in
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-02, LENS-03, LENS-04, LENS-06, LENS-09
+
+Database integrity explicitly consumes privacy lifecycle, migration/compatibility, precision/time and capacity lenses. Test deletion/resurrection, migration idempotency/partial failure, numeric/time semantics, uniqueness/collation and connection/lock pressure where material.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

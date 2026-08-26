@@ -29,3 +29,13 @@ Data quality; encoding; locale/time/currency; translation/localization; text fal
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-04, LENS-07, LENS-08, LENS-09
+
+Data/language quality explicitly includes Unicode, normalization, bidi/RTL, locale formatting, precision and AI-generated language risks where applicable. Visual correctness without semantic/data correctness is insufficient.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

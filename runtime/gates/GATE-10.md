@@ -29,3 +29,13 @@ Persistence; history; replay; refresh; cache coherence; state restoration; dupli
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-02, LENS-03, LENS-04, LENS-09
+
+History/replay must resist privacy resurrection, schema/version incompatibility, time-zone/ordering drift and change-induced replay divergence. Old records must remain interpretable under supported upgrades.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `config/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.
