@@ -68,7 +68,7 @@ Status: COMPLETE
 - Preserve the 25-gate count.
 
 ### Phase 3 — Runtime execution contract
-Status: IN PROGRESS
+Status: COMPLETE
 - Update authoritative agent instructions with mandatory lens workflow.
 - Add lens applicability decision phase.
 - Add evidence-strength ceiling rules.
@@ -76,7 +76,7 @@ Status: IN PROGRESS
 - Add risk-based test depth and bounded rerun/flakiness logic.
 
 ### Phase 4 — Reporting and dashboard
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Extend Project QA Profile with lens applicability and risk inventory.
 - Extend daily report with compact lens summary and evidence assurance.
 - Upgrade Dashboard run schema to preserve lens history.
@@ -151,3 +151,14 @@ No phase is considered COMPLETE until implementation, tests/evidence, checkpoint
 - Gate 24 requires representative upgrade/rollback and release-risk evidence.
 - Gate 25 requires all nine lens decisions and blocks complete DoD PASS when applicable lens evidence is missing.
 - Validation evidence: 25/25 gates contain one v2 reliability section and evidence-assurance rule; critical-gate content assertions passed.
+
+### 2026-08-26 — Phase 3 COMPLETE
+- Added mandatory Phase 3A lens applicability workflow and Phase 3B evidence-assurance/PASS-ceiling workflow to authoritative agent instructions.
+- Added explicit STRONG/MODERATE/WEAK/INSUFFICIENT semantics and high-risk evidence expectations.
+- Added decisive-test trustworthiness rules, bounded rerun guidance, mutation-testing preference/fallback and coverage-only prohibition.
+- Added risk-based QA depth driven by consequence and LENS-09 blast radius.
+- Added cross-gate/cross-lens contradiction resolution rules.
+- Added lens-owned stable finding IDs without duplicating one defect under gate and lens identities.
+- Updated completion contract: 25 gate statuses + 9 lens statuses + assurance classifications are required.
+- Updated portable skill, ChatGPT project instructions and START_HERE to enforce v2 runtime behavior.
+- Validation evidence: authoritative runtime tokens, skill numbering 1-21, ChatGPT lens/assurance/trust requirements all passed.
