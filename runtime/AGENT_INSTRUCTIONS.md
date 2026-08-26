@@ -108,7 +108,7 @@ Historical evidence may support context but cannot by itself convert a current g
 
 ## Phase 3A — Cross-cutting lens applicability
 
-Read `config/reliability.yaml` and all files under `lenses/`. The canonical model is exactly 25 gates plus 9 mandatory cross-cutting lens decisions.
+Read `gates/reliability.yaml` and all files under `gates/lenses/`. The canonical model is exactly 25 gates plus 9 mandatory cross-cutting lens decisions.
 
 For every run, record one status decision for each lens:
 - PASS
@@ -140,7 +140,7 @@ Every material gate and lens conclusion must classify its current evidence as:
 - WEAK
 - INSUFFICIENT
 
-Apply `config/reliability.yaml` strictly:
+Apply `gates/reliability.yaml` strictly:
 - STRONG may support PASS when all required checks are satisfied.
 - MODERATE may support PASS only when every known evidence gap is explicit and demonstrably non-material to the current conclusion.
 - WEAK cannot support a material PASS.

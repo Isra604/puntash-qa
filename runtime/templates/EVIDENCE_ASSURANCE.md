@@ -15,7 +15,7 @@
 - Known gaps:
 
 ## PASS ceiling decision
-- Is PASS permitted under `config/reliability.yaml`?
+- Is PASS permitted under `gates/reliability.yaml`?
 - Why/why not:
 
 ## Conflicting evidence

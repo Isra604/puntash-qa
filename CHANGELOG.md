@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0 - IN DEVELOPMENT
+
+- Added 9 mandatory cross-cutting reliability lenses while preserving exactly 25 canonical gates.
+- Added evidence assurance levels and PASS ceilings to prevent false confidence from weak evidence.
+- Added Test Trustworthiness rules for oracle quality, flakiness, isolation, mocks, test data and defect sensitivity.
+- Deepened privacy/data lifecycle, compatibility/upgrades, time/locale/precision, third-party failure, resource/cost, AI risk, accessibility and blast-radius QA.
+- Added v2 reporting/dashboard history for lens status and assurance.
+- Preserved v1.4 updater compatibility by packaging v2 lens/policy files under the already-managed `gates/` tree.
+
 ## 1.4.0 - 2026-08-26
 
 - Added a local-first visual QA Dashboard with calm responsive light/dark themes.

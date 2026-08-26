@@ -84,13 +84,13 @@ Status: COMPLETE
 - Preserve historical v1 dashboard records gracefully.
 
 ### Phase 5 — Discovery and tooling
-Status: IN PROGRESS
+Status: COMPLETE
 - Enhance QA Doctor with privacy/AI/i18n/third-party/compatibility/resource/accessibility signals.
 - Update installer/verify/update/rollback for lens/runtime additions.
 - Preserve local-only/no-telemetry behavior.
 
 ### Phase 6 — Self-QA and release gates
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Require exactly 25 gates and exactly 9 lenses.
 - Test lens mapping integrity and status semantics.
 - Test evidence-assurance PASS ceilings.
@@ -133,8 +133,8 @@ No phase is considered COMPLETE until implementation, tests/evidence, checkpoint
 - Resume rule established: read plan + checkpoint first; do not repeat completed work unless invalidated.
 
 ### 2026-08-26 — Phase 1 COMPLETE
-- Added 9 authoritative cross-cutting lens specifications under `runtime/lenses/`.
-- Added `runtime/config/reliability.yaml` with 25+9 model, evidence assurance ceilings, lens status rules, finding ID patterns and test-trustworthiness rules.
+- Added 9 authoritative cross-cutting lens specifications under `runtime/gates/lenses/`.
+- Added `runtime/gates/reliability.yaml` with 25+9 model, evidence assurance ceilings, lens status rules, finding ID patterns and test-trustworthiness rules.
 - Added Lens Evaluation and Evidence Assurance templates.
 - Extended Project QA Profile with lens applicability, reliability risk inventory, test trustworthiness profile and assurance overrides.
 - Upgraded default runtime config to reliability model version 2.
@@ -172,3 +172,16 @@ No phase is considered COMPLETE until implementation, tests/evidence, checkpoint
 - Preserved legacy v1.x dashboard records; they display as Legacy rather than being misclassified as missing/failing v2 lenses.
 - Updated Dashboard documentation for v2 privacy/local-only and history semantics.
 - Validation evidence: v2 schema contract PASS, JS syntax PASS, mixed v1/v2 history refresh PASS.
+
+### v1.4 updater compatibility layout
+During Phase 5, the reliability files were deliberately located under the existing managed `gates/` tree: `gates/lenses/` and `gates/reliability.yaml`. The v1.4.0 updater already replaces the full `gates/` directory recursively, so an existing v1.4.0 installation can receive the complete v2 reliability architecture without requiring an intermediate bridge release or a second updater pass. This supersedes only the physical Phase-1 path, not the completed lens semantics.
+
+### 2026-08-26 — Phase 5 COMPLETE
+- Moved canonical lens definitions to `runtime/gates/lenses/` and reliability policy to `runtime/gates/reliability.yaml` specifically to preserve direct upgrade compatibility with the already-released v1.4 updater, which recursively replaces the complete `gates/` tree.
+- Set branch package metadata to target version `2.0.0`; Terms remain `1.0.0`.
+- Regenerated deterministic legal manifest for package version 2.0.0 without changing legal document content or Terms version.
+- Upgraded QA Doctor schema/version to 2.0 on PowerShell and shell implementations.
+- Added conservative discovery hints for all 9 reliability lenses; false hints explicitly do not mean NOT_APPLICABLE.
+- Updated v2 updater to validate 25 gates + 9 lenses + reliability policy for v2 packages and post-update state.
+- Updated install verification scripts to require the v2 reliability model.
+- Validation evidence: PowerShell Doctor 9/9 hints PASS, Git Bash Doctor 9/9 hints PASS, PowerShell syntax PASS, v1.4 updater gate-tree recursive-copy proof PASS.

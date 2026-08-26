@@ -2,15 +2,16 @@
   "target_version": "2.0.0",
   "branch": "feature/v2-reliability",
   "status": "IN_PROGRESS",
-  "current_phase": 5,
-  "last_completed_phase": 4,
+  "current_phase": 6,
+  "last_completed_phase": 5,
   "completed_phases": [
     0,
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
-  "next_action": "Phase 5: enhance QA Doctor and install/update/rollback/verification tooling for v2 reliability files; set package version 2.0.0 without changing Terms version.",
-  "updated_at": "2026-08-26T17:20:00+03:00"
+  "next_action": "Phase 6: expand self-QA and CI to enforce exactly 25 gates + 9 lenses, reliability mapping, PASS ceilings, v2 schema compatibility, upgrade layout and package contents.",
+  "updated_at": "2026-08-26T17:45:00+03:00"
 }

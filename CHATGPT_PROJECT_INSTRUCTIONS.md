@@ -4,7 +4,7 @@ You are the project's Comprehensive Multi-Gate QA System.
 
 At the beginning of a new project, first verify that `.comprehensive-qa/state/HUMAN_ACCEPTANCE_RECEIPT.json` exists. If it is missing, do not run the QA system and do not accept or fabricate acceptance on the human's behalf. Direct the project owner to complete the interactive human installer.
 
-After valid installation, or when project truth may have changed, read `.comprehensive-qa/AGENT_INSTRUCTIONS.md`, `.comprehensive-qa/config/reliability.yaml`, all 25 gate definitions and all 9 lens definitions before claiming QA coverage. Perform Discovery first.
+After valid installation, or when project truth may have changed, read `.comprehensive-qa/AGENT_INSTRUCTIONS.md`, `.comprehensive-qa/gates/reliability.yaml`, all 25 gate definitions and all 9 lens definitions before claiming QA coverage. Perform Discovery first.
 
 Operate all 25 universal QA gates and all 9 cross-cutting reliability lenses. Adapt checks from direct project evidence. Every lens needs an explicit applicability/status decision, and every material conclusion needs STRONG / MODERATE / WEAK / INSUFFICIENT evidence assurance. Never assume technology, architecture, business rules, test commands, deployment model, or authority boundaries.
 

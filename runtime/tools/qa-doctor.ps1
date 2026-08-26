@@ -40,6 +40,13 @@ $containerSignal=(Test-Path (Join-Path $project 'Dockerfile')) -or (@($rels|Wher
 $infraSignal=@($rels|Where-Object{$_ -match '\.tf$|(^|[\\/])(helm|k8s|kubernetes|terraform|infrastructure|infra)([\\/]|$)'}).Count -gt 0
 $authSignal=@($rels|Where-Object{$_ -match '(^|[\\/])(auth|authentication|authorization|oauth|oidc|jwt)([\\/]|[._-])'}).Count -gt 0
 $obsSignal=@($rels|Where-Object{$_ -match 'opentelemetry|telemetry|tracing|metrics|sentry|prometheus|grafana'}).Count -gt 0
+$privacySignal=@($rels|Where-Object{$_ -match '(^|[\\/])(privacy|consent|retention|accounts?|profiles?|users?|analytics)([\\/]|[._-])'}).Count -gt 0
+$compatSignal=@($rels|Where-Object{$_ -match '(^|[\\/])(migrations?|openapi|swagger|proto|versioning|upgrades?|rollback)([\\/]|[._-])' -or $_ -match '\.(proto|avsc)$'}).Count -gt 0
+$localeSignal=@($rels|Where-Object{$_ -match '(^|[\\/])(i18n|l10n|locales?|translations?|rtl|timezone|timezones|currencies)([\\/]|[._-])'}).Count -gt 0
+$thirdPartySignal=@($rels|Where-Object{$_ -match '(^|[\\/])(integrations?|webhooks?|oauth|stripe|twilio|sendgrid|sentry|openai|anthropic|bedrock|gemini)([\\/]|[._-])'}).Count -gt 0
+$resourceSignal=$infraSignal -or $containerSignal -or (@($rels|Where-Object{$_ -match '(^|[\\/])(load|stress|soak|benchmarks?|capacity|queues?|workers?|k6|jmeter|locust)([\\/]|[._-])'}).Count -gt 0)
+$aiSignal=@($rels|Where-Object{$_ -match '(^|[\\/])(prompts?|llm|openai|anthropic|bedrock|gemini|ollama|langchain|huggingface)([\\/]|[._-])'}).Count -gt 0
+$accessibilitySignal=@($rels|Where-Object{$_ -match '(^|[\\/])(a11y|accessibility|axe|wcag|aria)([\\/]|[._-])'}).Count -gt 0
 $gitSignal=$false
 if(Get-Command git -ErrorAction SilentlyContinue){try{git -C $project rev-parse --is-inside-work-tree 2>$null|Out-Null;if($LASTEXITCODE -eq 0){$gitSignal=$true}}catch{}}
 
@@ -51,6 +58,14 @@ $packageScripts=@()
 $package=Join-Path $project 'package.json'
 if(Test-Path $package){try{$pj=Get-Content $package -Raw|ConvertFrom-Json;if($pj.scripts){$packageScripts=@($pj.scripts.PSObject.Properties.Name|Sort-Object)}}catch{}}
 $buildSignal=(@($packageScripts|Where-Object{$_ -match 'build|compile|typecheck|lint'}).Count -gt 0) -or ($manifests.Count -gt 0)
+if(Test-Path $package){
+  try{
+    $pkgText=Get-Content $package -Raw
+    if($pkgText -match '"(openai|@anthropic-ai|langchain|@google/generative-ai|ollama|ai)"\s*:'){$aiSignal=$true}
+    if($pkgText -match '"(@axe-core|axe-core|pa11y|lighthouse)"\s*:'){$accessibilitySignal=$true}
+    if($pkgText -match '"(stripe|twilio|@sentry|firebase|aws-sdk|@aws-sdk|@azure|googleapis)'){$thirdPartySignal=$true}
+  }catch{}
+}
 
 $typeHints=New-Object System.Collections.Generic.List[string]
 if(Test-Path $package){$typeHints.Add('Node/JavaScript ecosystem')}
@@ -76,8 +91,8 @@ if($infraSignal -or $containerSignal){foreach($g in @(19,23)){[void]$gateSet.Add
 $gateEstimate=@($gateSet|Sort-Object)
 
 $result=[ordered]@{
- schema_version=1
- doctor_version='1.0'
+ schema_version=2
+ doctor_version='2.0'
  status='READY_FOR_AGENT_DISCOVERY'
  generated_at=(Get-Date).ToString('o')
  project_path=$project
@@ -88,6 +103,18 @@ $result=[ordered]@{
  manifests=$manifests
  package_scripts=$packageScripts
  signals=[ordered]@{git_repository=$gitSignal;tests=$testSignal;build_or_manifest=$buildSignal;database_or_schema=$dbSignal;browser_e2e=$e2eSignal;ci=$ciSignal;containers=$containerSignal;infrastructure=$infraSignal;authentication=$authSignal;observability=$obsSignal}
+ reliability_lens_hints=[ordered]@{
+  'LENS-01_test_trustworthiness'=$testSignal;
+  'LENS-02_privacy_data_lifecycle'=($privacySignal -or $dbSignal -or $authSignal);
+  'LENS-03_compatibility_upgrade'=($compatSignal -or $dbSignal);
+  'LENS-04_time_locale_precision_encoding'=$localeSignal;
+  'LENS-05_third_party_failure_quota'=$thirdPartySignal;
+  'LENS-06_resource_capacity_cost'=$resourceSignal;
+  'LENS-07_ai_quality_model_risk'=$aiSignal;
+  'LENS-08_accessibility_depth'=$accessibilitySignal;
+  'LENS-09_change_blast_radius'=$gitSignal
+ }
+ reliability_hint_meaning='Discovery hints only. False means no simple local signal was found, not NOT_APPLICABLE. The agent must make all 9 lens decisions from direct evidence.'
  local_tools=$tools
  local_evidence_gate_estimate=[ordered]@{count=$gateEstimate.Count;of=25;gates=$gateEstimate;meaning='Conservative local evidence signals only. This is NOT a gate status, PASS claim or applicability decision.'}
  note='QA Doctor output is a pre-discovery hint set. The AI agent must verify every relevant fact from direct current evidence.'
@@ -98,6 +125,7 @@ $langText=if($langCounts.Count){($langCounts.GetEnumerator()|ForEach-Object{"$($
 $manifestText=if($manifests.Count){$manifests -join ', '}else{'None detected'}
 $toolText=($tools.GetEnumerator()|Where-Object{$_.Value}|ForEach-Object{$_.Key}) -join ', '
 $signalLines=($result.signals.GetEnumerator()|ForEach-Object{"- $($_.Key): $($_.Value)"}) -join "`r`n"
+$lensLines=($result.reliability_lens_hints.GetEnumerator()|ForEach-Object{"- $($_.Key): $($_.Value)"}) -join "`r`n"
 $md=@"
 # QA Doctor Readiness Report
 
@@ -117,6 +145,11 @@ $manifestText
 ## Signals
 $signalLines
 
+## v2 Reliability lens discovery hints
+$lensLines
+
+A `false` hint is not proof of NOT_APPLICABLE. All 9 lenses still require an evidence-based decision by the QA agent.
+
 ## Local tools detected
 $toolText
 
@@ -130,5 +163,6 @@ Set-Content $mdPath $md -Encoding UTF8
 Write-Host "QA_DOCTOR_STATUS=READY_FOR_AGENT_DISCOVERY"
 Write-Host "QA_DOCTOR_SCANNED_FILES=$($files.Count)"
 Write-Host "QA_DOCTOR_LOCAL_EVIDENCE_GATES=$($gateEstimate.Count)/25"
+Write-Host "QA_DOCTOR_RELIABILITY_HINTS=9"
 Write-Host "QA_DOCTOR_JSON=$jsonPath"
 Write-Host "QA_DOCTOR_MD=$mdPath"

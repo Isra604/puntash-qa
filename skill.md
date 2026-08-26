@@ -34,4 +34,4 @@ Use this skill when asked to comprehensively audit, validate, quality-gate, rele
 
 ## Installed runtime
 
-After installation, read `.comprehensive-qa/AGENT_INSTRUCTIONS.md` as the authoritative detailed runtime contract, `.comprehensive-qa/config/reliability.yaml` as the reliability policy, and the files under `.comprehensive-qa/gates/` and `.comprehensive-qa/lenses/` as the canonical gate/lens definitions.
+After installation, read `.comprehensive-qa/AGENT_INSTRUCTIONS.md` as the authoritative detailed runtime contract, `.comprehensive-qa/gates/reliability.yaml` as the reliability policy, and the files under `.comprehensive-qa/gates/` and `.comprehensive-qa/gates/lenses/` as the canonical gate/lens definitions.

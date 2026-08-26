@@ -59,6 +59,6 @@ legal:
 reliability_model:
   canonical_gate_count: 25
   cross_cutting_lens_count: 9
-  config: config/reliability.yaml
+  config: gates/reliability.yaml
   require_lens_applicability_decision: true
   require_evidence_assurance: true
