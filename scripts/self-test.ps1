@@ -11,12 +11,15 @@ foreach($i in 1..25){Check (Test-Path (Join-Path $root ('runtime\gates\GATE-{0:D
 foreach($j in @('manifest.json','LEGAL_MANIFEST.json','runtime\config\update.json')){try{Get-Content (Join-Path $root $j)-Raw|ConvertFrom-Json|Out-Null;Check $true "$j valid JSON"}catch{Check $false "$j valid JSON"}}
 $terms=(Get-Content (Join-Path $root 'TERMS_VERSION') -Raw).Trim();Check ([string]$manifest.terms_version -eq $terms) 'Terms version consistency'
 $legalManifest=Get-Content (Join-Path $root 'LEGAL_MANIFEST.json')-Raw|ConvertFrom-Json
+Check ([string]$legalManifest.package_version -eq $version) 'LEGAL_MANIFEST package version consistency'
+Check ([string]$legalManifest.terms_version -eq $terms) 'LEGAL_MANIFEST terms version consistency'
+Check ([string]$legalManifest.line_endings -eq 'LF') 'LEGAL_MANIFEST deterministic LF contract'
 $legalOk=$true
 foreach($p in $legalManifest.documents.PSObject.Properties){$path=Join-Path $root $p.Name;if(-not(Test-Path $path)){$legalOk=$false;continue};$actual=(Get-FileHash -Algorithm SHA256 $path).Hash.ToUpperInvariant();if($actual -ne ([string]$p.Value).ToUpperInvariant()){$legalOk=$false}}
 Check $legalOk 'legal document SHA-256 manifest integrity'
 $psFiles=Get-ChildItem $root -Recurse -Filter '*.ps1' -File|Where-Object{$_.FullName -notmatch '\\.git\\|\\dist\\'}
 foreach($p in $psFiles){$tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile($p.FullName,[ref]$tokens,[ref]$errors)|Out-Null;Check ($errors.Count -eq 0) ("PowerShell parse: "+(Resolve-Path $p.FullName -Relative))}
-$required=@('START_HERE_WINDOWS.cmd','scripts\install-gui.ps1','runtime\START_HERE.md','runtime\tools\qa-doctor.ps1','runtime\tools\qa-doctor.sh','docs\PRODUCT_ROADMAP.md','.github\workflows\qa.yml')
+$required=@('START_HERE_WINDOWS.cmd','scripts\install-gui.ps1','runtime\START_HERE.md','runtime\tools\qa-doctor.ps1','runtime\tools\qa-doctor.sh','docs\PRODUCT_ROADMAP.md','.github\workflows\qa.yml','scripts\generate-legal-manifest.ps1','.gitattributes')
 foreach($r in $required){Check (Test-Path (Join-Path $root $r)) "$r present"}
 $guideCount=(Get-ChildItem (Join-Path $root 'runtime\agent-guides') -Filter '*.md' -File).Count;Check ($guideCount -ge 5) 'agent quick guides present'
 $update=Get-Content (Join-Path $root 'runtime\config\update.json')-Raw|ConvertFrom-Json;Check ($update.current_visibility -eq 'public') 'public update channel retained'

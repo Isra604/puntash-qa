@@ -1,8 +1,9 @@
 {
   "system": "Universal Comprehensive QA Gate System",
-  "package_version": "1.1.0",
+  "package_version": "1.3.0",
   "terms_version": "1.0.0",
   "algorithm": "SHA-256",
+  "line_endings": "LF",
   "documents": {
     "LICENSE": "24CB421439097C5A585EC099FD1EF1403188EE12A4363768AB13EED83515AEC2",
     "TERMS_OF_USE.md": "A1E8C6F1CE981B69AF0B94C1EFEF7746CD5DE9B0863D0D2FEBB900AFC9871746",

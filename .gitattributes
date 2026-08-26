@@ -1,0 +1,3 @@
+# Deterministic text files across Windows, macOS and Linux
+* text=auto eol=lf
+*.cmd text eol=crlf

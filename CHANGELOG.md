@@ -8,6 +8,7 @@
 - Added deterministic self-tests and Windows/Linux/macOS GitHub Actions QA.
 - Added durable product roadmap for v1.4 dashboard and deferred opt-in telemetry.
 - Updated release workflow baseline for self-tested releases.
+- Made legal-document SHA-256 validation deterministic across operating systems.
 
 
 ## 1.2.1 - 2026-08-26
