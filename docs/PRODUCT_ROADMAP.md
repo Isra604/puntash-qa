@@ -6,7 +6,7 @@ Current public release at roadmap creation: v1.2.1.
 
 ## v1.3.0 — Easy Start
 
-Status: IN PROGRESS
+Status: COMPLETED
 
 Goal: turn the project from an expert-oriented QA runtime package into a product that a non-programmer can install and hand to an AI agent with minimal setup.
 
