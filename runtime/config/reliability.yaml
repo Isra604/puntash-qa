@@ -1,0 +1,49 @@
+schema_version: 2
+model: 25-gates-plus-9-cross-cutting-lenses
+required_gate_count: 25
+required_lens_count: 9
+lens_statuses:
+  - PASS
+  - FAIL
+  - BLOCKED
+  - NOT_RUN
+  - NOT_APPLICABLE
+evidence_assurance:
+  levels:
+    STRONG: current direct reproducible evidence adequate for the conclusion
+    MODERATE: direct evidence with bounded non-material gaps
+    WEAK: partial indirect stale heuristic or materially incomplete evidence
+    INSUFFICIENT: no adequate evidence for the conclusion
+  pass_rules:
+    STRONG: PASS_ALLOWED
+    MODERATE: PASS_ALLOWED_ONLY_WITH_EXPLICIT_NON_MATERIAL_GAP
+    WEAK: MATERIAL_PASS_FORBIDDEN
+    INSUFFICIENT: PASS_FORBIDDEN
+finding_id_patterns:
+  gate: UQ-YYYYMMDD-GXX-NNN
+  lens: UQ-YYYYMMDD-LXX-NNN
+rules:
+  gate_pass_does_not_imply_lens_pass: true
+  lens_pass_does_not_imply_gate_pass: true
+  missing_lens_decision_is_run_incomplete: true
+  missing_applicable_lens_evidence_never_becomes_pass: true
+  coverage_percentage_is_never_behavioral_proof: true
+  decisive_automated_test_pass_requires_test_trustworthiness_evaluation: true
+  stale_evidence_alone_cannot_pass: true
+  contradictory_gate_lens_states_require_resolution_or_explicit_blocker: true
+test_trustworthiness:
+  decisive_high_risk_suite_rerun_target: 2
+  rerun_when_cost_and_safety_reasonable: true
+  mutation_testing_preferred_when_project_native_and_affordable: true
+  targeted_defect_sensitivity_reasoning_fallback: true
+  skipped_disabled_quarantined_tests_must_be_accounted_for: true
+lens_gate_map:
+  LENS-01: [GATE-04, GATE-02, GATE-03, GATE-13, GATE-14, GATE-15, GATE-16, GATE-17, GATE-18, GATE-19, GATE-21, GATE-22, GATE-24, GATE-25]
+  LENS-02: [GATE-07, GATE-10, GATE-11, GATE-12, GATE-20, GATE-22, GATE-23, GATE-24, GATE-25]
+  LENS-03: [GATE-10, GATE-11, GATE-12, GATE-14, GATE-19, GATE-23, GATE-24, GATE-25]
+  LENS-04: [GATE-05, GATE-06, GATE-09, GATE-10, GATE-11, GATE-12, GATE-13, GATE-14, GATE-15, GATE-16, GATE-17]
+  LENS-05: [GATE-03, GATE-05, GATE-06, GATE-14, GATE-17, GATE-18, GATE-19, GATE-20, GATE-22, GATE-24, GATE-25]
+  LENS-06: [GATE-17, GATE-18, GATE-19, GATE-20, GATE-21, GATE-24, GATE-25]
+  LENS-07: [GATE-05, GATE-06, GATE-07, GATE-08, GATE-09, GATE-13, GATE-14, GATE-16, GATE-17, GATE-18, GATE-19, GATE-21, GATE-22, GATE-24, GATE-25]
+  LENS-08: [GATE-15, GATE-05, GATE-06, GATE-07, GATE-09, GATE-16, GATE-24]
+  LENS-09: [GATE-01, GATE-02, GATE-03, GATE-04, GATE-05, GATE-06, GATE-07, GATE-08, GATE-09, GATE-10, GATE-11, GATE-12, GATE-13, GATE-14, GATE-15, GATE-16, GATE-17, GATE-18, GATE-19, GATE-20, GATE-21, GATE-22, GATE-23, GATE-24, GATE-25]

@@ -1,4 +1,4 @@
-version: 1
+version: 2
 system_name: Universal Comprehensive QA Gate System
 mode: report_only
 statuses:
@@ -55,3 +55,10 @@ legal:
   require_fresh_acceptance_on_reinstall: true
   terms_version: 1.0.0
   installer_transmits_receipt: false
+
+reliability_model:
+  canonical_gate_count: 25
+  cross_cutting_lens_count: 9
+  config: config/reliability.yaml
+  require_lens_applicability_decision: true
+  require_evidence_assurance: true

@@ -46,14 +46,14 @@ Every material gate/lens conclusion will classify current evidence as:
 ## Implementation phases
 
 ### Phase 0 — Durable control plane
-Status: IN PROGRESS
+Status: COMPLETE
 - Create dedicated `feature/v2-reliability` branch.
 - Create this durable implementation file.
 - Create machine/human readable checkpoint state.
 - Define phase completion rules.
 
 ### Phase 1 — Reliability architecture
-Status: NOT_STARTED
+Status: COMPLETE
 - Add 9 authoritative lens specifications.
 - Add lens applicability/mapping configuration.
 - Add evidence-assurance rules and templates.
@@ -61,7 +61,7 @@ Status: NOT_STARTED
 - Add project-profile lens discovery fields.
 
 ### Phase 2 — Deepen the 25 gates
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Strengthen gates that own or consume lens evidence.
 - Make test trustworthiness decisive for regression PASS evidence.
 - Explicitly deepen privacy/data lifecycle, compatibility, time/locale, third-party, cost/resource, AI, accessibility and blast-radius responsibilities.
@@ -126,3 +126,16 @@ When resuming work, read this file and `docs/V2_CHECKPOINT.json` first. Continue
 ## Completion log
 
 No phase is considered COMPLETE until implementation, tests/evidence, checkpoint update and Git commit are all present.
+
+### 2026-08-26 — Phase 0 COMPLETE
+- Dedicated branch `feature/v2-reliability` created and pushed.
+- Durable implementation plan and machine-readable checkpoint committed.
+- Resume rule established: read plan + checkpoint first; do not repeat completed work unless invalidated.
+
+### 2026-08-26 — Phase 1 COMPLETE
+- Added 9 authoritative cross-cutting lens specifications under `runtime/lenses/`.
+- Added `runtime/config/reliability.yaml` with 25+9 model, evidence assurance ceilings, lens status rules, finding ID patterns and test-trustworthiness rules.
+- Added Lens Evaluation and Evidence Assurance templates.
+- Extended Project QA Profile with lens applicability, reliability risk inventory, test trustworthiness profile and assurance overrides.
+- Upgraded default runtime config to reliability model version 2.
+- Validation evidence: exactly 9 lenses, numbering 01-09, all gate references bounded to 01-25, required applicability/assurance/status contracts present.

@@ -69,3 +69,26 @@ Last discovery: N/A
 ## 13. Known open risks
 | ID | Risk | Severity | Evidence | Owner/status |
 |---|---|---|---|---|
+
+## 14. Cross-cutting lens applicability
+| Lens | Applicable | Why | Evidence | Primary gates | Known blockers |
+|---|---|---|---|---|---|
+
+## 15. Reliability risk inventory
+- Data/privacy classes handled:
+- Compatibility/upgrade contracts:
+- Supported locales/time zones/currencies/encodings:
+- Critical third-party dependencies and quotas:
+- Resource/capacity/cost budgets or hard limits:
+- AI/ML/LLM behavior and providers:
+- Human UI/accessibility surfaces:
+- Current change baseline and likely blast radius:
+
+## 16. Test trustworthiness profile
+| Suite | Purpose | Decisive for | Oracle quality | Flakiness/isolation evidence | Mock fidelity | Test-data quality | Assurance |
+|---|---|---|---|---|---|---|---|
+
+## 17. Evidence-assurance policy overrides
+- Owner-approved exceptions:
+- High-risk gates/lenses requiring STRONG evidence:
+- Evidence that must not be reused without refresh:
