@@ -1,0 +1,49 @@
+version: 1
+system_name: Universal Comprehensive QA Gate System
+mode: report_only
+statuses:
+  - PASS
+  - FAIL
+  - BLOCKED
+  - NOT_RUN
+  - NOT_APPLICABLE
+severities:
+  - Critical
+  - High
+  - Medium
+  - Low
+finding_id_pattern: UQ-YYYYMMDD-GXX-NNN
+output:
+  profile: profile/PROJECT_QA_PROFILE.md
+  reports: reports
+  evidence: evidence
+  artifacts: artifacts
+  remediation: remediation
+  dispositions: dispositions
+  state: state
+remediation:
+  default: report_only
+  allowed_modes:
+    - report_only
+    - safe_auto
+  never_auto_change:
+    - material_product_intent
+    - architecture
+    - public_api_contracts
+    - security_policy
+    - privacy_policy
+    - authentication_semantics
+    - authorization_semantics
+    - database_schema
+    - migrations
+    - production_data
+    - credentials
+    - deployments
+    - production
+    - billing_or_paid_calls
+    - destructive_operations
+reporting:
+  immutable_completed_reports: true
+  overwrite_same_day: false
+  second_run_suffix: HHMMSS
+  preserve_reviewer_disposition_separately: true
