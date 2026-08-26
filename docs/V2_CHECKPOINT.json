@@ -1,0 +1,10 @@
+{
+  "target_version": "2.0.0",
+  "branch": "feature/v2-reliability",
+  "status": "IN_PROGRESS",
+  "current_phase": 0,
+  "last_completed_phase": -1,
+  "completed_phases": [],
+  "next_action": "Create branch, commit durable v2 plan, then begin Phase 1 reliability architecture.",
+  "updated_at": "2026-08-26T16:00:00+03:00"
+}
