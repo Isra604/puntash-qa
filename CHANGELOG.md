@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 - 2026-08-26
+
+- Added private GitHub Releases development channel.
+- Added interactive Windows update notification, updater and rollback tools.
+- Added release-manifest and SHA-256 verification.
+- Added full pre-update backup and preservation of QA reports/evidence/profile/state.
+- Added renewed human Terms acceptance when Terms version changes.
+- Added GitHub Actions tag-based release packaging.
+
 ## 1.1.0 — 2026-08-26
 
 - Added mandatory human acceptance before installation.

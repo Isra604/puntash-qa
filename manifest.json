@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -36,5 +36,16 @@
     "NOTICE",
     "CREDITS.md"
   ],
-  "legal_manifest": "LEGAL_MANIFEST.json"
+  "legal_manifest": "LEGAL_MANIFEST.json",
+  "updates": {
+    "repository": "Isra604/comprehensive-qa-gate-system",
+    "source": "github_releases",
+    "current_visibility": "private",
+    "windows_check": "runtime/tools/check-update.ps1",
+    "windows_update": "runtime/tools/update.ps1",
+    "windows_rollback": "runtime/tools/rollback.ps1",
+    "human_confirmation_required": true,
+    "sha256_required": true,
+    "backup_required": true
+  }
 }

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "repository": "Isra604/comprehensive-qa-gate-system",
+  "channel": "stable",
+  "release_source": "github_releases",
+  "current_visibility": "private",
+  "private_channel_requires_github_authentication": true,
+  "public_channel_supports_anonymous_checks": true,
+  "check_interval_hours": 24,
+  "interactive_update_required": true,
+  "verify_sha256": true,
+  "backup_before_update": true,
+  "preserve_directories": [
+    "profile",
+    "reports",
+    "evidence",
+    "artifacts",
+    "remediation",
+    "dispositions",
+    "state"
+  ],
+  "preserve_files": [
+    "config/default.yaml"
+  ],
+  "managed_paths": [
+    "AGENT_INSTRUCTIONS.md",
+    "gates",
+    "templates",
+    "tools",
+    "config/update.json",
+    "LICENSE",
+    "NOTICE",
+    "CREDITS.md",
+    "TERMS_OF_USE.md",
+    "DISCLAIMER.md",
+    "DATA_RESPONSIBILITY_NOTICE.md",
+    "HUMAN_ACCEPTANCE.md",
+    "TERMS_VERSION",
+    "LEGAL_MANIFEST.json"
+  ]
+}

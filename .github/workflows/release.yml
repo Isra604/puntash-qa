@@ -1,0 +1,35 @@
+name: Release Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Verify tag matches VERSION
+        shell: pwsh
+        run: |
+          $version=(Get-Content VERSION -Raw).Trim()
+          if ("v$version" -ne "${{ github.ref_name }}") { throw "Tag ${{ github.ref_name }} does not match VERSION v$version" }
+      - name: Build release package
+        shell: pwsh
+        run: ./scripts/build-release.ps1
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" `
+            "dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ github.ref_name }}.zip" `
+            "dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ github.ref_name }}.zip.sha256" `
+            "dist/release-manifest.json" `
+            --title "Universal Comprehensive QA Gate System ${{ github.ref_name }}" `
+            --generate-notes

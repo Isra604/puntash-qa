@@ -96,8 +96,14 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 - `HUMAN_ACCEPTANCE.md` — mandatory natural-person acceptance protocol.
 - `LEGAL_MANIFEST.json` — SHA-256 manifest of the presented legal documents.
 
+## Updates
+
+Version 1.2.0 adds a GitHub Releases update channel. On Windows, installed projects can check for a newer version, show the project owner an update prompt, verify the downloaded package with SHA-256, create a backup, preserve QA data, update managed runtime files, and roll back if validation fails. See `docs/UPDATES.md`.
+
+While this repository remains private, update checks require GitHub authentication with access to the private repository. When the repository is made public, the same checker supports anonymous public release checks.
+
 ## Safety principle
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.1.0
+Version: 1.2.0

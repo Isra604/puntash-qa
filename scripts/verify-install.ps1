@@ -20,6 +20,10 @@ $required = @(
   'NOTICE',
   'CREDITS.md',
   'state\HUMAN_ACCEPTANCE_RECEIPT.json',
+  'tools\check-update.ps1',
+  'tools\update.ps1',
+  'tools\rollback.ps1',
+  'config\update.json',
   'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 )
 foreach ($i in 1..25) { $required += ('gates\GATE-{0:D2}.md' -f $i) }

@@ -16,6 +16,10 @@ On first activation after a valid installation, check for `state/FIRST_RUN_ATTRI
 
 Do not repeatedly insert creator attribution into ordinary QA findings or reports. The first-run notice, legal files, acceptance receipt, and retained metadata are sufficient.
 
+## Update awareness
+
+If `tools/check-update.ps1` is available and command execution is authorized, perform a non-destructive update check at most once every 24 hours before the first substantive QA cycle of the day. An update-check failure must not be converted into a QA PASS or block ordinary QA execution. Never install an update without the project owner's interactive approval. Never bypass SHA-256 verification, backup, Terms re-acceptance when required, or rollback safeguards.
+
 ## First principle: evidence before assumption
 
 Direct current evidence outranks stale notes, old reports, inferred intent, and memory. If two sources disagree, report the contradiction and determine which source is authoritative from repository history, current configuration, executable behavior, explicit owner decisions, and other durable evidence.
