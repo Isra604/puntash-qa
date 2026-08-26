@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -47,5 +47,14 @@
     "human_confirmation_required": true,
     "sha256_required": true,
     "backup_required": true
+  },
+  "easy_start": {
+    "windows_launcher": "START_HERE_WINDOWS.cmd",
+    "windows_gui_installer": "scripts/install-gui.ps1",
+    "installed_start_here": "runtime/START_HERE.md",
+    "qa_doctor_windows": "runtime/tools/qa-doctor.ps1",
+    "qa_doctor_unix": "runtime/tools/qa-doctor.sh",
+    "self_test_windows": "scripts/self-test.ps1",
+    "self_test_unix": "scripts/self-test.sh"
   }
 }

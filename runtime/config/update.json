@@ -24,6 +24,8 @@
   ],
   "managed_paths": [
     "AGENT_INSTRUCTIONS.md",
+    "agent-guides",
+    "START_HERE.md",
     "gates",
     "templates",
     "tools",

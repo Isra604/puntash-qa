@@ -8,6 +8,9 @@ They extract it outside their project and run the installer against the project 
 
 ## Windows
 
+Recommended for non-technical users: extract the ZIP and double-click `START_HERE_WINDOWS.cmd`, then choose the project folder.
+
+
 ```powershell
 .\scripts\install.ps1 -ProjectPath "C:\path\to\their-project"
 .\scripts\verify-install.ps1 -ProjectPath "C:\path\to\their-project"

@@ -30,7 +30,14 @@ An AI agent may inspect the package, explain it, and launch the installer, but t
 
 ## Install into any project
 
-Windows PowerShell:
+Windows Easy Start (recommended):
+
+1. Extract the release ZIP.
+2. Double-click `START_HERE_WINDOWS.cmd`.
+3. Choose the target project folder.
+4. Review and accept the mandatory human terms.
+
+PowerShell remains available for advanced/manual installation:
 
 ```powershell
 .\scripts\install.ps1 -ProjectPath "C:\path\to\project"
@@ -50,9 +57,13 @@ The installer creates one self-contained folder in the target project:
 
 It does not alter product source code, dependencies, CI/CD, database schema, deployment configuration, or Git history.
 
+## QA Doctor
+
+Version 1.3.0 runs a safe local QA Doctor readiness scan after installation. It records project/tooling signals in `.comprehensive-qa/state/QA_DOCTOR.json` and `.md`. Doctor output is only a discovery hint and never a QA PASS result.
+
 ## Start the agent
 
-Give the QA-capable agent filesystem access to the project, then instruct it:
+Open `.comprehensive-qa/START_HERE.md` for the simplest handoff. Give the QA-capable agent filesystem access to the project, then instruct it:
 
 ```text
 Read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full. Perform the discovery phase first. Do not assume the stack, product contract, test commands, environments, or authority boundaries. Build the project QA profile, map all 25 gates, then execute the authorized QA cycle and preserve evidence exactly as instructed.
@@ -106,4 +117,4 @@ This repository is public. Update checks and release downloads work anonymously 
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.2.1
+Version: 1.3.0

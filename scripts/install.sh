@@ -111,9 +111,17 @@ cat > "$DEST/INSTALLATION.json" <<EOF
 }
 EOF
 
+if [[ -f "$DEST/tools/qa-doctor.sh" ]]; then
+  if bash "$DEST/tools/qa-doctor.sh" "$PROJECT" "$DEST/state"; then
+    echo "QA Doctor readiness scan completed."
+  else
+    echo "WARNING: QA Doctor did not complete. Installation remains valid." >&2
+  fi
+fi
+
 echo "Comprehensive QA Gate System installed successfully."
 echo "Created by Ofir Israeli."
 echo "Human acceptance recorded for Terms v$TERMS_VERSION."
 echo "Installed runtime: $DEST"
 echo "Acceptance receipt: $DEST/state/HUMAN_ACCEPTANCE_RECEIPT.json"
-echo "Next: ask your QA agent to read .comprehensive-qa/AGENT_INSTRUCTIONS.md and perform Discovery."
+echo "Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md and perform Discovery."

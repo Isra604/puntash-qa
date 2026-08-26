@@ -1,5 +1,9 @@
 # Installation Guide
 
+## Easy Start on Windows
+
+Extract the release ZIP and double-click `START_HERE_WINDOWS.cmd`. Choose the root folder of the target project. The launcher never scans the disk or guesses a project; installation begins only after explicit folder selection and the existing human legal-acceptance gate.
+
 ## Mandatory human acceptance
 
 Installation through the supplied installers is intentionally interactive. An AI agent may launch the installer but must hand control to a natural person for acceptance. The person must review and accept `LICENSE`, `TERMS_OF_USE.md`, `DISCLAIMER.md`, `DATA_RESPONSIBILITY_NOTICE.md`, and `HUMAN_ACCEPTANCE.md`.

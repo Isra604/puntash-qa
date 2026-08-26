@@ -215,8 +215,19 @@ $installed = [ordered]@{
 } 
 $installed | ConvertTo-Json -Depth 6 | Set-Content -Path (Join-Path $dest 'INSTALLATION.json') -Encoding UTF8
 
+
+$doctor = Join-Path $dest 'tools\qa-doctor.ps1'
+if (Test-Path $doctor) {
+  try {
+    & $doctor -ProjectPath $project -OutputDirectory (Join-Path $dest 'state') | Out-Host
+    Write-Host 'QA Doctor readiness scan completed.'
+  } catch {
+    Write-Warning ("QA Doctor did not complete: " + $_.Exception.Message)
+  }
+}
+
 Write-Host 'Comprehensive QA Gate System installed successfully.'
 Write-Host 'Created by Ofir Israeli.'
 Write-Host "Installed runtime: $dest"
 Write-Host "Acceptance receipt: $dest\state\HUMAN_ACCEPTANCE_RECEIPT.json"
-Write-Host 'Next: ask your QA agent to read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full and perform Discovery.'
+Write-Host 'Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md in full and perform Discovery.'

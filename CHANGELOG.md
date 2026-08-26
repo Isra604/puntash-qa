@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0 - 2026-08-26
+
+- Added Easy Start Windows folder-picker launcher.
+- Added cross-platform QA Doctor readiness reports.
+- Added installed START HERE and agent-specific quick guides.
+- Added deterministic self-tests and Windows/Linux/macOS GitHub Actions QA.
+- Added durable product roadmap for v1.4 dashboard and deferred opt-in telemetry.
+- Updated release workflow baseline for self-tested releases.
+
+
 ## 1.2.1 - 2026-08-26
 
 - Switched the official update channel from private to public GitHub Releases.

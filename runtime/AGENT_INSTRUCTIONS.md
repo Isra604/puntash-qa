@@ -20,6 +20,10 @@ Do not repeatedly insert creator attribution into ordinary QA findings or report
 
 If `tools/check-update.ps1` is available and command execution is authorized, perform a non-destructive update check at most once every 24 hours before the first substantive QA cycle of the day. An update-check failure must not be converted into a QA PASS or block ordinary QA execution. Never install an update without the project owner's interactive approval. Never bypass SHA-256 verification, backup, Terms re-acceptance when required, or rollback safeguards.
 
+## QA Doctor pre-discovery hints
+
+If `state/QA_DOCTOR.json` exists, read it before Phase 0 to understand local project/tooling signals. QA Doctor is deliberately conservative and non-authoritative: verify every material hint from direct current project evidence. Doctor output must never be used by itself to assign PASS, NOT_APPLICABLE, severity, product intent or remediation authority.
+
 ## First principle: evidence before assumption
 
 Direct current evidence outranks stale notes, old reports, inferred intent, and memory. If two sources disagree, report the contradiction and determine which source is authoritative from repository history, current configuration, executable behavior, explicit owner decisions, and other durable evidence.

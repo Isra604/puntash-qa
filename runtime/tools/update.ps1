@@ -78,18 +78,19 @@ function Show-TermsAcceptance([string]$pkgRoot,[string]$newVersion,[string]$term
   return $script:legalAccepted
 }
 function Restore-Managed([string]$backup) {
-  foreach($d in @('gates','templates')){
+  foreach($d in @('gates','templates','agent-guides')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
-    Copy-Item (Join-Path $backup $d) $target -Recurse -Force
+    $source=Join-Path $backup $d
+    if(Test-Path $source){Copy-Item $source $target -Recurse -Force}
   }
   foreach($d in @('tools')){
     $target=Join-Path $installRoot $d
     New-Item -ItemType Directory -Path $target -Force | Out-Null
     Copy-Item (Join-Path $backup "$d\*") $target -Recurse -Force
   }
-  $files=@('AGENT_INSTRUCTIONS.md','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
-  foreach($f in $files){$src=Join-Path $backup $f;if(Test-Path $src){Copy-Item $src (Join-Path $installRoot $f) -Force}}
+  $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
+  foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -eq 'START_HERE.md' -and (Test-Path $dst)){Remove-Item $dst -Force}}
   $uc=Join-Path $backup 'config\update.json'; if(Test-Path $uc){Copy-Item $uc (Join-Path $installRoot 'config\update.json') -Force}
   $r=Join-Path $backup 'state\HUMAN_ACCEPTANCE_RECEIPT.json'; if(Test-Path $r){Copy-Item $r (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Force}
 }
@@ -135,7 +136,8 @@ try {
   Copy-Item $installRoot $backup -Recurse -Force
 
   Copy-Item (Join-Path $pkgRoot 'runtime\AGENT_INSTRUCTIONS.md') (Join-Path $installRoot 'AGENT_INSTRUCTIONS.md') -Force
-  foreach($d in @('gates','templates')){
+  Copy-Item (Join-Path $pkgRoot 'runtime\START_HERE.md') (Join-Path $installRoot 'START_HERE.md') -Force
+  foreach($d in @('gates','templates','agent-guides')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force

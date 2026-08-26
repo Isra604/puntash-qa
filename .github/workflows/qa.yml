@@ -1,0 +1,30 @@
+name: QA System Self-Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run Windows self-test
+        shell: pwsh
+        run: ./scripts/self-test.ps1 -BuildPackage
+
+  unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run shell self-test
+        shell: bash
+        run: bash ./scripts/self-test.sh
