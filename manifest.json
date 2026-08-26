@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -56,5 +56,15 @@
     "qa_doctor_unix": "runtime/tools/qa-doctor.sh",
     "self_test_windows": "scripts/self-test.ps1",
     "self_test_unix": "scripts/self-test.sh"
+  },
+  "dashboard": {
+    "entrypoint": "runtime/dashboard/index.html",
+    "data_file": "runtime/dashboard/data.js",
+    "run_records": "reports/dashboard/*.json",
+    "refresh_windows": "runtime/tools/dashboard-refresh.ps1",
+    "refresh_unix": "runtime/tools/dashboard-refresh.sh",
+    "open_windows": "runtime/tools/open-dashboard.ps1",
+    "local_only": true,
+    "telemetry": false
   }
 }

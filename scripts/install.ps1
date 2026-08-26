@@ -163,7 +163,7 @@ Copy-Item (Join-Path $runtime '*') $dest -Recurse -Force
 foreach ($name in $legalNames) { Copy-Item (Join-Path $packageRoot $name) (Join-Path $dest $name) -Force }
 Copy-Item (Join-Path $packageRoot 'LEGAL_MANIFEST.json') (Join-Path $dest 'LEGAL_MANIFEST.json') -Force
 Copy-Item (Join-Path $packageRoot 'TERMS_VERSION') (Join-Path $dest 'TERMS_VERSION') -Force
-foreach ($d in @('profile','reports','evidence','artifacts','remediation','dispositions','state')) {
+foreach ($d in @('profile','reports','reports\dashboard','evidence','artifacts','remediation','dispositions','state')) {
   New-Item -ItemType Directory -Path (Join-Path $dest $d) -Force | Out-Null
 }
 $profile = Join-Path $dest 'profile\PROJECT_QA_PROFILE.md'
@@ -224,6 +224,11 @@ if (Test-Path $doctor) {
   } catch {
     Write-Warning ("QA Doctor did not complete: " + $_.Exception.Message)
   }
+}
+
+$dashboardRefresh = Join-Path $dest 'tools\dashboard-refresh.ps1'
+if (Test-Path $dashboardRefresh) {
+  try { & $dashboardRefresh -ProjectPath $project | Out-Host; Write-Host 'Dashboard initialized.' } catch { Write-Warning ("Dashboard initialization did not complete: " + $_.Exception.Message) }
 }
 
 Write-Host 'Comprehensive QA Gate System installed successfully.'

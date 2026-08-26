@@ -227,3 +227,10 @@ A comprehensive QA cycle is complete only when:
 - performed remediation is revalidated
 - protected issues are routed by authority
 - the primary report and evidence package are preserved
+
+
+## Dashboard history contract
+
+After every completed substantive QA cycle, create one immutable structured dashboard run record at `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json` using `templates/DASHBOARD_RUN.json` as the contract. Include project/branch/HEAD identity, all 25 gate statuses, finding counts, material finding summaries, and explicit new/resolved/gate-status changes compared with the prior structured run when one exists. Do not overwrite prior run records.
+
+After writing the structured run, refresh `dashboard/data.js` with `tools/dashboard-refresh.ps1` on Windows or `tools/dashboard-refresh.sh` when available. Dashboard generation is a presentation step only: it must never alter evidence, finding closure, gate status, or product source code. If refresh tooling is unavailable, preserve the run JSON and report that the visual dashboard is stale rather than fabricating data.

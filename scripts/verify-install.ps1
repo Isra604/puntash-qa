@@ -7,6 +7,13 @@ $dest = Join-Path (Resolve-Path $ProjectPath).Path '.comprehensive-qa'
 $required = @(
   'AGENT_INSTRUCTIONS.md',
   'START_HERE.md',
+  'OPEN_DASHBOARD.cmd',
+  'dashboard\index.html',
+  'dashboard\data.js',
+  'templates\DASHBOARD_RUN.json',
+  'tools\dashboard-refresh.ps1',
+  'tools\dashboard-refresh.sh',
+  'tools\open-dashboard.ps1',
   'agent-guides\GENERIC.md',
   'config\default.yaml',
   'profile\PROJECT_QA_PROFILE.md',

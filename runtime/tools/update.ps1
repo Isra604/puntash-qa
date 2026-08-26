@@ -78,7 +78,7 @@ function Show-TermsAcceptance([string]$pkgRoot,[string]$newVersion,[string]$term
   return $script:legalAccepted
 }
 function Restore-Managed([string]$backup) {
-  foreach($d in @('gates','templates','agent-guides')){
+  foreach($d in @('gates','templates','agent-guides','dashboard')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     $source=Join-Path $backup $d
@@ -89,8 +89,8 @@ function Restore-Managed([string]$backup) {
     New-Item -ItemType Directory -Path $target -Force | Out-Null
     Copy-Item (Join-Path $backup "$d\*") $target -Recurse -Force
   }
-  $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
-  foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -eq 'START_HERE.md' -and (Test-Path $dst)){Remove-Item $dst -Force}}
+  $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
+  foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -in @('START_HERE.md','OPEN_DASHBOARD.cmd') -and (Test-Path $dst)){Remove-Item $dst -Force}}
   $uc=Join-Path $backup 'config\update.json'; if(Test-Path $uc){Copy-Item $uc (Join-Path $installRoot 'config\update.json') -Force}
   $r=Join-Path $backup 'state\HUMAN_ACCEPTANCE_RECEIPT.json'; if(Test-Path $r){Copy-Item $r (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Force}
 }
@@ -137,7 +137,8 @@ try {
 
   Copy-Item (Join-Path $pkgRoot 'runtime\AGENT_INSTRUCTIONS.md') (Join-Path $installRoot 'AGENT_INSTRUCTIONS.md') -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\START_HERE.md') (Join-Path $installRoot 'START_HERE.md') -Force
-  foreach($d in @('gates','templates','agent-guides')){
+  Copy-Item (Join-Path $pkgRoot 'runtime\OPEN_DASHBOARD.cmd') (Join-Path $installRoot 'OPEN_DASHBOARD.cmd') -Force
+  foreach($d in @('gates','templates','agent-guides','dashboard')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force
@@ -163,6 +164,7 @@ try {
 
   if((Get-ChildItem (Join-Path $installRoot 'gates') -Filter 'GATE-*.md').Count -ne 25){throw 'Post-update validation failed: gate count is not 25.'}
   foreach($p in @('profile','reports','evidence','artifacts','remediation','dispositions','state')){if(-not(Test-Path (Join-Path $installRoot $p))){throw "Post-update validation failed: preserved directory missing: $p"}}
+  $dashRefresh=Join-Path $installRoot 'tools\dashboard-refresh.ps1'; if(Test-Path $dashRefresh){try{& $dashRefresh -ProjectPath $projectRoot|Out-Null;Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=PASS'}catch{Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=WARNING'}}
   [ordered]@{updated_at=(Get-Date).ToString('o');from=$currentVersion.ToString();to=$newVersion.ToString();release_tag=$tag;backup=$backup;sha256=$actual;status='SUCCESS'} | ConvertTo-Json -Compress | Add-Content (Join-Path $installRoot 'state\UPDATE_HISTORY.jsonl') -Encoding UTF8
   [System.Windows.Forms.MessageBox]::Show("Update completed successfully.`r`n$currentVersion -> $newVersion`r`n`r`nBackup: $backup",'QA System Updated',[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
   Write-Host "UPDATE_SUCCESS=$currentVersion->$newVersion"

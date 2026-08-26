@@ -23,6 +23,8 @@
     "config/default.yaml"
   ],
   "managed_paths": [
+    "OPEN_DASHBOARD.cmd",
+    "dashboard",
     "AGENT_INSTRUCTIONS.md",
     "agent-guides",
     "START_HERE.md",

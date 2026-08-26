@@ -63,3 +63,7 @@ Explicitly state which protected systems or categories were changed and which we
 ## Evidence Index
 | Artifact | Path | Purpose |
 |---|---|---|
+
+## Dashboard Run Record
+- Structured run JSON: `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json`
+- Dashboard refresh status:

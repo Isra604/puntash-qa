@@ -27,3 +27,8 @@ See `agent-guides/` for short startup notes for:
 ## Important
 
 The QA system does not grant an AI agent new permissions. The agent can only inspect, test or change what its environment already allows. Missing capabilities must become BLOCKED/NOT_RUN where appropriate, never fabricated PASS evidence.
+
+
+## Your local dashboard
+
+After the first completed QA cycle, double-click `OPEN_DASHBOARD.cmd` inside `.comprehensive-qa` on Windows. It refreshes and opens a local, private dashboard with current health, gate status, findings, changes and run history. No dashboard data is uploaded by this package.

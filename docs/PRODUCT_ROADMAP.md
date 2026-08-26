@@ -43,7 +43,7 @@ Goal: turn the project from an expert-oriented QA runtime package into a product
 
 ## v1.4.0 — Local QA Dashboard
 
-Status: PLANNED
+Status: IN PROGRESS
 
 Goal: make QA status understandable to project owners and managers without requiring them to read long Markdown reports.
 

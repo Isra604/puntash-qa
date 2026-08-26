@@ -7,7 +7,7 @@ pass(){ echo "PASS: $1"; }
 pass 'exactly 25 gates'
 for i in $(seq -w 1 25); do [[ -f "$ROOT/runtime/gates/GATE-$i.md" ]] || fail "missing GATE-$i"; done
 pass 'gate numbering 01-25'
-for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
+for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
 pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
@@ -18,6 +18,25 @@ TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 bash "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT" "$TMP/doctor" >/dev/null
 [[ -s "$TMP/doctor/QA_DOCTOR.json" && -s "$TMP/doctor/QA_DOCTOR.md" ]] || fail 'QA Doctor output'
 pass 'QA Doctor output'
+
+for f in "$ROOT/runtime/dashboard/index.html" "$ROOT/runtime/dashboard/data.js" "$ROOT/runtime/templates/DASHBOARD_RUN.json" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/docs/DASHBOARD.md"; do [[ -f "$f" ]] || fail "missing dashboard asset $f"; done
+grep -q 'Local only · no telemetry' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard privacy label'
+grep -q '25 gate map' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard gate map'
+pass 'dashboard local UI contract'
+DASHROOT="$TMP/dashproject"; mkdir -p "$DASHROOT/.comprehensive-qa"; cp -R "$ROOT/runtime/." "$DASHROOT/.comprehensive-qa/"; printf '{"version":"%s"}\n' "$(tr -d '\r\n' < "$ROOT/VERSION")" > "$DASHROOT/.comprehensive-qa/INSTALLATION.json"; mkdir -p "$DASHROOT/.comprehensive-qa/reports/dashboard"
+printf '%s\n' '{"schema_version":1,"run_id":"RUN-SHELL-1","project":{"name":"Demo","branch":"main","head":"abc"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":20,"fail":2,"blocked":1,"not_run":1,"not_applicable":1},"findings_summary":{"open":3},"gates":[],"findings":[],"changes":{}}' > "$DASHROOT/.comprehensive-qa/reports/dashboard/RUN-SHELL-1.json"
+set +e
+bash "$DASHROOT/.comprehensive-qa/tools/dashboard-refresh.sh" "$DASHROOT" >/dev/null 2>&1
+DASH_RC=$?
+set -e
+if [[ "$DASH_RC" == "0" ]]; then
+  grep -q 'RUN-SHELL-1' "$DASHROOT/.comprehensive-qa/dashboard/data.js" || fail 'dashboard history shell output'
+  pass 'dashboard refresh and history'
+elif [[ "$DASH_RC" == "2" && "${OS:-}" == "Windows_NT" ]]; then
+  pass 'dashboard refresh dependency reported cleanly on Windows Git Bash'
+else
+  fail "dashboard refresh shell exit $DASH_RC"
+fi
 mkdir -p "$TMP/project"
 set +e
 bash "$ROOT/scripts/install.sh" "$TMP/project" </dev/null >/tmp/qa-install-out.$$ 2>&1

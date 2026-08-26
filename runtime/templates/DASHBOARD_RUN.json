@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-YYYYMMDD-HHMMSS",
+  "project": {
+    "name": "",
+    "path": "",
+    "branch": "",
+    "head": ""
+  },
+  "started_at": "",
+  "completed_at": "",
+  "verdict": "UNKNOWN",
+  "summary": {
+    "pass": 0,
+    "fail": 0,
+    "blocked": 0,
+    "not_run": 0,
+    "not_applicable": 0
+  },
+  "findings_summary": {
+    "open": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "resolved_this_run": 0,
+    "new_this_run": 0
+  },
+  "gates": [],
+  "findings": [],
+  "changes": {
+    "new_findings": [],
+    "resolved_findings": [],
+    "gate_changes": [],
+    "notes": []
+  },
+  "report_path": "",
+  "evidence_paths": []
+}

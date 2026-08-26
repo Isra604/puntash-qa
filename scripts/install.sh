@@ -59,7 +59,7 @@ LOCAL_HOST="$(hostname 2>/dev/null || echo unknown)"
 mkdir -p "$DEST"
 cp -R "$PACKAGE_ROOT/runtime/." "$DEST/"
 for f in "${LEGAL[@]}" TERMS_VERSION LEGAL_MANIFEST.json; do cp "$PACKAGE_ROOT/$f" "$DEST/$f"; done
-mkdir -p "$DEST/profile" "$DEST/reports" "$DEST/evidence" "$DEST/artifacts" "$DEST/remediation" "$DEST/dispositions" "$DEST/state"
+mkdir -p "$DEST/profile" "$DEST/reports" "$DEST/reports/dashboard" "$DEST/evidence" "$DEST/artifacts" "$DEST/remediation" "$DEST/dispositions" "$DEST/state"
 cp "$DEST/templates/PROJECT_QA_PROFILE.md" "$DEST/profile/PROJECT_QA_PROFILE.md"
 : > "$DEST/state/FINDING_LEDGER.jsonl"
 cat > "$DEST/state/FIRST_RUN_ATTRIBUTION_PENDING.txt" <<EOF
@@ -116,6 +116,14 @@ if [[ -f "$DEST/tools/qa-doctor.sh" ]]; then
     echo "QA Doctor readiness scan completed."
   else
     echo "WARNING: QA Doctor did not complete. Installation remains valid." >&2
+  fi
+fi
+
+if [[ -f "$DEST/tools/dashboard-refresh.sh" ]]; then
+  if bash "$DEST/tools/dashboard-refresh.sh" "$PROJECT"; then
+    echo "Dashboard initialized."
+  else
+    echo "WARNING: Dashboard initialization did not complete. Installation remains valid." >&2
   fi
 fi
 

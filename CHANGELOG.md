@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.0 - 2026-08-26
+
+- Added a local-first visual QA Dashboard with calm responsive light/dark themes.
+- Added persistent structured run history and run selector.
+- Added QA Health and separate execution coverage metrics to avoid misleading confidence.
+- Added prioritized attention view, 25-gate status map, finding filters and gate details.
+- Added run-to-run change summaries, resolved/new finding tracking and health trend.
+- Added Windows one-click dashboard launcher plus Windows/Unix refresh tools.
+- Dashboard remains local with no telemetry, cloud account or project-data upload.
+
 ## 1.3.0 - 2026-08-26
 
 - Added Easy Start Windows folder-picker launcher.
