@@ -52,6 +52,11 @@ $required = @(
   'tools\scheduled-run.sh',
   'tools\dashboard-control.ps1',
   'tools\dashboard-control.py',
+  'tools\open-dashboard.sh',
+  'tools\authorize-change.ps1',
+  'tools\authorize-change.py',
+  'tools\authorize-change.sh',
+  'tools\prepare-scheduler-for-rollback.ps1',
   'templates\PERMISSION_POLICY.json',
   'templates\SCHEDULED_QA.md'
 )

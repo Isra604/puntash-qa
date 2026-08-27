@@ -65,13 +65,21 @@ function Authorized($request) {
     return $true
 }
 function Safe-StaticPath([string]$urlPath) {
-    $decoded = [Uri]::UnescapeDataString($urlPath.TrimStart('/')).Replace('/', [IO.Path]::DirectorySeparatorChar)
-    if ([string]::IsNullOrWhiteSpace($decoded)) { $decoded = 'dashboard\index.html' }
-    if ($decoded -eq 'index.html') { $decoded = 'dashboard\index.html' }
-    if ($decoded -eq 'data.js') { $decoded = 'dashboard\data.js' }
-    $candidate = [IO.Path]::GetFullPath((Join-Path $installRoot $decoded))
-    $rootFull = [IO.Path]::GetFullPath($installRoot) + [IO.Path]::DirectorySeparatorChar
-    if (-not $candidate.StartsWith($rootFull, [StringComparison]::OrdinalIgnoreCase)) { return $null }
+    $path = $urlPath.TrimStart('/')
+    if ([string]::IsNullOrWhiteSpace($path) -or $path -eq 'index.html') { $path = 'dashboard/index.html' }
+    elseif ($path -eq 'data.js') { $path = 'dashboard/data.js' }
+    if ($path -ne 'dashboard/index.html') { return $null }
+    return Join-Path $installRoot ($path.Replace('/', [IO.Path]::DirectorySeparatorChar))
+}
+function Safe-ReportPath([string]$relative) {
+    if ([string]::IsNullOrWhiteSpace($relative)) { return $null }
+    $decoded=[Uri]::UnescapeDataString($relative).Replace('/',[IO.Path]::DirectorySeparatorChar).TrimStart([IO.Path]::DirectorySeparatorChar)
+    if ($decoded.Split([IO.Path]::DirectorySeparatorChar) -contains '..') { return $null }
+    if ($decoded.StartsWith('reports'+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) { $decoded=$decoded.Substring(8) }
+    $reportsRoot=[IO.Path]::GetFullPath((Join-Path $installRoot 'reports'))+[IO.Path]::DirectorySeparatorChar
+    $candidate=[IO.Path]::GetFullPath((Join-Path $installRoot ('reports'+[IO.Path]::DirectorySeparatorChar+$decoded)))
+    if(-not $candidate.StartsWith($reportsRoot,[StringComparison]::OrdinalIgnoreCase)){return $null}
+    if([IO.Path]::GetExtension($candidate).ToLowerInvariant() -notin @('.md','.txt','.json')){return $null}
     return $candidate
 }
 function Content-Type([string]$path) {
@@ -93,12 +101,12 @@ if (-not $NoBrowser) {
 
 try {
     while ($listener.IsListening) {
-        $async = $listener.BeginGetContext($null, $null)
-        if (-not $async.AsyncWaitHandle.WaitOne(1000)) {
+        $contextTask = $listener.GetContextAsync()
+        while (-not $contextTask.Wait(1000)) {
             if (((Get-Date) - $lastActivity).TotalMinutes -ge $IdleMinutes) { break }
-            continue
         }
-        $context = $listener.EndGetContext($async)
+        if (-not $contextTask.IsCompleted) { break }
+        $context = $contextTask.GetAwaiter().GetResult()
         $lastActivity = Get-Date
         try {
             $request = $context.Request
@@ -108,9 +116,29 @@ try {
                     Send-Json $context @{ok=$false;error='unauthorized'} 403
                     continue
                 }
+                if ($path -eq '/api/dashboard-data' -and $request.HttpMethod -eq 'GET') {
+                    $dataPath=Join-Path $installRoot 'dashboard\data.js'
+                    if(-not(Test-Path $dataPath -PathType Leaf)){Send-Json $context @{ok=$false;error='dashboard_data_not_found'} 404;continue}
+                    $raw=Get-Content $dataPath -Raw
+                    $json=$raw -replace '^\s*window\.QA_DASHBOARD_DATA\s*=\s*','' -replace ';\s*$',''
+                    try{$data=$json|ConvertFrom-Json}catch{Send-Json $context @{ok=$false;error='dashboard_data_invalid'} 500;continue}
+                    Send-Json $context @{ok=$true;data=$data}
+                    continue
+                }
+                if ($path -eq '/api/report' -and $request.HttpMethod -eq 'GET') {
+                    $reportFile=Safe-ReportPath ([string]$request.QueryString['path'])
+                    if(-not $reportFile -or -not(Test-Path $reportFile -PathType Leaf)){Send-Json $context @{ok=$false;error='report_not_found'} 404;continue}
+                    Send-Bytes $context ([IO.File]::ReadAllBytes($reportFile)) (Content-Type $reportFile)
+                    continue
+                }
                 if ($path -eq '/api/policy' -and $request.HttpMethod -eq 'GET') {
-                    $policy = Get-Content $ownerPolicyPath -Raw | ConvertFrom-Json
-                    Send-Json $context @{ok=$true;policy=$policy}
+                    try {
+                        $policyRaw = & $policyTool -Operation Get | Out-String
+                        $policy = $policyRaw | ConvertFrom-Json
+                        Send-Json $context @{ok=$true;policy=$policy}
+                    } catch {
+                        Send-Json $context @{ok=$false;error='owner_policy_invalid';details=$_.Exception.Message} 409
+                    }
                     continue
                 }
                 if ($path -eq '/api/scheduler' -and $request.HttpMethod -eq 'GET') {

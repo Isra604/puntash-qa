@@ -1,6 +1,6 @@
 # Disclaimer and Risk Notice
 
-**Version:** 1.0.0  
+**Version:** 1.1.0
 **Copyright © 2026 Ofir Israeli**
 
 The Universal Comprehensive QA Gate System is a software quality-assistance framework. It does not guarantee that software is defect-free, secure, compliant, performant, recoverable, accessible, suitable for production, or suitable for any particular business or technical purpose.
@@ -12,6 +12,10 @@ Installation, configuration, execution, and reliance on outputs are performed at
 ## AI limitations
 
 When operated through an AI agent, results may be incomplete, incorrect, non-deterministic, or based on unavailable context. An AI agent can misunderstand source code, documentation, configuration, system state, business rules, or authority boundaries. Human review remains necessary where the potential impact warrants it.
+
+## Scheduled and automated execution risk
+
+If the owner enables scheduled QA or remediation, actions may be initiated later by an operating-system scheduler, AI platform, or local executor while the owner is not actively present. Failures can therefore occur unattended. The owner is responsible for selecting a suitable executor, limiting its permissions, monitoring costs and resource use, maintaining backups/rollback, and disabling schedules that are no longer appropriate. A configured permission preset is a maximum authority ceiling and is not a guarantee that an AI or third-party executor will comply correctly.
 
 ## No guarantee of detection
 

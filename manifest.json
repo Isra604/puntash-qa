@@ -23,7 +23,7 @@
   "license": "MIT",
   "copyright": "Copyright (c) 2026 Ofir Israeli",
   "notice": "NOTICE",
-  "terms_version": "1.0.0",
+  "terms_version": "1.1.0",
   "human_acceptance_required": true,
   "acceptance_mode": "interactive-human-attestation",
   "acceptance_receipt": "state/HUMAN_ACCEPTANCE_RECEIPT.json",
@@ -65,7 +65,10 @@
     "refresh_unix": "runtime/tools/dashboard-refresh.sh",
     "open_windows": "runtime/tools/open-dashboard.ps1",
     "local_only": true,
-    "telemetry": false
+    "telemetry": false,
+    "control_center_windows": "runtime/tools/dashboard-control.ps1",
+    "control_center_portable": "runtime/tools/dashboard-control.py",
+    "loopback_only": true
   },
   "lens_count": 9,
   "reliability_model": {
@@ -88,6 +91,20 @@
     "scheduler_unix": "runtime/tools/scheduler.sh",
     "default_permission": "REPORT_ONLY",
     "schedule_default_enabled": false,
+    "telemetry": false
+  },
+  "automation_and_permissions": {
+    "owner_policy": "runtime/templates/OWNER_POLICY.json",
+    "permission_policy": "runtime/config/permission-policy.json",
+    "authorization_windows": "runtime/tools/authorize-change.ps1",
+    "authorization_unix": "runtime/tools/authorize-change.sh",
+    "scheduler_windows": "runtime/tools/scheduler.ps1",
+    "scheduler_unix": "runtime/tools/scheduler.sh",
+    "scheduled_runner_windows": "runtime/tools/scheduled-run.ps1",
+    "scheduled_runner_unix": "runtime/tools/scheduled-run.sh",
+    "dashboard_control_windows": "runtime/tools/dashboard-control.ps1",
+    "dashboard_control_portable": "runtime/tools/dashboard-control.py",
+    "safe_default": "REPORT_ONLY + schedule disabled",
     "telemetry": false
   }
 }

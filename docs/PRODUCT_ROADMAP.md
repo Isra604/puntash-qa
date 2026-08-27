@@ -78,6 +78,27 @@ Delivered scope:
 - Permanent v1.4 -> v2 -> rollback preservation test.
 - Windows, Ubuntu and macOS CI/release gating.
 
+## v2.1.0 — Automation & Agent Permission Control Center
+
+Status: RELEASE CANDIDATE — OWNER PUBLICATION APPROVAL REQUIRED
+
+Goal: turn the QA runtime into an owner-controlled ongoing QA system without granting hidden authority to an AI agent.
+
+Delivered candidate scope:
+- Safe default: REPORT_ONLY and scheduling OFF until explicit owner choice.
+- Owner presets for report-only, bounded safe fixes and active LOW/MEDIUM-risk remediation.
+- Mechanical change-authorization engine plus immutable hard boundaries.
+- Append-only owner-policy audit history and no agent self-elevation.
+- Opt-in recurring QA via Windows Task Scheduler, Unix cron, or AGENT_MANAGED scheduling.
+- Executor readiness/status, overlap prevention, timeout handling and local logs.
+- Loopback-only Dashboard Control Center with per-session token and read-only file fallback.
+- Authenticated report access limited to the local reports tree; state/evidence are not served as dashboard files.
+- Direct v2.0.0 -> v2.1.0 compatibility and rollback preservation/pause behavior.
+- Terms 1.1.0 requiring renewed human acceptance on update from earlier Terms versions.
+- Dedicated v2.1 control/permission/scheduler/upgrade Red-Team and cross-platform CI gates.
+
+Release rule: branch/PR/RC artifacts may be prepared and tested, but `main`, tag `v2.1.0`, and the public GitHub Release require explicit owner approval.
+
 ## Adoption metrics / optional telemetry
 
 Status: DEFERRED UNTIL EXPLICIT PRIVACY DESIGN
@@ -116,7 +137,6 @@ These ideas remain deliberately after the milestones above:
 - signed release artifacts in addition to SHA-256
 - package-manager distribution where appropriate
 - macOS/Linux updater parity with Windows
-- optional scheduled QA runs
 - optional scheduled update checks outside agent sessions
 - exportable executive reports
 - configurable organization policies and gate profiles

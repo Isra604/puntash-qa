@@ -170,6 +170,13 @@ $profile = Join-Path $dest 'profile\PROJECT_QA_PROFILE.md'
 if (-not (Test-Path $profile)) { Copy-Item (Join-Path $dest 'templates\PROJECT_QA_PROFILE.md') $profile }
 $ledger = Join-Path $dest 'state\FINDING_LEDGER.jsonl'
 if (-not (Test-Path $ledger)) { New-Item -ItemType File -Path $ledger | Out-Null }
+$ownerPolicy = Join-Path $dest 'state\OWNER_POLICY.json'
+if (-not (Test-Path $ownerPolicy)) {
+  $ownerTemplate = Join-Path $dest 'templates\OWNER_POLICY.json'
+  if (-not (Test-Path $ownerTemplate -PathType Leaf)) { throw 'OWNER_POLICY template missing after runtime copy.' }
+  Copy-Item $ownerTemplate $ownerPolicy -Force
+}
+Write-Host 'Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise.'
 
 @"
 Universal Comprehensive QA Gate System v$version
@@ -240,4 +247,4 @@ Write-Host 'Comprehensive QA Gate System installed successfully.'
 Write-Host 'Created by Ofir Israeli.'
 Write-Host "Installed runtime: $dest"
 Write-Host "Acceptance receipt: $dest\state\HUMAN_ACCEPTANCE_RECEIPT.json"
-Write-Host 'Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md in full and perform Discovery.'
+Write-Host 'Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md in full, then choose owner permissions/scheduling when prompted or through the Dashboard Settings panel.'

@@ -9,6 +9,10 @@ try {
  $oldUpdater=Get-Content (Join-Path $oldPkg 'runtime\tools\update.ps1') -Raw
  Assert ($oldUpdater.Contains("foreach(`$d in @('gates','templates','agent-guides','dashboard'))")) 'released v2.0 updater managed tree contract detected'
  Assert ($oldUpdater -match "runtime\\tools.*toolsTarget.*Recurse.*Force") 'released v2.0 updater replaces tools recursively'
+ Assert ($oldUpdater.Contains('if($newTerms -ne $oldTerms)')) 'released v2.0 updater detects Terms version changes'
+ Assert ($oldUpdater.Contains('Show-TermsAcceptance')) 'released v2.0 updater requires interactive renewed Terms acceptance'
+ Assert (((Get-Content (Join-Path $oldPkg 'TERMS_VERSION') -Raw).Trim()) -eq '1.0.0') 'released v2.0 Terms baseline is 1.0.0'
+ Assert (((Get-Content (Join-Path $root 'TERMS_VERSION') -Raw).Trim()) -eq '1.1.0') 'v2.1 candidate Terms version is 1.1.0'
  $project=Join-Path $temp 'project';$install=Join-Path $project '.comprehensive-qa';New-Item -ItemType Directory $install -Force|Out-Null
  Copy-Item (Join-Path $oldPkg 'runtime\*') $install -Recurse -Force
  foreach($d in @('profile','reports','reports\dashboard','evidence','artifacts','remediation','dispositions','state')){New-Item -ItemType Directory (Join-Path $install $d) -Force|Out-Null}

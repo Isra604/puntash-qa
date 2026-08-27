@@ -1,7 +1,7 @@
 # Terms of Use
 
-**Terms version:** 1.0.0  
-**Effective date:** 2026-08-26  
+**Terms version:** 1.1.0
+**Effective date:** 2026-08-26
 **Original creator and project architect:** Ofir Israeli
 
 These Terms of Use govern use of the Universal Comprehensive QA Gate System through the distributed installer and installed runtime. The Software is separately licensed under the MIT License. These Terms supplement the license by recording the user's informed acceptance of responsibility, risk allocation, and installation conditions. They do not promise that every provision is enforceable in every jurisdiction.
@@ -35,6 +35,14 @@ The user should validate changes in an isolated or non-production environment wh
 The Software may be operated by AI systems or automation supplied by third parties. AI output can be incomplete, incorrect, non-deterministic, outdated, or inappropriate for a specific project. The user remains responsible for deciding what permissions to grant and whether to act on outputs or recommendations.
 
 No statement, finding, PASS status, report, generated command, or automated validation constitutes a warranty, certification, professional opinion, security attestation, regulatory approval, or guarantee.
+
+### Scheduled execution and persistent remediation policy
+
+If the user separately enables scheduled QA or persistent remediation authority, those settings may cause a third-party AI agent, local CLI, operating-system scheduler, or automation platform to execute QA later without the user being present at that moment. The user is responsible for selecting the executor, schedule, environments, permissions, cost limits, and remediation ceiling, and for disabling automation when it is no longer appropriate.
+
+The package's owner-policy controls are intended as safety ceilings, not guarantees that a third-party agent will behave correctly. A schedule does not itself grant remediation authority. The broadest built-in remediation preset still preserves approval gates for protected or high-impact categories. Users should configure scheduled execution only with executors and credentials whose storage, billing, privacy, and security characteristics they understand.
+
+Legal acceptance of these Terms is separate from optional operational choices. Accepting the package Terms does not by itself enable scheduled QA, authorize product changes, or authorize a particular executor. Those choices require separate owner configuration.
 
 ## 6. No professional advice
 

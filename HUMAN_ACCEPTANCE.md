@@ -1,6 +1,6 @@
 # Human Acceptance Requirement
 
-**Acceptance protocol version:** 1.0.0
+**Acceptance protocol version:** 1.1.0
 
 Installation through the distributed installer requires affirmative acceptance by a **natural person** who represents that they are authorized to accept the package terms for themselves or the organization/project owner they represent.
 
@@ -15,6 +15,10 @@ An AI agent may:
 - tell the human where manual action is required
 
 It must not claim that it accepted the terms for the human.
+
+## Legal acceptance is not operational authorization
+
+Accepting the package Terms authorizes installation under those Terms; it does **not** automatically authorize scheduled QA, product remediation, a local executor, or an AI-platform scheduler. Those operational choices are separate and remain disabled/report-only until the project owner explicitly configures them after installation. An AI agent must not infer those choices from legal acceptance.
 
 ## Windows acceptance
 

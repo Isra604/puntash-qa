@@ -19,18 +19,38 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Run Windows self-test
+      - name: Package and core self-test
         shell: pwsh
         run: ./scripts/self-test.ps1 -BuildPackage
-      - name: Run v2 upgrade and rollback red-team
+      - name: Cross-version upgrade and rollback red-team
         shell: pwsh
-        run: ./scripts/v2-upgrade-red-team.ps1
-      - name: Run v2.1 direct-upgrade compatibility red-team
+        run: |
+          ./scripts/v2-upgrade-red-team.ps1
+          ./scripts/v2.1-upgrade-red-team.ps1
+      - name: Permission, policy and runtime red-team
         shell: pwsh
-        run: ./scripts/v2.1-upgrade-red-team.ps1
+        run: |
+          python ./scripts/v2.1-control-red-team.py
+          python ./scripts/v2.1-policy-fuzz-red-team.py
+          python ./scripts/v2.1-runtime-red-team.py
+          python ./scripts/v2.1-concurrency-red-team.py
+      - name: Windows native control and authorization red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-control-red-team.ps1
+          ./scripts/v2.1-windows-authorization-red-team.ps1
+      - name: Windows Task Scheduler and rollback safety red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-scheduler-red-team.ps1
+          ./scripts/v2.1-rollback-scheduler-red-team.ps1
+      - name: Windows timeout and process-tree red-team
+        shell: pwsh
+        run: ./scripts/v2.1-windows-timeout-red-team.ps1
 
   unix:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
@@ -39,6 +59,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Run shell self-test
+      - name: Shell and package-contract self-test
         shell: bash
         run: bash ./scripts/self-test.sh
+      - name: Portable permission and runtime red-team
+        shell: bash
+        run: |
+          python3 ./scripts/v2.1-control-red-team.py
+          python3 ./scripts/v2.1-policy-fuzz-red-team.py
+          python3 ./scripts/v2.1-runtime-red-team.py
+      - name: Unix scheduler preservation and failure red-team
+        shell: bash
+        run: python3 ./scripts/v2.1-unix-scheduler-red-team.py

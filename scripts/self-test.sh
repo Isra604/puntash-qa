@@ -15,13 +15,18 @@ grep -q 'decisive_automated_test_pass_requires_test_trustworthiness_evaluation: 
 grep -q 'coverage_percentage_is_never_behavioral_proof: true' "$ROOT/runtime/gates/reliability.yaml" || fail 'coverage-only prohibition'
 [[ "$(grep -l 'v2 cross-cutting reliability obligations' "$ROOT"/runtime/gates/GATE-*.md | wc -l | tr -d ' ')" == "25" ]] || fail 'all gates v2 reliability obligations'
 pass '9 reliability lenses and policy contract'
+TERMS_VERSION="$(tr -d '\r\n' < "$ROOT/TERMS_VERSION")"
+grep -q "terms_version: $TERMS_VERSION" "$ROOT/runtime/config/default.yaml" || fail 'default.yaml Terms version consistency'
+if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then grep -q 'authority_source: state/OWNER_POLICY.json' "$ROOT/runtime/config/default.yaml" || fail 'OWNER_POLICY authority source'; grep -q 'legacy_allowed_modes_are_not_authority: true' "$ROOT/runtime/config/default.yaml" || fail 'legacy remediation authority disabled'; fi
+pass 'config authority/Terms consistency'
 for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/runtime/tools/validate-run.sh" "$ROOT/runtime/tools/policy-manager.sh" "$ROOT/runtime/tools/scheduler.sh" "$ROOT/runtime/tools/scheduled-run.sh" "$ROOT/runtime/tools/authorize-change.sh" "$ROOT/runtime/tools/open-dashboard.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
 pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
 if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then
-  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh scripts/v2.1-control-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
+  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/prepare-scheduler-for-rollback.ps1 runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh scripts/v2.1-control-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
   cmp -s "$ROOT/runtime/config/permission-policy.json" "$ROOT/runtime/templates/PERMISSION_POLICY.json" || fail 'permission policy compatibility copy mismatch'
+  cmp -s "$ROOT/runtime/prompts/SCHEDULED_QA.md" "$ROOT/runtime/templates/SCHEDULED_QA.md" || fail 'scheduled prompt compatibility copy mismatch'
   grep -q 'authorize-change' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent mechanical authorization contract'
   grep -q 'Agent permissions' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard agent permissions card'
   grep -q 'Scheduled QA' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard scheduled QA card'
@@ -78,7 +83,16 @@ PY
   pass 'run validator PASS ceilings and 25+9 completeness'
   python3 "$ROOT/scripts/v2-red-team.py" >/dev/null || fail 'v2 red-team suite'
   pass 'v2 red-team false-PASS attacks'
-  if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then python3 "$ROOT/scripts/v2.1-control-red-team.py" >/dev/null || fail 'v2.1 control red-team'; pass 'v2.1 control/permission attacks'; fi
+  if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then
+    python3 "$ROOT/scripts/v2.1-control-red-team.py" >/dev/null || fail 'v2.1 control red-team suite'
+    python3 "$ROOT/scripts/v2.1-policy-fuzz-red-team.py" >/dev/null || fail 'v2.1 policy fuzz red-team suite'
+    python3 "$ROOT/scripts/v2.1-runtime-red-team.py" >/dev/null || fail 'v2.1 runtime lifecycle red-team suite'
+    pass 'v2.1 control/permission/runtime red-team'
+    if [[ "${OS:-}" != "Windows_NT" ]]; then
+      python3 "$ROOT/scripts/v2.1-unix-scheduler-red-team.py" >/dev/null || fail 'v2.1 unix scheduler red-team suite'
+      pass 'v2.1 unix scheduler red-team'
+    fi
+  fi
 else
   echo 'SKIP: Python 3 unavailable for shell run-validator contract test'
 fi

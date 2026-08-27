@@ -78,6 +78,9 @@ Use one complete section per material finding based on `FINDING.md`.
 
 ## Automatic Remediation
 - Record path:
+- Change-authorization audit: `state/CHANGE_AUTHORIZATION_HISTORY.jsonl`
+- Authorization IDs used:
+- Owner policy revision(s):
 - Branch/worktree if used:
 - Commits:
 

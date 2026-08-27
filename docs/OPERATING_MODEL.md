@@ -24,11 +24,9 @@ Existing project-native tests are preferred. The QA system may add temporary ins
 
 A strong report identifies a shared root cause when five gates fail because of the same missing dependency or configuration error. It also distinguishes a blocked test environment from a proven product regression.
 
-## 6. Remediate only by authority
+## 6. Remediate only by owner authority
 
-Default: report only.
-
-Optional `safe_auto`: unambiguous, reversible, bounded changes only. Anything protected or ambiguous is routed for review.
+Default: `REPORT_ONLY`. OWNER_POLICY is the v2.1 authority source. The owner can select `SAFE_FIXES` or `ACTIVE_REMEDIATION`, but the preset is only a maximum ceiling. Before every automatic product mutation the agent classifies change risk/category and invokes the mechanical authorize-change tool. No ALLOW means no automatic edit. Every ALLOW returns an AUTHORIZATION_ID that must be preserved, and automatic changes must be reversible. Hard-boundary/high-impact changes are always routed for explicit review.
 
 ## 7. Revalidate
 
@@ -40,4 +38,4 @@ Never rewrite completed reports after external review. Reviewer dispositions and
 
 ## 9. Repeatable daily or release use
 
-After discovery is stable, later cycles refresh only what changed plus the minimum evidence necessary to prove current gate status. Full deep cycles can be scheduled daily, nightly, per release, or on demand depending on project cost and runtime.
+After discovery is stable, later cycles refresh what changed plus the evidence necessary to prove current gate/lens status. Full deep cycles can run on demand or through the opt-in v2.1 scheduler. A schedule is considered active only after a real executor is registered/activated; scheduling never expands remediation authority. Scheduled runs revalidate current Terms acceptance and human-approved OWNER_POLICY before execution.

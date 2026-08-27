@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.1.0 - RELEASE CANDIDATE / NOT YET PUBLIC
+
+- Added explicit owner-controlled remediation presets: REPORT_ONLY, SAFE_FIXES and ACTIVE_REMEDIATION.
+- Added a mechanical `authorize-change` decision engine required before automatic product mutation.
+- Added immutable hard boundaries so agents cannot self-authorize high-impact/protected categories.
+- Added persistent owner-policy audit history and blocked agent self-elevation.
+- Added opt-in Scheduled QA with Windows Task Scheduler, Unix cron, and AGENT_MANAGED platform mode.
+- Added overlap locks, timeout/status records and local scheduler logs.
+- Scheduled runs now revalidate the current human Terms receipt and human-approved owner policy on every invocation.
+- Added local Dashboard Control Center for permission/schedule configuration with loopback-only binding and per-session tokens.
+- Restricted unauthenticated dashboard serving to dashboard assets only; report access is token-authenticated and constrained to the local reports tree.
+- Added cross-platform direct-upgrade compatibility from v2.0.0 without a bridge release.
+- Added safe rollback behavior that preserves owner policy/history while pausing scheduled execution.
+- Added Windows/native and portable Control Center red-team coverage, executor injection/secret checks, receipt/policy tamper checks and traversal tests.
+- Updated Terms/Data Responsibility/Human Acceptance notices to version 1.1.0 for scheduled execution and persistent remediation authority.
+
 ## 2.0.0 - 2026-08-27
 
 - Added 9 mandatory cross-cutting reliability lenses while preserving exactly 25 canonical gates.

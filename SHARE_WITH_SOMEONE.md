@@ -26,7 +26,7 @@ Recommended for non-technical users: extract the ZIP and double-click `START_HER
 After installation, they give their AI QA agent access to the project and send exactly this instruction:
 
 ```text
-Read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full. Perform Discovery first. Build the Project QA Profile from direct evidence. Map every one of the 25 QA gates to this project, then execute the strongest authorized comprehensive QA cycle. Never mark unavailable checks as PASS. Preserve per-gate evidence and produce the complete report. Do not modify product code unless I explicitly authorize SAFE automatic remediation.
+Read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full. Perform Discovery first. Build the Project QA Profile from direct evidence. Map all 25 QA gates + 9 reliability lenses, then execute the strongest authorized comprehensive QA cycle. Never mark unavailable checks as PASS. If OWNER_POLICY is still unconfigured, ask me whether I want scheduled QA and which remediation preset I authorize. Remain REPORT_ONLY until I choose, and require an ALLOW from the installed authorize-change tool before every automatic product mutation.
 ```
 
 ## What happens next
@@ -45,6 +45,10 @@ Reports and evidence stay inside `.comprehensive-qa`, separate from product code
 
 ## Capabilities
 
-The quality of execution depends on the tools given to the AI agent. File access enables repository analysis. Shell access enables builds and tests. Browser access enables real UI/E2E testing. Authorized database/cloud/log access strengthens data, infrastructure and observability gates. Write access enables owner-delegated SAFE remediation.
+The quality of execution depends on the tools given to the AI agent. File access enables repository analysis. Shell access enables builds and tests. Browser access enables real UI/E2E testing. Authorized database/cloud/log access strengthens data, infrastructure and observability gates. Write access only makes remediation technically possible; actual mutation authority comes from the human-approved OWNER_POLICY and mechanical authorize-change decision. Scheduling is separate and requires an active executor/scheduler.
 
 The package never grants those permissions by itself; it governs how the agent uses permissions that the project owner has provided.
+
+## v2.1 owner controls
+
+After installation the safe default is `REPORT_ONLY` with Scheduled QA `OFF`. The recipient can open the local dashboard Settings panel to choose Report only, Safe fixes or Active remediation and optionally configure a recurring QA time. Legal acceptance does not automatically enable either capability. The dashboard/control data remains local and the package adds no telemetry.

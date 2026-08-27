@@ -163,9 +163,12 @@ try {
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $pkgRoot $f) (Join-Path $installRoot $f) -Force}
 
   if($newTerms -ne $oldTerms){
+    $legalHashes=$null
+    $legalManifestPath=Join-Path $pkgRoot 'LEGAL_MANIFEST.json'
+    if(Test-Path $legalManifestPath){try{$legalHashes=(Get-Content $legalManifestPath -Raw|ConvertFrom-Json).documents}catch{}}
     [ordered]@{
-      system='Universal Comprehensive QA Gate System'; package_version=$newVersion.ToString(); terms_version=$newTerms; accepted_at=(Get-Date).ToString('o'); acceptance_method='interactive_windows_gui_update_clickwrap'; accepted_by_human_attestation=$true; acceptance_phrase='I ACCEPT'; creator='Ofir Israeli'; license='MIT'; transmitted_by_updater=$false
-    } | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Encoding UTF8
+      system='Universal Comprehensive QA Gate System'; package_version=$newVersion.ToString(); terms_version=$newTerms; accepted_at=(Get-Date).ToString('o'); acceptance_method='interactive_windows_gui_update_clickwrap'; accepted_by_human_attestation=$true; human_authority_attestation='I am a natural person authorized to accept these updated terms.'; acceptance_phrase='I ACCEPT'; local_os_user=[Environment]::UserName; local_machine_name=[Environment]::MachineName; creator='Ofir Israeli'; license='MIT'; legal_document_sha256=$legalHashes; transmitted_by_updater=$false
+    } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Encoding UTF8
   }
   $meta=Get-Content (Join-Path $installRoot 'INSTALLATION.json') -Raw | ConvertFrom-Json
   $meta | Add-Member -NotePropertyName previous_version -NotePropertyValue $currentVersion.ToString() -Force

@@ -2,7 +2,7 @@
 import argparse,json,mimetypes,secrets,subprocess,sys,threading,time,webbrowser
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote,urlparse
+from urllib.parse import unquote,urlparse,parse_qs
 
 INSTALL=Path(__file__).resolve().parent.parent
 TOOLS=INSTALL/'tools'; STATE=INSTALL/'state'; STATE.mkdir(exist_ok=True)
@@ -31,19 +31,40 @@ def main():
             if self.headers.get('X-QA-Control-Token','')!=token:return False
             origin=self.headers.get('Origin','');expected=f'http://127.0.0.1:{self.server.server_address[1]}'
             return not origin or origin==expected
-        def api_get(self,path):
+        def api_get(self,path,query):
             if not self.authorized():return self.send_json({'ok':False,'error':'unauthorized'},403)
-            if path=='/api/policy': return self.send_json({'ok':True,'policy':json.loads(POLICY.read_text(encoding='utf-8-sig'))})
+            if path=='/api/dashboard-data':
+                try:
+                    raw=(INSTALL/'dashboard/data.js').read_text(encoding='utf-8-sig').strip()
+                    prefix='window.QA_DASHBOARD_DATA = '
+                    if not raw.startswith(prefix):return self.send_json({'ok':False,'error':'dashboard_data_invalid'},500)
+                    payload=raw[len(prefix):].rstrip().removesuffix(';').strip()
+                    return self.send_json({'ok':True,'data':json.loads(payload)})
+                except Exception:return self.send_json({'ok':False,'error':'dashboard_data_invalid'},500)
+            if path=='/api/report':
+                raw=(parse_qs(query).get('path') or [''])[0]
+                try:
+                    rel=Path(unquote(raw.replace('\\','/')).lstrip('/'))
+                    parts=list(rel.parts)
+                    if parts and parts[0].lower()=='reports':parts=parts[1:]
+                    if not parts or '..' in parts:return self.send_json({'ok':False,'error':'report_not_found'},404)
+                    reports=(INSTALL/'reports').resolve();f=reports.joinpath(*parts).resolve();f.relative_to(reports)
+                    if f.suffix.lower() not in {'.md','.txt','.json'} or not f.is_file():return self.send_json({'ok':False,'error':'report_not_found'},404)
+                    return self.send_bytes(f.read_bytes(),mimetypes.guess_type(str(f))[0] or 'text/plain; charset=utf-8')
+                except Exception:return self.send_json({'ok':False,'error':'report_not_found'},404)
+            if path=='/api/policy':
+                try:return self.send_json({'ok':True,'policy':run_json(policy_tool+['get'])})
+                except Exception as exc:return self.send_json({'ok':False,'error':'owner_policy_invalid','details':str(exc)},409)
             if path=='/api/scheduler': return self.send_json({'ok':True,'scheduler':run_json(scheduler_tool+['status'])})
             return self.send_json({'ok':False,'error':'not_found'},404)
         def do_GET(self):
-            last[0]=time.monotonic();path=urlparse(self.path).path
-            if path.startswith('/api/'):return self.api_get(path)
+            last[0]=time.monotonic();parsed=urlparse(self.path);path=parsed.path
+            if path.startswith('/api/'):return self.api_get(path,parsed.query)
             rel=unquote(path.lstrip('/')) or 'dashboard/index.html'
             if rel=='index.html':rel='dashboard/index.html'
             if rel=='data.js':rel='dashboard/data.js'
-            try:p=(INSTALL/rel).resolve();p.relative_to(INSTALL.resolve())
-            except Exception:return self.send_bytes(b'Not Found','text/plain',404)
+            if rel!='dashboard/index.html':return self.send_bytes(b'Not Found','text/plain',404)
+            p=INSTALL/rel
             if not p.is_file():return self.send_bytes(b'Not Found','text/plain',404)
             ctype=mimetypes.guess_type(str(p))[0] or 'application/octet-stream';self.send_bytes(p.read_bytes(),ctype)
         def do_POST(self):

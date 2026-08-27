@@ -6,39 +6,105 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  preflight-windows:
     runs-on: windows-latest
     steps:
-      - name: Checkout
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify tag matches VERSION before tests
+        shell: pwsh
+        run: |
+          $version=(Get-Content VERSION -Raw).Trim()
+          if ("v$version" -ne "${{ github.ref_name }}") { throw "Tag ${{ github.ref_name }} does not match VERSION v$version" }
+      - name: Package and core self-test
+        shell: pwsh
+        run: ./scripts/self-test.ps1 -BuildPackage
+      - name: Cross-version upgrade and rollback red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2-upgrade-red-team.ps1
+          ./scripts/v2.1-upgrade-red-team.ps1
+      - name: Permission, policy and runtime red-team
+        shell: pwsh
+        run: |
+          python ./scripts/v2.1-control-red-team.py
+          python ./scripts/v2.1-policy-fuzz-red-team.py
+          python ./scripts/v2.1-runtime-red-team.py
+          python ./scripts/v2.1-concurrency-red-team.py
+      - name: Windows native control and authorization red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-control-red-team.ps1
+          ./scripts/v2.1-windows-authorization-red-team.ps1
+      - name: Windows scheduler, rollback and timeout red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-scheduler-red-team.ps1
+          ./scripts/v2.1-rollback-scheduler-red-team.ps1
+          ./scripts/v2.1-windows-timeout-red-team.ps1
+
+  preflight-unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify tag matches VERSION before tests
+        shell: bash
+        run: |
+          test "v$(tr -d '\r\n' < VERSION)" = "${{ github.ref_name }}"
+      - name: Shell self-test
+        shell: bash
+        run: bash ./scripts/self-test.sh
+      - name: Portable permission and runtime red-team
+        shell: bash
+        run: |
+          python3 ./scripts/v2.1-control-red-team.py
+          python3 ./scripts/v2.1-policy-fuzz-red-team.py
+          python3 ./scripts/v2.1-runtime-red-team.py
+      - name: Unix scheduler preservation and failure red-team
+        shell: bash
+        run: python3 ./scripts/v2.1-unix-scheduler-red-team.py
+
+  release:
+    needs: [preflight-windows, preflight-unix]
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact tagged candidate
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Run package self-test
-        shell: pwsh
-        run: ./scripts/self-test.ps1 -BuildPackage
-      - name: Run v2 upgrade and rollback red-team
-        shell: pwsh
-        run: ./scripts/v2-upgrade-red-team.ps1
-      - name: Run v2.1 control and permission red-team
-        shell: pwsh
-        run: python ./scripts/v2.1-control-red-team.py
-      - name: Run v2.1 direct-upgrade compatibility red-team
-        shell: pwsh
-        run: ./scripts/v2.1-upgrade-red-team.ps1
       - name: Verify tag matches VERSION
         shell: pwsh
         run: |
           $version=(Get-Content VERSION -Raw).Trim()
           if ("v$version" -ne "${{ github.ref_name }}") { throw "Tag ${{ github.ref_name }} does not match VERSION v$version" }
-      - name: Build release package
+      - name: Build release package after all platform gates passed
         shell: pwsh
         run: ./scripts/build-release.ps1
+      - name: Verify release artifacts exist
+        shell: pwsh
+        run: |
+          $zip="dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ github.ref_name }}.zip"
+          $sha="$zip.sha256"
+          if(-not(Test-Path $zip) -or -not(Test-Path $sha) -or -not(Test-Path 'dist/release-manifest.json')){throw 'Release artifacts missing.'}
       - name: Create GitHub Release
         shell: pwsh
         env:
