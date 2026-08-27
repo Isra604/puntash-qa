@@ -86,8 +86,9 @@ function Restore-Managed([string]$backup) {
   }
   foreach($d in @('tools')){
     $target=Join-Path $installRoot $d
-    New-Item -ItemType Directory -Path $target -Force | Out-Null
-    Copy-Item (Join-Path $backup "$d\*") $target -Recurse -Force
+    if(Test-Path $target){Remove-Item $target -Recurse -Force}
+    $source=Join-Path $backup $d
+    if(Test-Path $source){Copy-Item $source $target -Recurse -Force}
   }
   $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
   foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -in @('START_HERE.md','OPEN_DASHBOARD.cmd') -and (Test-Path $dst)){Remove-Item $dst -Force}}
@@ -149,8 +150,9 @@ try {
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force
   }
-  New-Item -ItemType Directory -Path (Join-Path $installRoot 'tools') -Force | Out-Null
-  Copy-Item (Join-Path $pkgRoot 'runtime\tools\*') (Join-Path $installRoot 'tools') -Recurse -Force
+  $toolsTarget=Join-Path $installRoot 'tools'
+  if(Test-Path $toolsTarget){Remove-Item $toolsTarget -Recurse -Force}
+  Copy-Item (Join-Path $pkgRoot 'runtime\tools') $toolsTarget -Recurse -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\config\update.json') (Join-Path $installRoot 'config\update.json') -Force
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $pkgRoot $f) (Join-Path $installRoot $f) -Force}
 

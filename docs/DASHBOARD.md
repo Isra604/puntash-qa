@@ -41,3 +41,6 @@ PASS / (PASS + FAIL + BLOCKED)
 ```
 
 NOT_APPLICABLE and NOT_RUN are excluded from health. Coverage is shown separately so incomplete execution cannot look equivalent to a fully-tested project.
+
+## Evidence freshness and assurance in v2
+A v2 PASS/FAIL run record is valid only when it references current evidence. NOT_APPLICABLE requires current applicability evidence. The dashboard shows the recorded assurance but never upgrades it; overall assurance cannot exceed the weakest gate/lens/test-trustworthiness assurance.

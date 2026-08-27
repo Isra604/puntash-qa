@@ -150,6 +150,18 @@ Evidence strength depends on relevance and ability to prove the claim, not on qu
 
 For high-risk conclusions involving security/authorization, privacy-sensitive data, irreversible migration/data integrity, destructive recovery, critical safety/business rules, or high-impact AI decisions, prefer STRONG evidence. If STRONG evidence is unavailable, do not hide the uncertainty behind a broad gate PASS.
 
+### Structured evidence record requirements
+
+For every gate or lens with status PASS or FAIL, the structured run record must include:
+- `evidence_freshness: CURRENT`
+- one or more non-empty `evidence_refs` pointing to current commands, artifacts, logs, reports, traces, screenshots, or other reproducible evidence preserved for this run.
+
+Historical/stale evidence may appear as context, but it must not be labeled CURRENT and cannot by itself support PASS or FAIL. For `NOT_APPLICABLE`, record both a specific `applicability_rationale` and one or more `applicability_evidence` references proving the project does not meaningfully contain that responsibility. A generic sentence such as “not relevant” is not sufficient.
+
+Every reliability lens decision must contain applicability rationale and applicability evidence, even when the lens is applicable and ultimately PASS/FAIL/BLOCKED/NOT_RUN. This prevents silent omission of why a cross-cutting concern was considered.
+
+`evidence_assurance.overall` may never be stronger than the weakest recorded gate/lens/test-trustworthiness assurance in the run. The overall badge summarizes uncertainty; it must not average weakness away.
+
 ### Test Trustworthiness rule
 
 Whenever automated tests are decisive evidence for a material PASS, LENS-01 must be evaluated at adequate depth. Inspect at minimum the relevant test oracle, skipped/disabled/quarantined tests, isolation/flakiness risk, mock fidelity and test-data relevance.
@@ -159,6 +171,8 @@ For decisive high-risk suites, rerun the critical suite at least twice when doin
 Use project-native mutation testing when it already exists or is low-risk and affordable. Do not introduce a heavy mutation framework solely to satisfy this rule. When mutation testing is unavailable, use bounded defect-sensitivity/oracle analysis to determine whether critical tests would actually fail when the behavior they protect is broken.
 
 Coverage metrics are never sufficient behavioral proof by themselves.
+
+The structured `test_trustworthiness` decision is mandatory on every v2 run. Record `applicable: true/false`. When true, record status, assurance, current evidence references and decisive suites if any. When false, record applicability rationale and applicability evidence. Decisive automated suites may support material PASS only when Test Trustworthiness and LENS-01 are PASS with adequate assurance.
 
 ### Risk-based depth
 

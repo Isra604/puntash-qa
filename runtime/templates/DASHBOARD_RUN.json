@@ -53,5 +53,33 @@
     "notes": []
   },
   "report_path": "",
-  "evidence_paths": []
+  "evidence_paths": [],
+  "gate_record_contract": {
+    "gate": 1,
+    "status": "PASS",
+    "assurance": "STRONG",
+    "evidence_freshness": "CURRENT",
+    "evidence_refs": [
+      "evidence/YYYY-MM-DD/GATE-01/example.txt"
+    ],
+    "summary": "",
+    "assurance_gap_non_material": false,
+    "lens_impact_reviewed": false,
+    "lens_exception_lenses": [],
+    "lens_exception_rationale": ""
+  },
+  "lens_record_contract": {
+    "lens": 1,
+    "status": "PASS",
+    "assurance": "STRONG",
+    "applicability_rationale": "",
+    "applicability_evidence": [
+      "profile/PROJECT_QA_PROFILE.md"
+    ],
+    "evidence_freshness": "CURRENT",
+    "evidence_refs": [
+      "evidence/YYYY-MM-DD/LENS-01/example.txt"
+    ],
+    "assurance_gap_non_material": false
+  }
 }

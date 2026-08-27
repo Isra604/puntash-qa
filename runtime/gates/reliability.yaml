@@ -30,6 +30,9 @@ rules:
   coverage_percentage_is_never_behavioral_proof: true
   decisive_automated_test_pass_requires_test_trustworthiness_evaluation: true
   stale_evidence_alone_cannot_pass: true
+  pass_or_fail_requires_current_evidence_refs: true
+  not_applicable_requires_applicability_evidence: true
+  silent_gate_lens_contradiction_forbidden: true
   contradictory_gate_lens_states_require_resolution_or_explicit_blocker: true
 test_trustworthiness:
   decisive_high_risk_suite_rerun_target: 2

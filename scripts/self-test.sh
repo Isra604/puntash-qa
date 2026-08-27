@@ -55,9 +55,9 @@ if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1
 import json,subprocess,sys
 from pathlib import Path
 root=Path(sys.argv[1]); tmp=Path(sys.argv[2])
-gates=[{"gate":i,"status":"PASS","assurance":"STRONG","summary":"self"} for i in range(1,26)]
-lenses=[{"lens":i,"status":"PASS","assurance":"STRONG","applicability_rationale":"self"} for i in range(1,10)]
-base={"schema_version":2,"run_id":"SELF","project":{"name":"self"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":25,"fail":0,"blocked":0,"not_run":0,"not_applicable":0},"evidence_assurance":{"overall":"STRONG"},"gates":gates,"lenses":lenses,"test_trustworthiness":{"applicable":True,"decisive_suites":["critical"]},"findings":[],"changes":{}}
+gates=[{"gate":i,"status":"PASS","assurance":"STRONG","summary":"self","evidence_freshness":"CURRENT","evidence_refs":[f"evidence/GATE-{i:02d}.txt"],"lens_impact_reviewed":False,"lens_exception_lenses":[],"lens_exception_rationale":""} for i in range(1,26)]
+lenses=[{"lens":i,"status":"PASS","assurance":"STRONG","applicability_rationale":"self","applicability_evidence":["profile/PROJECT_QA_PROFILE.md"],"evidence_freshness":"CURRENT","evidence_refs":[f"evidence/LENS-{i:02d}.txt"]} for i in range(1,10)]
+base={"schema_version":2,"run_id":"SELF","project":{"name":"self"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":25,"fail":0,"blocked":0,"not_run":0,"not_applicable":0},"evidence_assurance":{"overall":"STRONG"},"gates":gates,"lenses":lenses,"test_trustworthiness":{"applicable":True,"status":"PASS","assurance":"STRONG","evidence_freshness":"CURRENT","evidence_refs":["evidence/LENS-01/test-trust.txt"],"decisive_suites":["critical"]},"findings":[],"changes":{}}
 def run(obj,name,expect):
  p=tmp/name;p.write_text(json.dumps(obj),encoding="utf-8")
  rc=subprocess.run([sys.executable,str(root/'runtime/tools/validate-run.py'),str(p)],stdout=subprocess.DEVNULL).returncode
@@ -68,6 +68,8 @@ bad=json.loads(json.dumps(base));bad["lenses"][1]["status"]="BLOCKED";bad["lense
 bad=json.loads(json.dumps(base));bad["lenses"]=bad["lenses"][:-1];run(bad,"bad-lens-count.json",False)
 PY
   pass 'run validator PASS ceilings and 25+9 completeness'
+  python3 "$ROOT/scripts/v2-red-team.py" >/dev/null || fail 'v2 red-team suite'
+  pass 'v2 red-team false-PASS attacks'
 else
   echo 'SKIP: Python 3 unavailable for shell run-validator contract test'
 fi
