@@ -90,7 +90,7 @@ Status: COMPLETE
 - Preserve local-only/no-telemetry behavior.
 
 ### Phase 6 — Self-QA and release gates
-Status: IN PROGRESS
+Status: COMPLETE
 - Require exactly 25 gates and exactly 9 lenses.
 - Test lens mapping integrity and status semantics.
 - Test evidence-assurance PASS ceilings.
@@ -185,3 +185,13 @@ During Phase 5, the reliability files were deliberately located under the existi
 - Updated v2 updater to validate 25 gates + 9 lenses + reliability policy for v2 packages and post-update state.
 - Updated install verification scripts to require the v2 reliability model.
 - Validation evidence: PowerShell Doctor 9/9 hints PASS, Git Bash Doctor 9/9 hints PASS, PowerShell syntax PASS, v1.4 updater gate-tree recursive-copy proof PASS.
+
+### 2026-08-27 — Phase 6 COMPLETE
+- Added cross-platform v2 structured-run validators for PowerShell and Python/shell environments.
+- Validator requires exactly 25 gates + 9 reliability lenses for schema-v2 runs.
+- Enforced evidence-assurance PASS ceilings: WEAK/INSUFFICIENT cannot PASS; MODERATE PASS requires explicit non-material gap attestation.
+- Enforced Gate-25 closure consistency against unresolved applicable lenses.
+- Expanded Windows/Unix self-QA for lens count, policy integrity, Doctor v2 hints, validator negative cases, dashboard v1/v2 compatibility, secret scanning and package contents.
+- Hardened Unix lens numbering and Python-runtime probing.
+- Draft PR #1 opened only to exercise pull-request CI; no merge performed.
+- CI evidence: Windows PASS, Ubuntu PASS, macOS PASS on run 33067591254.

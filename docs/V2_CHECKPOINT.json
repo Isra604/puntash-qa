@@ -2,16 +2,17 @@
   "target_version": "2.0.0",
   "branch": "feature/v2-reliability",
   "status": "IN_PROGRESS",
-  "current_phase": 6,
-  "last_completed_phase": 5,
+  "current_phase": 7,
+  "last_completed_phase": 6,
   "completed_phases": [
     0,
     1,
     2,
     3,
     4,
-    5
+    5,
+    6
   ],
-  "next_action": "Phase 6: expand self-QA and CI to enforce exactly 25 gates + 9 lenses, reliability mapping, PASS ceilings, v2 schema compatibility, upgrade layout and package contents.",
-  "updated_at": "2026-08-26T17:45:00+03:00"
+  "next_action": "Phase 7: independent red-team false-PASS, NOT_APPLICABLE/stale-evidence/contradiction attacks, v1.4->v2 update preservation, rollback, and public update-path tests.",
+  "updated_at": "2026-08-27T14:30:00+03:00"
 }
