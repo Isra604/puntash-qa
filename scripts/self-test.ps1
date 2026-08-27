@@ -27,6 +27,7 @@ Check ([string]$legalManifest.line_endings -eq 'LF') 'LEGAL_MANIFEST determinist
 $legalOk=$true
 foreach($p in $legalManifest.documents.PSObject.Properties){$path=Join-Path $root $p.Name;if(-not(Test-Path $path)){$legalOk=$false;continue};$actual=(Get-FileHash -Algorithm SHA256 $path).Hash.ToUpperInvariant();if($actual -ne ([string]$p.Value).ToUpperInvariant()){$legalOk=$false}}
 Check $legalOk 'legal document SHA-256 manifest integrity'
+$legalLfOnly=$true;foreach($p in $legalManifest.documents.PSObject.Properties){$bytes=[IO.File]::ReadAllBytes((Join-Path $root $p.Name));for($i=0;$i-lt($bytes.Length-1);$i++){if($bytes[$i]-eq13-and$bytes[$i+1]-eq10){$legalLfOnly=$false;break}}};Check $legalLfOnly 'legal documents contain LF only (no CRLF)'
 $psFiles=Get-ChildItem $root -Recurse -Filter '*.ps1' -File|Where-Object{$_.FullName -notmatch '\\.git\\|\\dist\\'}
 foreach($p in $psFiles){$tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile($p.FullName,[ref]$tokens,[ref]$errors)|Out-Null;Check ($errors.Count -eq 0) ("PowerShell parse: "+(Resolve-Path $p.FullName -Relative))}
 $required=@('START_HERE_WINDOWS.cmd','scripts\install-gui.ps1','runtime\START_HERE.md','runtime\tools\qa-doctor.ps1','runtime\tools\qa-doctor.sh','docs\PRODUCT_ROADMAP.md','.github\workflows\qa.yml','scripts\generate-legal-manifest.ps1','.gitattributes')

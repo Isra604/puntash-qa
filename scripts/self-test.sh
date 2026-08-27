@@ -49,6 +49,18 @@ grep -q '25 gate map' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard ga
 grep -q 'Reliability assurance' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard reliability assurance'
 grep -q '9 cross-cutting lenses' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard lens strip'
 pass 'dashboard local UI contract'
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
+  python3 - "$ROOT" <<'PY'
+import hashlib,json,sys
+from pathlib import Path
+root=Path(sys.argv[1]); manifest=json.loads((root/'LEGAL_MANIFEST.json').read_text(encoding='utf-8-sig'))
+for name,expected in manifest['documents'].items():
+    data=(root/name).read_bytes()
+    if b'\r\n' in data: raise SystemExit(f'CRLF legal document: {name}')
+    if hashlib.sha256(data).hexdigest().upper()!=str(expected).upper(): raise SystemExit(f'legal hash mismatch: {name}')
+PY
+  pass 'legal document SHA-256 and LF contract'
+fi
 DASHROOT="$TMP/dashproject"; mkdir -p "$DASHROOT/.comprehensive-qa"; cp -R "$ROOT/runtime/." "$DASHROOT/.comprehensive-qa/"; printf '{"version":"%s"}\n' "$(tr -d '\r\n' < "$ROOT/VERSION")" > "$DASHROOT/.comprehensive-qa/INSTALLATION.json"; mkdir -p "$DASHROOT/.comprehensive-qa/reports/dashboard"
 printf '%s\n' '{"schema_version":1,"run_id":"RUN-SHELL-1","project":{"name":"Demo","branch":"main","head":"abc"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":20,"fail":2,"blocked":1,"not_run":1,"not_applicable":1},"findings_summary":{"open":3},"gates":[],"findings":[],"changes":{}}' > "$DASHROOT/.comprehensive-qa/reports/dashboard/RUN-SHELL-1.json"
 set +e
