@@ -8,6 +8,16 @@ $manifest=Get-Content (Join-Path $root 'manifest.json') -Raw|ConvertFrom-Json
 Check ([string]$manifest.version -eq $version) 'VERSION matches manifest.json'
 Check ((Get-ChildItem (Join-Path $root 'runtime\gates') -Filter 'GATE-*.md').Count -eq 25) 'exactly 25 gate files'
 foreach($i in 1..25){Check (Test-Path (Join-Path $root ('runtime\gates\GATE-{0:D2}.md' -f $i))) ("gate {0:D2} exists" -f $i)}
+$lensDir=Join-Path $root 'runtime\gates\lenses'
+Check ((Get-ChildItem $lensDir -Filter 'LENS-*.md').Count -eq 9) 'exactly 9 reliability lens files'
+foreach($i in 1..9){Check (Test-Path (Join-Path $lensDir ('LENS-{0:D2}.md' -f $i))) ("lens {0:D2} exists" -f $i)}
+$relPolicyPath=Join-Path $root 'runtime\gates\reliability.yaml';Check (Test-Path $relPolicyPath) 'reliability policy present'
+$relPolicy=if(Test-Path $relPolicyPath){Get-Content $relPolicyPath -Raw}else{''}
+foreach($token in @('required_gate_count: 25','required_lens_count: 9','MATERIAL_PASS_FORBIDDEN','PASS_FORBIDDEN','coverage_percentage_is_never_behavioral_proof: true','decisive_automated_test_pass_requires_test_trustworthiness_evaluation: true')){Check ($relPolicy.Contains($token)) ("reliability policy token: $token")}
+$gateV2Ok=$true;foreach($i in 1..25){$gt=Get-Content (Join-Path $root ('runtime\gates\GATE-{0:D2}.md' -f $i))-Raw;if($gt -notmatch 'v2 cross-cutting reliability obligations' -or $gt -notmatch 'Evidence-assurance rule'){$gateV2Ok=$false}}
+Check $gateV2Ok 'all 25 gates contain v2 reliability obligations'
+$lensContractOk=$true;foreach($i in 1..9){$lt=Get-Content (Join-Path $lensDir ('LENS-{0:D2}.md' -f $i))-Raw;if($lt -notmatch 'Applicability decision' -or $lt -notmatch 'Evidence assurance' -or $lt -notmatch 'PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE'){$lensContractOk=$false}}
+Check $lensContractOk 'all 9 lenses contain applicability/status/assurance contract'
 foreach($j in @('manifest.json','LEGAL_MANIFEST.json','runtime\config\update.json')){try{Get-Content (Join-Path $root $j)-Raw|ConvertFrom-Json|Out-Null;Check $true "$j valid JSON"}catch{Check $false "$j valid JSON"}}
 $terms=(Get-Content (Join-Path $root 'TERMS_VERSION') -Raw).Trim();Check ([string]$manifest.terms_version -eq $terms) 'Terms version consistency'
 $legalManifest=Get-Content (Join-Path $root 'LEGAL_MANIFEST.json')-Raw|ConvertFrom-Json
@@ -29,12 +39,27 @@ $secretHit=$false
 foreach($rel in $tracked){$p=Join-Path $root $rel;if(Test-Path $p -PathType Leaf){try{$txt=Get-Content $p -Raw -ErrorAction Stop;if($txt -match $secretRegex){$secretHit=$true;Write-Host "SECRET_SIGNATURE_HIT=$rel"}}catch{}}}
 Check (-not $secretHit) 'no common secret signatures in tracked text files'
 $temp=Join-Path ([IO.Path]::GetTempPath()) ('qa-doctor-selftest-'+[guid]::NewGuid().ToString('N'))
-try{New-Item -ItemType Directory $temp|Out-Null;& (Join-Path $root 'runtime\tools\qa-doctor.ps1') -ProjectPath $root -OutputDirectory $temp|Out-Host;Check (Test-Path (Join-Path $temp 'QA_DOCTOR.json')) 'QA Doctor produces JSON';$d=Get-Content (Join-Path $temp 'QA_DOCTOR.json')-Raw|ConvertFrom-Json;Check ($d.status -eq 'READY_FOR_AGENT_DISCOVERY') 'QA Doctor status contract'}finally{if(Test-Path $temp){Remove-Item $temp -Recurse -Force}}
+try{New-Item -ItemType Directory $temp|Out-Null;& (Join-Path $root 'runtime\tools\qa-doctor.ps1') -ProjectPath $root -OutputDirectory $temp|Out-Host;Check (Test-Path (Join-Path $temp 'QA_DOCTOR.json')) 'QA Doctor produces JSON';$d=Get-Content (Join-Path $temp 'QA_DOCTOR.json')-Raw|ConvertFrom-Json;Check ($d.status -eq 'READY_FOR_AGENT_DISCOVERY') 'QA Doctor status contract';Check ($d.schema_version -eq 2 -and $d.doctor_version -eq '2.0') 'QA Doctor v2 contract';Check (@($d.reliability_lens_hints.PSObject.Properties).Count -eq 9) 'QA Doctor emits 9 reliability hints'}finally{if(Test-Path $temp){Remove-Item $temp -Recurse -Force}}
+
+$validatorRequired=@('runtime\tools\validate-run.ps1','runtime\tools\validate-run.py','runtime\tools\validate-run.sh')
+foreach($r in $validatorRequired){Check (Test-Path (Join-Path $root $r)) "$r present"}
+$runTemp=Join-Path ([IO.Path]::GetTempPath()) ('qa-v2-run-validator-'+[guid]::NewGuid().ToString('N'))
+try{
+ New-Item $runTemp -ItemType Directory|Out-Null
+ $gates=@();foreach($i in 1..25){$gates+=[ordered]@{gate=$i;status='PASS';assurance='STRONG';summary='self-test'}}
+ $lenses=@();foreach($i in 1..9){$lenses+=[ordered]@{lens=$i;status='PASS';assurance='STRONG';applicability_rationale='self-test applicable'}}
+ $base=[ordered]@{schema_version=2;run_id='SELFTEST';project=[ordered]@{name='self';branch='main';head='abc'};completed_at=(Get-Date).ToString('o');summary=[ordered]@{pass=25;fail=0;blocked=0;not_run=0;not_applicable=0};evidence_assurance=[ordered]@{overall='STRONG'};findings_summary=[ordered]@{open=0};gates=$gates;lenses=$lenses;test_trustworthiness=[ordered]@{applicable=$true;status='PASS';assurance='STRONG';decisive_suites=@('critical')};findings=@();changes=[ordered]@{lens_changes=@()}}
+ $valid=Join-Path $runTemp 'valid.json';$base|ConvertTo-Json -Depth 12|Set-Content $valid -Encoding UTF8
+ & pwsh -NoProfile -File (Join-Path $root 'runtime\tools\validate-run.ps1') -RunPath $valid|Out-Null;Check ($LASTEXITCODE -eq 0) 'run validator accepts valid 25+9 STRONG run'
+ $bad=Get-Content $valid -Raw|ConvertFrom-Json;$bad.gates[0].assurance='WEAK';$badPath=Join-Path $runTemp 'bad-weak.json';$bad|ConvertTo-Json -Depth 12|Set-Content $badPath -Encoding UTF8;& pwsh -NoProfile -File (Join-Path $root 'runtime\tools\validate-run.ps1') -RunPath $badPath|Out-Null;Check ($LASTEXITCODE -ne 0) 'run validator rejects PASS with WEAK evidence'
+ $bad=Get-Content $valid -Raw|ConvertFrom-Json;$bad.gates[0].assurance='MODERATE';$badPath=Join-Path $runTemp 'bad-moderate.json';$bad|ConvertTo-Json -Depth 12|Set-Content $badPath -Encoding UTF8;& pwsh -NoProfile -File (Join-Path $root 'runtime\tools\validate-run.ps1') -RunPath $badPath|Out-Null;Check ($LASTEXITCODE -ne 0) 'run validator rejects MODERATE PASS without non-material gap attestation'
+ $bad=Get-Content $valid -Raw|ConvertFrom-Json;$bad.lenses[1].status='BLOCKED';$bad.lenses[1]|Add-Member -NotePropertyName reason -NotePropertyValue 'tool missing' -Force;$badPath=Join-Path $runTemp 'bad-g25.json';$bad|ConvertTo-Json -Depth 12|Set-Content $badPath -Encoding UTF8;& pwsh -NoProfile -File (Join-Path $root 'runtime\tools\validate-run.ps1') -RunPath $badPath|Out-Null;Check ($LASTEXITCODE -ne 0) 'run validator rejects GATE-25 PASS with unresolved lens'
+}finally{if(Test-Path $runTemp){Remove-Item $runTemp -Recurse -Force}}
 
 $dashRequired=@('runtime\dashboard\index.html','runtime\dashboard\data.js','runtime\templates\DASHBOARD_RUN.json','runtime\OPEN_DASHBOARD.cmd','runtime\tools\dashboard-refresh.ps1','runtime\tools\dashboard-refresh.sh','runtime\tools\open-dashboard.ps1','docs\DASHBOARD.md')
 foreach($r in $dashRequired){Check (Test-Path (Join-Path $root $r)) "$r present"}
 $dashHtml=Get-Content (Join-Path $root 'runtime\dashboard\index.html') -Raw
-foreach($token in @('Needs attention','Health trend','25 gate map','What changed','Run history','Local only · no telemetry')){Check ($dashHtml.Contains($token)) ("dashboard UI token: $token")}
+foreach($token in @('Needs attention','Health trend','25 gate map','What changed','Run history','Local only · no telemetry','Reliability assurance','9 cross-cutting lenses','function renderLenses','function showLens')){Check ($dashHtml.Contains($token)) ("dashboard UI token: $token")}
 if(Get-Command node -ErrorAction SilentlyContinue){
   $matches=[regex]::Matches($dashHtml,'(?s)<script>(.*?)</script>')
   $js=if($matches.Count){$matches[$matches.Count-1].Groups[1].Value}else{''}
@@ -55,6 +80,6 @@ try{
   Check ($data.IndexOf('RUN-2') -lt $data.IndexOf('RUN-1')) 'Dashboard history sorted newest first'
 }finally{if(Test-Path $dashTemp){Remove-Item $dashTemp -Recurse -Force}}
 
-if($BuildPackage){& (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory '.selftest-dist'|Out-Host;$zip=Join-Path $root ".selftest-dist\COMPREHENSIVE-QA-GATE-SYSTEM-v$version.zip";Check (Test-Path $zip) 'release ZIP builds';if(Test-Path $zip){Add-Type -AssemblyName System.IO.Compression.FileSystem;$z=[IO.Compression.ZipFile]::OpenRead($zip);try{$names=@($z.Entries.FullName);Check (@($names|Where-Object{$_ -match '^runtime/gates/GATE-\d\d\.md$'}).Count -eq 25) 'release ZIP contains 25 gates';Check ($names -contains 'runtime/tools/qa-doctor.ps1') 'release ZIP contains QA Doctor';Check ($names -contains 'START_HERE_WINDOWS.cmd') 'release ZIP contains Easy Start launcher';Check ($names -contains 'runtime/dashboard/index.html') 'release ZIP contains Dashboard';Check ($names -contains 'runtime/tools/dashboard-refresh.ps1') 'release ZIP contains Dashboard refresh tool'}finally{$z.Dispose()}};Remove-Item (Join-Path $root '.selftest-dist') -Recurse -Force -ErrorAction SilentlyContinue}
+if($BuildPackage){& (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory '.selftest-dist'|Out-Host;$zip=Join-Path $root ".selftest-dist\COMPREHENSIVE-QA-GATE-SYSTEM-v$version.zip";Check (Test-Path $zip) 'release ZIP builds';if(Test-Path $zip){Add-Type -AssemblyName System.IO.Compression.FileSystem;$z=[IO.Compression.ZipFile]::OpenRead($zip);try{$names=@($z.Entries.FullName);Check (@($names|Where-Object{$_ -match '^runtime/gates/GATE-\d\d\.md$'}).Count -eq 25) 'release ZIP contains 25 gates';Check ($names -contains 'runtime/tools/qa-doctor.ps1') 'release ZIP contains QA Doctor';Check ($names -contains 'START_HERE_WINDOWS.cmd') 'release ZIP contains Easy Start launcher';Check ($names -contains 'runtime/dashboard/index.html') 'release ZIP contains Dashboard';Check ($names -contains 'runtime/tools/dashboard-refresh.ps1') 'release ZIP contains Dashboard refresh tool';Check (@($names|Where-Object{$_ -match '^runtime/gates/lenses/LENS-\d\d\.md$'}).Count -eq 9) 'release ZIP contains 9 reliability lenses';Check ($names -contains 'runtime/gates/reliability.yaml') 'release ZIP contains reliability policy';Check ($names -contains 'runtime/tools/validate-run.ps1') 'release ZIP contains run validator'}finally{$z.Dispose()}};Remove-Item (Join-Path $root '.selftest-dist') -Recurse -Force -ErrorAction SilentlyContinue}
 if($failures.Count){Write-Host "SELF_TEST_RESULT=FAIL COUNT=$($failures.Count)";foreach($f in $failures){Write-Host "FAILED=$f"};exit 1}
 Write-Host 'SELF_TEST_RESULT=PASS'

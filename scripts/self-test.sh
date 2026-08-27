@@ -7,7 +7,15 @@ pass(){ echo "PASS: $1"; }
 pass 'exactly 25 gates'
 for i in $(seq -w 1 25); do [[ -f "$ROOT/runtime/gates/GATE-$i.md" ]] || fail "missing GATE-$i"; done
 pass 'gate numbering 01-25'
-for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
+[[ "$(find "$ROOT/runtime/gates/lenses" -maxdepth 1 -type f -name 'LENS-*.md' | wc -l | tr -d ' ')" == "9" ]] || fail 'exactly 9 reliability lenses'
+for i in $(seq -f "%02g" 1 9); do [[ -f "$ROOT/runtime/gates/lenses/LENS-$i.md" ]] || fail "missing LENS-$i"; done
+[[ -f "$ROOT/runtime/gates/reliability.yaml" ]] || fail 'missing reliability policy'
+grep -q 'required_lens_count: 9' "$ROOT/runtime/gates/reliability.yaml" || fail 'reliability policy lens count'
+grep -q 'decisive_automated_test_pass_requires_test_trustworthiness_evaluation: true' "$ROOT/runtime/gates/reliability.yaml" || fail 'test trustworthiness policy'
+grep -q 'coverage_percentage_is_never_behavioral_proof: true' "$ROOT/runtime/gates/reliability.yaml" || fail 'coverage-only prohibition'
+[[ "$(grep -l 'v2 cross-cutting reliability obligations' "$ROOT"/runtime/gates/GATE-*.md | wc -l | tr -d ' ')" == "25" ]] || fail 'all gates v2 reliability obligations'
+pass '9 reliability lenses and policy contract'
+for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/runtime/tools/validate-run.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
 pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
@@ -18,10 +26,15 @@ TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 bash "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT" "$TMP/doctor" >/dev/null
 [[ -s "$TMP/doctor/QA_DOCTOR.json" && -s "$TMP/doctor/QA_DOCTOR.md" ]] || fail 'QA Doctor output'
 pass 'QA Doctor output'
+grep -q '"doctor_version": "2.0"' "$TMP/doctor/QA_DOCTOR.json" || fail 'QA Doctor v2 version'
+[[ "$(grep -c '"LENS-0[1-9]_' "$TMP/doctor/QA_DOCTOR.json")" == "9" ]] || fail 'QA Doctor 9 reliability hints'
+pass 'QA Doctor v2 reliability hints'
 
 for f in "$ROOT/runtime/dashboard/index.html" "$ROOT/runtime/dashboard/data.js" "$ROOT/runtime/templates/DASHBOARD_RUN.json" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/docs/DASHBOARD.md"; do [[ -f "$f" ]] || fail "missing dashboard asset $f"; done
 grep -q 'Local only · no telemetry' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard privacy label'
 grep -q '25 gate map' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard gate map'
+grep -q 'Reliability assurance' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard reliability assurance'
+grep -q '9 cross-cutting lenses' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard lens strip'
 pass 'dashboard local UI contract'
 DASHROOT="$TMP/dashproject"; mkdir -p "$DASHROOT/.comprehensive-qa"; cp -R "$ROOT/runtime/." "$DASHROOT/.comprehensive-qa/"; printf '{"version":"%s"}\n' "$(tr -d '\r\n' < "$ROOT/VERSION")" > "$DASHROOT/.comprehensive-qa/INSTALLATION.json"; mkdir -p "$DASHROOT/.comprehensive-qa/reports/dashboard"
 printf '%s\n' '{"schema_version":1,"run_id":"RUN-SHELL-1","project":{"name":"Demo","branch":"main","head":"abc"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":20,"fail":2,"blocked":1,"not_run":1,"not_applicable":1},"findings_summary":{"open":3},"gates":[],"findings":[],"changes":{}}' > "$DASHROOT/.comprehensive-qa/reports/dashboard/RUN-SHELL-1.json"
@@ -36,6 +49,27 @@ elif [[ "$DASH_RC" == "2" && "${OS:-}" == "Windows_NT" ]]; then
   pass 'dashboard refresh dependency reported cleanly on Windows Git Bash'
 else
   fail "dashboard refresh shell exit $DASH_RC"
+fi
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
+  python3 - "$ROOT" "$TMP" <<'PY'
+import json,subprocess,sys
+from pathlib import Path
+root=Path(sys.argv[1]); tmp=Path(sys.argv[2])
+gates=[{"gate":i,"status":"PASS","assurance":"STRONG","summary":"self"} for i in range(1,26)]
+lenses=[{"lens":i,"status":"PASS","assurance":"STRONG","applicability_rationale":"self"} for i in range(1,10)]
+base={"schema_version":2,"run_id":"SELF","project":{"name":"self"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":25,"fail":0,"blocked":0,"not_run":0,"not_applicable":0},"evidence_assurance":{"overall":"STRONG"},"gates":gates,"lenses":lenses,"test_trustworthiness":{"applicable":True,"decisive_suites":["critical"]},"findings":[],"changes":{}}
+def run(obj,name,expect):
+ p=tmp/name;p.write_text(json.dumps(obj),encoding="utf-8")
+ rc=subprocess.run([sys.executable,str(root/'runtime/tools/validate-run.py'),str(p)],stdout=subprocess.DEVNULL).returncode
+ if (rc==0)!=expect: raise SystemExit(f"validator case {name} rc={rc}")
+run(base,"valid-v2.json",True)
+bad=json.loads(json.dumps(base));bad["gates"][0]["assurance"]="WEAK";run(bad,"bad-weak.json",False)
+bad=json.loads(json.dumps(base));bad["lenses"][1]["status"]="BLOCKED";bad["lenses"][1]["reason"]="missing tool";run(bad,"bad-g25.json",False)
+bad=json.loads(json.dumps(base));bad["lenses"]=bad["lenses"][:-1];run(bad,"bad-lens-count.json",False)
+PY
+  pass 'run validator PASS ceilings and 25+9 completeness'
+else
+  echo 'SKIP: Python 3 unavailable for shell run-validator contract test'
 fi
 mkdir -p "$TMP/project"
 set +e

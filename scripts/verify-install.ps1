@@ -35,6 +35,9 @@ $required = @(
   'tools\rollback.ps1',
   'tools\qa-doctor.ps1',
   'tools\qa-doctor.sh',
+  'tools\validate-run.ps1',
+  'tools\validate-run.py',
+  'tools\validate-run.sh',
   'config\update.json'
 )
 $attributionPending = Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
