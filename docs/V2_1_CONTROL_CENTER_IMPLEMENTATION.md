@@ -1,6 +1,6 @@
 # v2.1.0 Automation & Agent Permission Control Center
 
-Status: IN PROGRESS
+Status: READY FOR OWNER RELEASE APPROVAL
 Target release: v2.1.0
 Owner / original creator and project architect: Ofir Israeli
 
@@ -77,7 +77,7 @@ Status: COMPLETE
 - Never fabricate an owner choice.
 
 ### Phase 5 — Red-team and CI
-Status: IN PROGRESS
+Status: COMPLETE
 - Attempt agent self-elevation.
 - Attempt protected change under ACTIVE_REMEDIATION.
 - Attempt schedule enable without human policy approval.
@@ -86,11 +86,11 @@ Status: IN PROGRESS
 - Test update/rollback preservation and dashboard read-only fallback.
 
 ### Phase 6 — Release
-Status: NOT_STARTED
-- Cross-platform CI.
-- Merge to main.
-- Tag/release v2.1.0.
-- Anonymous public download/SHA/update detection verification.
+Status: READY FOR OWNER APPROVAL
+- Cross-platform CI: COMPLETE on the release candidate.
+- Merge to main: BLOCKED pending explicit owner approval.
+- Tag/release v2.1.0: BLOCKED pending explicit owner approval.
+- Anonymous public download/SHA/update detection verification: POST-RELEASE step, not executable before owner approval.
 
 ## Resume rule
 
@@ -133,3 +133,13 @@ Read this file and `docs/V2_1_CHECKPOINT.json`; continue from the first incomple
 - Added portable Python loopback Control Center and shell launcher for macOS/Linux in addition to Windows PowerShell control server.
 - Added mechanical `authorize-change` decision engine; automatic remediation requires an explicit ALLOW based on owner preset, change risk, category, expected-behavior proof, reversibility where required, and hard boundaries.
 - Validation: direct released-v2.0 updater layout simulation PASS; portable Control Center token/mutation/shutdown PASS; mechanical permission Red-Team PASS.
+
+
+### 2026-08-28 — Phase 5 COMPLETE / release candidate validated
+- Functional candidate SHA: `63d662314bd7680a1a17dc9299e438fcc818e0f7`.
+- GitHub Actions run `33124840958`: Windows PASS, Ubuntu PASS, macOS PASS.
+- CI logs independently confirmed execution and PASS evidence for timeout/process-tree termination, rollback scheduler safety, native Windows authorization, Windows scheduler lifecycle, Windows Control Center, portable Control Center, policy fuzzing, AGENT_MANAGED runtime lifecycle, concurrency, Unix fake-crontab scheduler tests, v1.4 -> v2.1 rollback, and v2.0 -> v2.1 rollback.
+- Legal-document bytes are deterministic UTF-8/LF and SHA-256 matches the Git index and `LEGAL_MANIFEST.json`.
+- Local final package self-test, both upgrade/rollback paths, rollback scheduler safety, and 60-second process-tree timeout test all PASS.
+- Repository secret scan and private-project isolation scan PASS.
+- No merge, tag, or public v2.1.0 release was performed. Publication authority remains with the owner.

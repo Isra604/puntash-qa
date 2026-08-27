@@ -1,16 +1,37 @@
 {
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
-  "status": "IN_PROGRESS",
-  "current_phase": 5,
-  "last_completed_phase": 4,
+  "status": "READY_FOR_OWNER_RELEASE_APPROVAL",
+  "current_phase": 6,
+  "last_completed_phase": 5,
   "completed_phases": [
     0,
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
-  "next_action": "Phase 5: permanent v2.1 permission/scheduler/control-center red-team, package self-tests and Windows/Ubuntu/macOS CI.",
-  "updated_at": "2026-08-27T19:55:00+03:00"
+  "validated_code_sha": "63d662314bd7680a1a17dc9299e438fcc818e0f7",
+  "validation": {
+    "github_ci_run": "33124840958",
+    "windows": "PASS",
+    "ubuntu": "PASS",
+    "macos": "PASS",
+    "required_redteam_evidence": "PASS",
+    "v1_4_to_v2_1_rollback": "PASS",
+    "v2_0_to_v2_1_rollback": "PASS",
+    "windows_timeout_process_tree": "PASS",
+    "package_self_test": "PASS",
+    "secret_scan": "PASS",
+    "private_project_isolation_scan": "PASS"
+  },
+  "publication_state": {
+    "merged_to_main": false,
+    "tag_created": false,
+    "public_release_created": false,
+    "owner_approval_required": true
+  },
+  "next_action": "Await owner final choices and explicit release approval. Do not merge to main, create tag v2.1.0, or publish a GitHub Release before that approval.",
+  "updated_at": "2026-08-28T02:11:25+03:00"
 }
