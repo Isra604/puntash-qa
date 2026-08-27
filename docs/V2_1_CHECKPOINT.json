@@ -1,0 +1,13 @@
+{
+  "target_version": "2.1.0",
+  "branch": "feature/v2.1-control-center",
+  "status": "IN_PROGRESS",
+  "current_phase": 2,
+  "last_completed_phase": 1,
+  "completed_phases": [
+    0,
+    1
+  ],
+  "next_action": "Phase 2: implement scheduled-run contract, overlap lock, Windows Task Scheduler and Unix cron registration with explicit executor readiness.",
+  "updated_at": "2026-08-27T15:15:00+03:00"
+}

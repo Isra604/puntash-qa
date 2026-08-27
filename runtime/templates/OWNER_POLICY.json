@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "configured": false,
+  "configured_at": null,
+  "configured_via": "UNCONFIGURED",
+  "permissions": {
+    "preset": "REPORT_ONLY",
+    "custom_auto_change_risks": [],
+    "custom_categories": [],
+    "notes": "Until the owner explicitly configures this policy, report-only is the maximum authority."
+  },
+  "schedule": {
+    "enabled": false,
+    "frequency": "DAILY",
+    "local_time": "03:00",
+    "days_of_week": [],
+    "executor_mode": "UNCONFIGURED",
+    "executor": {
+      "command": "",
+      "arguments": []
+    },
+    "timezone_mode": "LOCAL"
+  },
+  "approval": {
+    "approved_by_human": false,
+    "approved_at": null,
+    "source": "UNCONFIGURED"
+  },
+  "policy_revision": 0
+}

@@ -16,6 +16,9 @@ Use this skill when asked to comprehensively audit, validate, quality-gate, rele
 4. Build or refresh the Project QA Profile, including reliability risk inventory and test-trustworthiness profile.
 5. Map every one of the 25 universal QA gates to project-specific checks.
 6. Evaluate all 9 cross-cutting reliability lenses with explicit applicability, status and evidence assurance.
+6. Before mutation, read OWNER_POLICY. If it is unconfigured, ask the owner for schedule/remediation preferences; never self-elevate.
+7. Treat remediation permission as a maximum authority ceiling based on change risk, not finding severity.
+8. Scheduling is opt-in and only active when an actual executor is configured.
 7. Execute only checks supported by current capabilities and authorization.
 8. Never mark a gate or lens PASS from historical evidence alone.
 9. Evidence assurance is mandatory: STRONG / MODERATE / WEAK / INSUFFICIENT. WEAK or INSUFFICIENT evidence cannot support a material PASS.

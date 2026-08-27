@@ -20,6 +20,27 @@ Do not repeatedly insert creator attribution into ordinary QA findings or report
 
 If `tools/check-update.ps1` is available and command execution is authorized, perform a non-destructive update check at most once every 24 hours before the first substantive QA cycle of the day. An update-check failure must not be converted into a QA PASS or block ordinary QA execution. Never install an update without the project owner's interactive approval. Never bypass SHA-256 verification, backup, Terms re-acceptance when required, or rollback safeguards.
 
+## Owner policy, scheduling and remediation authority
+
+Before substantive QA execution, read `state/OWNER_POLICY.json` when present. If it is missing, initialize it from `templates/OWNER_POLICY.json` without granting any authority: the effective default is REPORT_ONLY and scheduling disabled.
+
+If `configured` is false, ask the project owner once, in ordinary language, whether they want:
+
+1. scheduled QA (disabled, or a recurrence/time such as daily at 03:00), and
+2. remediation authority: REPORT_ONLY, SAFE_FIXES, ACTIVE_REMEDIATION, or a bounded CUSTOM policy.
+
+Do not choose on the owner's behalf. The owner may defer; if they do, remain REPORT_ONLY with scheduling disabled. When the owner directly chooses a policy, save it through `tools/policy-manager.ps1` or `tools/policy-manager.sh` using approval source `agent_owner_conversation`. Never pass the owner-approval flag without a direct owner decision in the current interaction.
+
+Permission presets are maximum authority ceilings:
+- REPORT_ONLY: inspect/test/report only; no product remediation.
+- SAFE_FIXES: only LOW change-risk, reversible, unambiguous remediation outside protected boundaries.
+- ACTIVE_REMEDIATION: LOW/MEDIUM change-risk remediation may be automatic when expected behavior is proven; HIGH/PROTECTED changes still require explicit owner approval.
+- CUSTOM: owner-selected categories/risks, never exceeding managed hard boundaries.
+
+Finding severity and change risk are separate concepts. Classify remediation change risk independently before mutation. An agent may always act more conservatively than the owner policy, but may never self-elevate, rewrite the policy to gain authority, or treat a schedule as mutation authority. Hard boundaries in `config/permission-policy.json` override every preset.
+
+Scheduling is also opt-in. A requested schedule is not considered active unless an executor exists. `UNCONFIGURED` means the dashboard may remember schedule intent but automated execution is not ready. `LOCAL_COMMAND` may invoke only the owner-approved executable/argument list structurally; never use shell eval/Invoke-Expression. `AGENT_MANAGED` means a platform-native scheduler owns execution and the local runtime records status only.
+
 ## QA Doctor pre-discovery hints
 
 If `state/QA_DOCTOR.json` exists, read it before Phase 0 to understand local project/tooling signals. QA Doctor is deliberately conservative and non-authoritative: verify every material hint from direct current project evidence. Doctor output must never be used by itself to assign PASS, NOT_APPLICABLE, severity, product intent or remediation authority.
@@ -242,9 +263,9 @@ Prefer one root finding with linked manifestations over duplicate independent fi
 
 ## Phase 7 — Automatic remediation
 
-Default installation mode is `report_only`.
+The effective remediation ceiling comes from `state/OWNER_POLICY.json`; when missing/unconfigured it is REPORT_ONLY. Legacy `config/default.yaml` remediation settings may further restrict behavior but may never expand OWNER_POLICY authority.
 
-Only perform automatic fixes when configuration explicitly sets remediation to `safe_auto` or equivalent owner authorization is present.
+Only perform automatic fixes when the configured owner preset authorizes the independently classified change risk/category and every hard boundary remains satisfied.
 
 A SAFE automatic fix must be all of:
 - unambiguous
