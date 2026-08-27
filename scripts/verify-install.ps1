@@ -38,7 +38,22 @@ $required = @(
   'tools\validate-run.ps1',
   'tools\validate-run.py',
   'tools\validate-run.sh',
-  'config\update.json'
+  'config\update.json',
+  'templates\OWNER_POLICY.json',
+  'state\OWNER_POLICY.json',
+  'tools\policy-manager.ps1',
+  'tools\policy-manager.py',
+  'tools\policy-manager.sh',
+  'tools\scheduler.ps1',
+  'tools\scheduler.py',
+  'tools\scheduler.sh',
+  'tools\scheduled-run.ps1',
+  'tools\scheduled-run.py',
+  'tools\scheduled-run.sh',
+  'tools\dashboard-control.ps1',
+  'tools\dashboard-control.py',
+  'templates\PERMISSION_POLICY.json',
+  'templates\SCHEDULED_QA.md'
 )
 $attributionPending = Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 $attributionShown = Join-Path $dest 'state\ATTRIBUTION_SHOWN.txt'

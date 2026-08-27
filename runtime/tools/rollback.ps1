@@ -13,10 +13,14 @@ if(-not $BackupPath){
 if(-not(Test-Path $BackupPath)){throw "Backup not found: $BackupPath"}
 $result=[System.Windows.Forms.MessageBox]::Show("Rollback the managed QA runtime to:`r`n$BackupPath`r`n`r`nReports, evidence and current project data will be preserved.",'Confirm QA System Rollback',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Warning)
 if($result -ne [System.Windows.Forms.DialogResult]::Yes){Write-Host 'Rollback cancelled.';exit 4}
-foreach($d in @('gates','templates','agent-guides','dashboard')){$target=Join-Path $installRoot $d;if(Test-Path $target){Remove-Item $target -Recurse -Force};$source=Join-Path $BackupPath $d;if(Test-Path $source){Copy-Item $source $target -Recurse -Force}}
+$currentScheduler=Join-Path $installRoot 'tools\scheduler.ps1'
+if(Test-Path $currentScheduler){try{& $currentScheduler -Operation Remove -OwnerApproved|Out-Null;Write-Host 'SCHEDULER_PAUSED_FOR_ROLLBACK=1'}catch{Write-Warning ('Could not remove current scheduled QA task before rollback: '+$_.Exception.Message)}}
+foreach($d in @('gates','templates','agent-guides','dashboard','prompts')){$target=Join-Path $installRoot $d;if(Test-Path $target){Remove-Item $target -Recurse -Force};$source=Join-Path $BackupPath $d;if(Test-Path $source){Copy-Item $source $target -Recurse -Force}}
 $toolsTarget=Join-Path $installRoot 'tools';if(Test-Path $toolsTarget){Remove-Item $toolsTarget -Recurse -Force};$toolsSource=Join-Path $BackupPath 'tools';if(Test-Path $toolsSource){Copy-Item $toolsSource $toolsTarget -Recurse -Force}
 foreach($f in @('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')){$src=Join-Path $BackupPath $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -in @('START_HERE.md','OPEN_DASHBOARD.cmd') -and (Test-Path $dst)){Remove-Item $dst -Force}}
 $uc=Join-Path $BackupPath 'config\update.json';if(Test-Path $uc){Copy-Item $uc (Join-Path $installRoot 'config\update.json') -Force}
+$pc=Join-Path $BackupPath 'config\permission-policy.json';$pct=Join-Path $installRoot 'config\permission-policy.json';if(Test-Path $pc){Copy-Item $pc $pct -Force}elseif(Test-Path $pct){Remove-Item $pct -Force}
+[ordered]@{updated_at=(Get-Date).ToString('o');status='PAUSED_AFTER_ROLLBACK';message='Owner policy preserved, but scheduled execution was paused for safety after rollback.'}|ConvertTo-Json|Set-Content (Join-Path $installRoot 'state\SCHEDULER_REGISTRATION.json') -Encoding UTF8
 $r=Join-Path $BackupPath 'state\HUMAN_ACCEPTANCE_RECEIPT.json';if(Test-Path $r){Copy-Item $r (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Force}
 [ordered]@{rolled_back_at=(Get-Date).ToString('o');backup=$BackupPath;status='SUCCESS'}|ConvertTo-Json -Compress|Add-Content (Join-Path $installRoot 'state\UPDATE_HISTORY.jsonl') -Encoding UTF8
 Write-Host "ROLLBACK_SUCCESS=$BackupPath"

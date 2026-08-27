@@ -2,13 +2,15 @@
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
   "status": "IN_PROGRESS",
-  "current_phase": 3,
-  "last_completed_phase": 2,
+  "current_phase": 5,
+  "last_completed_phase": 4,
   "completed_phases": [
     0,
     1,
-    2
+    2,
+    3,
+    4
   ],
-  "next_action": "Phase 3: implement loopback-only dashboard control server and compact schedule/permission UI with read-only fallback.",
-  "updated_at": "2026-08-27T15:30:00+03:00"
+  "next_action": "Phase 5: permanent v2.1 permission/scheduler/control-center red-team, package self-tests and Windows/Ubuntu/macOS CI.",
+  "updated_at": "2026-08-27T19:55:00+03:00"
 }

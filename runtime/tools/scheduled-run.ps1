@@ -69,6 +69,7 @@ try {
     $stdoutPath = Join-Path $logDir "$runId.stdout.log"
     $stderrPath = Join-Path $logDir "$runId.stderr.log"
     $promptPath = Join-Path $installRoot 'prompts\SCHEDULED_QA.md'
+if(-not(Test-Path $promptPath)){$promptPath=Join-Path $installRoot 'templates\SCHEDULED_QA.md'}
     $arguments = @()
     foreach ($argument in @($policy.schedule.executor.arguments)) {
         $expanded = [string]$argument

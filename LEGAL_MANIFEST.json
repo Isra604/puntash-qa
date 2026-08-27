@@ -1,6 +1,6 @@
 {
   "system": "Universal Comprehensive QA Gate System",
-  "package_version": "2.0.0",
+  "package_version": "2.1.0",
   "terms_version": "1.0.0",
   "algorithm": "SHA-256",
   "line_endings": "LF",

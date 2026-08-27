@@ -49,7 +49,7 @@ if ($Operation -eq 'Status') {
         $registration = Get-Content $registrationPath -Raw | ConvertFrom-Json
     }
     [ordered]@{ task_name = $taskName; registered = $exists; registration = $registration } | ConvertTo-Json -Depth 8
-    exit 0
+    return
 }
 
 if (-not $OwnerApproved) {
@@ -64,7 +64,7 @@ if ($Operation -eq 'Remove') {
     }
     Save-Registration 'DISABLED' 'Local OS schedule removed by owner.'
     Write-Host "SCHEDULER_REMOVED=$taskName"
-    exit 0
+    return
 }
 
 if (-not (Test-Path $policyPath)) { throw 'OWNER_POLICY missing.' }
@@ -83,14 +83,14 @@ if ($Operation -eq 'MarkAgentManaged') {
         local_time = $policy.schedule.local_time
     }
     Write-Host 'SCHEDULER_AGENT_MANAGED=ACTIVE'
-    exit 0
+    return
 }
 
 if (-not $policy.schedule.enabled) { throw 'Schedule is disabled in OWNER_POLICY.' }
 if ($policy.schedule.executor_mode -eq 'UNCONFIGURED') {
     Save-Registration 'NEEDS_EXECUTOR' 'Schedule intent exists but no executor is configured.'
     Write-Host 'SCHEDULER_NEEDS_EXECUTOR=1'
-    exit 7
+    return
 }
 if ($policy.schedule.executor_mode -eq 'AGENT_MANAGED') {
     Save-Registration 'NEEDS_PLATFORM_ACTIVATION' 'Schedule is owner-approved but must be activated by the AI platform scheduler.' @{
@@ -98,7 +98,7 @@ if ($policy.schedule.executor_mode -eq 'AGENT_MANAGED') {
         local_time = $policy.schedule.local_time
     }
     Write-Host 'SCHEDULER_NEEDS_PLATFORM_ACTIVATION=1'
-    exit 0
+    return
 }
 if ($policy.schedule.executor_mode -ne 'LOCAL_COMMAND') { throw 'Unsupported executor mode.' }
 

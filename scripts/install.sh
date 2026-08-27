@@ -119,6 +119,16 @@ if [[ -f "$DEST/tools/qa-doctor.sh" ]]; then
   fi
 fi
 
+if [[ ! -f "$DEST/state/OWNER_POLICY.json" ]]; then
+  if [[ -x "$DEST/tools/policy-manager.sh" ]] && command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
+    bash "$DEST/tools/policy-manager.sh" get >/dev/null || true
+  fi
+  if [[ ! -f "$DEST/state/OWNER_POLICY.json" && -f "$DEST/templates/OWNER_POLICY.json" ]]; then
+    cp "$DEST/templates/OWNER_POLICY.json" "$DEST/state/OWNER_POLICY.json"
+  fi
+fi
+echo "Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise."
+
 if [[ -f "$DEST/tools/dashboard-refresh.sh" ]]; then
   if bash "$DEST/tools/dashboard-refresh.sh" "$PROJECT"; then
     echo "Dashboard initialized."

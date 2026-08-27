@@ -226,6 +226,11 @@ if (Test-Path $doctor) {
   }
 }
 
+$policyManager = Join-Path $dest 'tools\policy-manager.ps1'
+if (Test-Path $policyManager) {
+  try { & $policyManager -Operation Get -ProjectPath $project | Out-Null; Write-Host 'Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise.' } catch { Write-Warning ("Owner policy initialization did not complete: " + $_.Exception.Message) }
+}
+
 $dashboardRefresh = Join-Path $dest 'tools\dashboard-refresh.ps1'
 if (Test-Path $dashboardRefresh) {
   try { & $dashboardRefresh -ProjectPath $project | Out-Host; Write-Host 'Dashboard initialized.' } catch { Write-Warning ("Dashboard initialization did not complete: " + $_.Exception.Message) }

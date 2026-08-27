@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "model": "owner-controlled-agent-remediation",
+  "change_risks": [
+    "LOW",
+    "MEDIUM",
+    "HIGH",
+    "PROTECTED"
+  ],
+  "presets": {
+    "REPORT_ONLY": {
+      "auto_change_risks": [],
+      "description": "QA may inspect/test/report only; product remediation is not authorized."
+    },
+    "SAFE_FIXES": {
+      "auto_change_risks": [
+        "LOW"
+      ],
+      "description": "Only unambiguous reversible LOW change-risk remediation may be automatic."
+    },
+    "ACTIVE_REMEDIATION": {
+      "auto_change_risks": [
+        "LOW",
+        "MEDIUM"
+      ],
+      "description": "LOW/MEDIUM change-risk remediation may be automatic when evidence proves expected behavior; HIGH/PROTECTED still require explicit approval."
+    },
+    "CUSTOM": {
+      "auto_change_risks": [],
+      "description": "Owner-selected categories/risks, capped by hard boundaries."
+    }
+  },
+  "auto_change_categories": [
+    "documentation",
+    "tests",
+    "source_code",
+    "local_non_secret_config",
+    "non_production_ci",
+    "dependency_hygiene"
+  ],
+  "hard_boundaries": [
+    "material_product_intent",
+    "architecture",
+    "public_api_contracts",
+    "security_policy",
+    "privacy_policy",
+    "authentication_semantics",
+    "authorization_semantics",
+    "database_schema",
+    "migrations",
+    "production_data",
+    "credentials",
+    "deployments",
+    "production",
+    "billing_or_paid_calls",
+    "destructive_operations"
+  ],
+  "rules": {
+    "agent_may_never_self_elevate": true,
+    "owner_approval_required_for_policy_mutation": true,
+    "agent_may_act_more_conservatively_than_policy": true,
+    "severity_is_not_change_risk": true,
+    "hard_boundaries_override_all_presets": true,
+    "unknown_change_risk_requires_approval": true,
+    "ambiguous_expected_behavior_requires_approval": true
+  }
+}

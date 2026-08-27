@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -78,5 +78,16 @@
       "WEAK",
       "INSUFFICIENT"
     ]
+  },
+  "control_center": {
+    "owner_policy": "runtime/templates/OWNER_POLICY.json",
+    "permission_policy": "runtime/config/permission-policy.json",
+    "windows_control": "runtime/tools/dashboard-control.ps1",
+    "portable_control": "runtime/tools/dashboard-control.py",
+    "scheduler_windows": "runtime/tools/scheduler.ps1",
+    "scheduler_unix": "runtime/tools/scheduler.sh",
+    "default_permission": "REPORT_ONLY",
+    "schedule_default_enabled": false,
+    "telemetry": false
   }
 }

@@ -26,7 +26,7 @@ def validate(p,perm):
     if e:raise ValueError('; '.join(e))
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('operation',choices=['get','apply']);ap.add_argument('--policy-json');ap.add_argument('--owner-approved',action='store_true');ap.add_argument('--approval-source',default='UNCONFIGURED');args=ap.parse_args()
-    install=Path(__file__).resolve().parent.parent;state=install/'state';state.mkdir(exist_ok=True);policy=state/'OWNER_POLICY.json';template=install/'templates/OWNER_POLICY.json';perm=json.loads((install/'config/permission-policy.json').read_text(encoding='utf-8-sig'))
+    install=Path(__file__).resolve().parent.parent;state=install/'state';state.mkdir(exist_ok=True);policy=state/'OWNER_POLICY.json';template=install/'templates/OWNER_POLICY.json';perm_path=install/'config/permission-policy.json';perm_path=perm_path if perm_path.exists() else install/'templates/PERMISSION_POLICY.json';perm=json.loads(perm_path.read_text(encoding='utf-8-sig'))
     if not policy.exists():policy.write_bytes(template.read_bytes())
     if args.operation=='get':print(policy.read_text(encoding='utf-8-sig'));return 0
     if not args.owner_approved:raise SystemExit('Policy mutation requires explicit human owner approval.')

@@ -63,21 +63,21 @@ Status: COMPLETE
 - Explicit executor readiness/status.
 
 ### Phase 3 — Dashboard Control Center
-Status: IN PROGRESS
+Status: COMPLETE
 - Loopback-only local control server.
 - Schedule and permissions UI.
 - Read-only fallback when opened directly.
 - Compact current status on main dashboard.
 
 ### Phase 4 — Install/update/rollback integration
-Status: NOT_STARTED
+Status: COMPLETE
 - Initialize owner policy safely.
 - Preserve owner policy/scheduler state.
 - Agent asks owner if policy still unconfigured.
 - Never fabricate an owner choice.
 
 ### Phase 5 — Red-team and CI
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Attempt agent self-elevation.
 - Attempt protected change under ACTIVE_REMEDIATION.
 - Attempt schedule enable without human policy approval.
@@ -113,3 +113,23 @@ Read this file and `docs/V2_1_CHECKPOINT.json`; continue from the first incomple
 - Added AGENT_MANAGED mode with explicit NEEDS_PLATFORM_ACTIVATION vs ACTIVE state.
 - Real Windows Task Scheduler registration/removal PASS without Administrator.
 - Runner Human Acceptance gate PASS; Unix syntax contract PASS.
+
+### 2026-08-27 — Phase 3 COMPLETE
+- Added loopback-only Windows Dashboard Control Center with ephemeral/random port support and per-session token.
+- Added local CSP/no-store headers and token-gated mutation APIs.
+- Dashboard main screen now shows compact Agent Permissions and Scheduled QA cards.
+- Settings UI exposes the three simple owner presets requested: Report only, Safe fixes, Active remediation.
+- Scheduling UI supports simple Daily/Weekdays setup plus executor state; advanced weekly/custom policy remains available in OWNER_POLICY.
+- Direct file opening remains read-only and still displays policy/scheduler state from dashboard data.
+- Control Center mutation delegates to the already-validated policy manager and scheduler rather than duplicating permission logic.
+- Validation: PowerShell parse PASS, dashboard JS PASS, loopback lifecycle PASS, safe initial policy PASS, read-only data/fallback PASS.
+
+### 2026-08-27 — Phase 4 COMPLETE
+- Fresh installs initialize an unconfigured REPORT_ONLY owner policy with scheduling disabled; no owner choice is fabricated.
+- Direct v2.0.0 -> v2.1.0 compatibility preserved despite the already-released v2.0 updater not knowing new config/prompts paths: compatibility copies live under the v2.0-managed `templates/` tree and runtime tools fall back to them.
+- Dashboard refresh safely materializes OWNER_POLICY after a direct v2.0 update, so the old updater's post-update refresh completes initialization.
+- Owner policy, audit history, reports, evidence, profile and state survive update/rollback.
+- Rollback pauses/removes scheduled execution before restoring an older runtime; owner choices remain preserved for a future re-upgrade/reactivation.
+- Added portable Python loopback Control Center and shell launcher for macOS/Linux in addition to Windows PowerShell control server.
+- Added mechanical `authorize-change` decision engine; automatic remediation requires an explicit ALLOW based on owner preset, change risk, category, expected-behavior proof, reversibility where required, and hard boundaries.
+- Validation: direct released-v2.0 updater layout simulation PASS; portable Control Center token/mutation/shutdown PASS; mechanical permission Red-Team PASS.

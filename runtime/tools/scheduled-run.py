@@ -24,7 +24,7 @@ def main():
         if fcntl:
             try:fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
             except BlockingIOError:save('SKIPPED_OVERLAP','Another scheduled QA run is already active.');return 8
-        run='SCHEDULED-'+datetime.now().strftime('%Y%m%d-%H%M%S');out=logs/f'{run}.stdout.log';err=logs/f'{run}.stderr.log';prompt=install/'prompts/SCHEDULED_QA.md'
+        run='SCHEDULED-'+datetime.now().strftime('%Y%m%d-%H%M%S');out=logs/f'{run}.stdout.log';err=logs/f'{run}.stderr.log';prompt=install/'prompts/SCHEDULED_QA.md';prompt=prompt if prompt.exists() else install/'templates/SCHEDULED_QA.md'
         args=[str(a).replace('{project}',str(project)).replace('{install}',str(install)).replace('{prompt_file}',str(prompt)) for a in s.get('executor',{}).get('arguments',[])]
         timeout=int(s.get('executor',{}).get('timeout_minutes',240) or 240);timeout=timeout if 1<=timeout<=1440 else 240
         save('RUNNING','Scheduled QA executor started.',run_id=run,executor=cmd,started_at=now())

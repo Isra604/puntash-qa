@@ -78,7 +78,7 @@ function Show-TermsAcceptance([string]$pkgRoot,[string]$newVersion,[string]$term
   return $script:legalAccepted
 }
 function Restore-Managed([string]$backup) {
-  foreach($d in @('gates','templates','agent-guides','dashboard')){
+  foreach($d in @('gates','templates','agent-guides','dashboard','prompts')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     $source=Join-Path $backup $d
@@ -93,6 +93,7 @@ function Restore-Managed([string]$backup) {
   $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
   foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -in @('START_HERE.md','OPEN_DASHBOARD.cmd') -and (Test-Path $dst)){Remove-Item $dst -Force}}
   $uc=Join-Path $backup 'config\update.json'; if(Test-Path $uc){Copy-Item $uc (Join-Path $installRoot 'config\update.json') -Force}
+  $pc=Join-Path $backup 'config\permission-policy.json';$pct=Join-Path $installRoot 'config\permission-policy.json';if(Test-Path $pc){Copy-Item $pc $pct -Force}elseif(Test-Path $pct){Remove-Item $pct -Force}
   $r=Join-Path $backup 'state\HUMAN_ACCEPTANCE_RECEIPT.json'; if(Test-Path $r){Copy-Item $r (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Force}
 }
 
@@ -130,6 +131,9 @@ try {
     if($lensCount -ne 9){throw "Downloaded package reliability-lens validation failed: $lensCount/9"}
     if(-not(Test-Path (Join-Path $pkgRoot 'runtime\gates\reliability.yaml'))){throw 'Downloaded v2 package is missing gates/reliability.yaml'}
   }
+  if($newVersion -ge [version]'2.1.0'){
+    foreach($required21 in @('runtime\templates\PERMISSION_POLICY.json','runtime\templates\OWNER_POLICY.json','runtime\tools\policy-manager.ps1','runtime\tools\scheduler.ps1','runtime\tools\scheduled-run.ps1','runtime\tools\dashboard-control.ps1','runtime\tools\dashboard-control.py','runtime\templates\SCHEDULED_QA.md')){if(-not(Test-Path (Join-Path $pkgRoot $required21))){throw "Downloaded v2.1 package missing: $required21"}}
+  }
   $newTerms=(Get-Content (Join-Path $pkgRoot 'TERMS_VERSION') -Raw).Trim()
   $oldTerms=if(Test-Path (Join-Path $installRoot 'TERMS_VERSION')){(Get-Content (Join-Path $installRoot 'TERMS_VERSION') -Raw).Trim()}else{[string]$installed.terms_version}
   if($newTerms -ne $oldTerms){
@@ -145,7 +149,7 @@ try {
   Copy-Item (Join-Path $pkgRoot 'runtime\AGENT_INSTRUCTIONS.md') (Join-Path $installRoot 'AGENT_INSTRUCTIONS.md') -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\START_HERE.md') (Join-Path $installRoot 'START_HERE.md') -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\OPEN_DASHBOARD.cmd') (Join-Path $installRoot 'OPEN_DASHBOARD.cmd') -Force
-  foreach($d in @('gates','templates','agent-guides','dashboard')){
+  foreach($d in @('gates','templates','agent-guides','dashboard','prompts')){
     $target=Join-Path $installRoot $d
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force
@@ -154,6 +158,8 @@ try {
   if(Test-Path $toolsTarget){Remove-Item $toolsTarget -Recurse -Force}
   Copy-Item (Join-Path $pkgRoot 'runtime\tools') $toolsTarget -Recurse -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\config\update.json') (Join-Path $installRoot 'config\update.json') -Force
+  $permPolicy=Join-Path $pkgRoot 'runtime\templates\PERMISSION_POLICY.json'
+  if(Test-Path $permPolicy){Copy-Item $permPolicy (Join-Path $installRoot 'config\permission-policy.json') -Force}
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $pkgRoot $f) (Join-Path $installRoot $f) -Force}
 
   if($newTerms -ne $oldTerms){
@@ -172,6 +178,7 @@ try {
 
   if((Get-ChildItem (Join-Path $installRoot 'gates') -Filter 'GATE-*.md').Count -ne 25){throw 'Post-update validation failed: gate count is not 25.'}
   if($newVersion -ge [version]'2.0.0'){if((Get-ChildItem (Join-Path $installRoot 'gates\lenses') -Filter 'LENS-*.md').Count -ne 9){throw 'Post-update validation failed: reliability lens count is not 9.'};if(-not(Test-Path (Join-Path $installRoot 'gates\reliability.yaml'))){throw 'Post-update validation failed: reliability policy missing.'}}
+  if($newVersion -ge [version]'2.1.0'){foreach($r21 in @('templates\PERMISSION_POLICY.json','templates\OWNER_POLICY.json','tools\policy-manager.ps1','tools\scheduler.ps1','tools\scheduled-run.ps1','tools\dashboard-control.ps1','tools\dashboard-control.py','templates\SCHEDULED_QA.md')){if(-not(Test-Path (Join-Path $installRoot $r21))){throw "Post-update validation failed: missing v2.1 control asset: $r21"}};$pm=Join-Path $installRoot 'tools\policy-manager.ps1';if(-not(Test-Path (Join-Path $installRoot 'state\OWNER_POLICY.json'))){& $pm -Operation Get -ProjectPath $projectRoot|Out-Null}}
   foreach($p in @('profile','reports','evidence','artifacts','remediation','dispositions','state')){if(-not(Test-Path (Join-Path $installRoot $p))){throw "Post-update validation failed: preserved directory missing: $p"}}
   $dashRefresh=Join-Path $installRoot 'tools\dashboard-refresh.ps1'; if(Test-Path $dashRefresh){try{& $dashRefresh -ProjectPath $projectRoot|Out-Null;Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=PASS'}catch{Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=WARNING'}}
   [ordered]@{updated_at=(Get-Date).ToString('o');from=$currentVersion.ToString();to=$newVersion.ToString();release_tag=$tag;backup=$backup;sha256=$actual;status='SUCCESS'} | ConvertTo-Json -Compress | Add-Content (Join-Path $installRoot 'state\UPDATE_HISTORY.jsonl') -Encoding UTF8

@@ -12,7 +12,8 @@ $stateDir=Join-Path $installRoot 'state';New-Item -ItemType Directory $stateDir 
 $policyPath=Join-Path $stateDir 'OWNER_POLICY.json'
 $templatePath=Join-Path $installRoot 'templates\OWNER_POLICY.json'
 $permissionPath=Join-Path $installRoot 'config\permission-policy.json'
-if(-not(Test-Path $permissionPath)){throw "Permission policy missing: $permissionPath"}
+if(-not(Test-Path $permissionPath)){$permissionPath=Join-Path $installRoot 'templates\PERMISSION_POLICY.json'}
+if(-not(Test-Path $permissionPath)){throw "Permission policy missing from config and compatibility template paths."}
 $perm=Get-Content $permissionPath -Raw|ConvertFrom-Json
 function Initialize-Policy {
   if(-not(Test-Path $policyPath)){
@@ -47,7 +48,7 @@ Initialize-Policy
 if($Operation-eq'Get'){
   $p=Get-Content $policyPath -Raw|ConvertFrom-Json
   $p|ConvertTo-Json -Depth 12
-  exit 0
+  return
 }
 if(-not $OwnerApproved){throw 'Policy mutation requires explicit human owner approval. An AI agent may pass this only after the owner directly chose the policy in the current interaction.'}
 if($ApprovalSource-eq'UNCONFIGURED'){throw 'ApprovalSource is required for policy mutation.'}
