@@ -1,6 +1,6 @@
 {
   "name": "universal-comprehensive-qa-gate-system",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -66,5 +66,17 @@
     "open_windows": "runtime/tools/open-dashboard.ps1",
     "local_only": true,
     "telemetry": false
+  },
+  "lens_count": 9,
+  "reliability_model": {
+    "model": "25-gates-plus-9-cross-cutting-lenses",
+    "policy": "runtime/gates/reliability.yaml",
+    "lenses": "runtime/gates/lenses",
+    "evidence_assurance": [
+      "STRONG",
+      "MODERATE",
+      "WEAK",
+      "INSUFFICIENT"
+    ]
   }
 }

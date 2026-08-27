@@ -29,3 +29,13 @@ Unit/component/regression suites; known baselines; prior defect tests; golden/sn
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-09
+
+This gate is the primary consumer of LENS-01. Inventory skipped/quarantined tests, validate oracles, flakiness, order isolation, mock fidelity and defect sensitivity. Coverage alone never satisfies this gate. If decisive regression tests have WEAK/INSUFFICIENT trustworthiness, material PASS is forbidden.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

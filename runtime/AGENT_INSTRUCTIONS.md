@@ -84,6 +84,10 @@ The profile must define:
 - protected boundaries
 - available QA tools/capabilities
 - gate applicability map
+- all 9 cross-cutting lens applicability decisions
+- reliability risk inventory: privacy/data, compatibility, locale/time/precision, third parties, resources/cost, AI, accessibility and change blast radius
+- test trustworthiness profile for suites used as material evidence
+- evidence-assurance policy/owner overrides
 - baseline evidence
 - owner-defined severity or authority overrides
 
@@ -102,6 +106,78 @@ Status meanings:
 
 Historical evidence may support context but cannot by itself convert a current gate to PASS.
 
+## Phase 3A — Cross-cutting lens applicability
+
+Read `gates/reliability.yaml` and all files under `gates/lenses/`. The canonical model is exactly 25 gates plus 9 mandatory cross-cutting lens decisions.
+
+For every run, record one status decision for each lens:
+- PASS
+- FAIL
+- BLOCKED
+- NOT_RUN
+- NOT_APPLICABLE
+
+A lens may be NOT_APPLICABLE only from current project evidence and its own applicability rule. Never use “another gate already covers this” as a NOT_APPLICABLE rationale. Gate status and lens status are independent views of the same evidence.
+
+The nine lens decisions are:
+1. Test Trustworthiness & Oracle Integrity
+2. Privacy & Data Lifecycle
+3. Compatibility, Migration & Upgrade Safety
+4. Time, Locale, Precision & Encoding
+5. Third-Party Failure, Quota & Dependency Reality
+6. Resource, Capacity & Cost Exhaustion
+7. AI Quality, Model Risk & Non-Determinism
+8. Accessibility Depth & Assistive Interaction
+9. Change Impact, Dependency Reach & Blast Radius
+
+If an applicable lens cannot be evaluated because capability, authorization, environment or representative data is unavailable, use BLOCKED or NOT_RUN and explain the consequence. Missing lens evaluation makes the QA cycle incomplete.
+
+## Phase 3B — Evidence assurance and PASS ceilings
+
+Every material gate and lens conclusion must classify its current evidence as:
+- STRONG
+- MODERATE
+- WEAK
+- INSUFFICIENT
+
+Apply `gates/reliability.yaml` strictly:
+- STRONG may support PASS when all required checks are satisfied.
+- MODERATE may support PASS only when every known evidence gap is explicit and demonstrably non-material to the current conclusion.
+- WEAK cannot support a material PASS.
+- INSUFFICIENT cannot support PASS.
+
+Evidence strength depends on relevance and ability to prove the claim, not on quantity. Ten shallow checks do not outrank one direct representative check. Historical reports, coverage percentage, static scanners, mocks, screenshots, or AI reasoning can support evidence but are not automatically STRONG.
+
+For high-risk conclusions involving security/authorization, privacy-sensitive data, irreversible migration/data integrity, destructive recovery, critical safety/business rules, or high-impact AI decisions, prefer STRONG evidence. If STRONG evidence is unavailable, do not hide the uncertainty behind a broad gate PASS.
+
+### Structured evidence record requirements
+
+For every gate or lens with status PASS or FAIL, the structured run record must include:
+- `evidence_freshness: CURRENT`
+- one or more non-empty `evidence_refs` pointing to current commands, artifacts, logs, reports, traces, screenshots, or other reproducible evidence preserved for this run.
+
+Historical/stale evidence may appear as context, but it must not be labeled CURRENT and cannot by itself support PASS or FAIL. For `NOT_APPLICABLE`, record both a specific `applicability_rationale` and one or more `applicability_evidence` references proving the project does not meaningfully contain that responsibility. A generic sentence such as “not relevant” is not sufficient.
+
+Every reliability lens decision must contain applicability rationale and applicability evidence, even when the lens is applicable and ultimately PASS/FAIL/BLOCKED/NOT_RUN. This prevents silent omission of why a cross-cutting concern was considered.
+
+`evidence_assurance.overall` may never be stronger than the weakest recorded gate/lens/test-trustworthiness assurance in the run. The overall badge summarizes uncertainty; it must not average weakness away.
+
+### Test Trustworthiness rule
+
+Whenever automated tests are decisive evidence for a material PASS, LENS-01 must be evaluated at adequate depth. Inspect at minimum the relevant test oracle, skipped/disabled/quarantined tests, isolation/flakiness risk, mock fidelity and test-data relevance.
+
+For decisive high-risk suites, rerun the critical suite at least twice when doing so is safe, affordable and reasonably fast. A repeated failure must be classified from evidence; an intermittent result is a trustworthiness signal, not automatically a product regression. If reruns are impractical, document why and lower assurance as appropriate.
+
+Use project-native mutation testing when it already exists or is low-risk and affordable. Do not introduce a heavy mutation framework solely to satisfy this rule. When mutation testing is unavailable, use bounded defect-sensitivity/oracle analysis to determine whether critical tests would actually fail when the behavior they protect is broken.
+
+Coverage metrics are never sufficient behavioral proof by themselves.
+
+The structured `test_trustworthiness` decision is mandatory on every v2 run. Record `applicable: true/false`. When true, record status, assurance, current evidence references and decisive suites if any. When false, record applicability rationale and applicability evidence. Decisive automated suites may support material PASS only when Test Trustworthiness and LENS-01 are PASS with adequate assurance.
+
+### Risk-based depth
+
+Spend more QA depth where consequence and change reach are highest: critical journeys, shared primitives, auth/privacy boundaries, migrations, irreversible state, externally exposed contracts, expensive dependencies, and AI decisions with material impact. Use LENS-09 to justify the regression set from actual change/dependency reach rather than only changed filenames.
+
 ## Phase 4 — Execution
 
 Use the strongest safe checks available. Prefer deterministic existing project commands over invented replacements. Preserve exact commands, inputs, versions, return codes, counts, durations, and artifact paths where practical.
@@ -110,14 +186,19 @@ Never perform destructive, intrusive, paid, production-impacting, credential-cha
 
 For browser/UI checks, test actual supported journeys when a browser capability exists. For database/infrastructure checks, prefer read-only validation unless mutation is explicitly authorized.
 
+Execute mapped lens checks alongside their consuming gates; do not postpone all lenses to a paper review after testing. Preserve enough evidence to tell whether a failure is product behavior, test-harness weakness, environment blockage, or unresolved uncertainty.
+
 ## Phase 5 — Findings
 
-Every material finding receives a stable ID:
+Every material finding receives a stable ID. Use the primary ownership view:
 
-`UQ-YYYYMMDD-GXX-NNN`
+- Gate-owned finding: `UQ-YYYYMMDD-GXX-NNN`
+- Cross-cutting lens-owned finding: `UQ-YYYYMMDD-LXX-NNN`
+
+Do not duplicate one defect under both patterns. Link affected gates/lenses from the single primary finding.
 
 Each finding must include:
-- Gate ID
+- Gate ID and/or Lens ID
 - severity: Critical / High / Medium / Low
 - affected file/component/system
 - observed behavior
@@ -141,17 +222,21 @@ Severity defaults:
 
 Do not inflate severity to create urgency.
 
-## Phase 6 — Cross-gate analysis
+## Phase 6 — Cross-gate and cross-lens analysis
 
-Before reporting, correlate findings across gates:
+Before reporting, correlate findings across gates and lenses:
 - duplicates
 - one root cause producing multiple symptoms
 - regressions
 - recurring findings
-- contradictions between gates or evidence sources
+- contradictions between gates, lenses or evidence sources
 - systemic patterns
 - protected-boundary issues
-- likely false positives
+- likely false positives/false negatives
+- evidence-assurance mismatches
+- change/blast-radius gaps
+
+A material LENS FAIL that directly invalidates a consuming gate's claim cannot coexist silently with that gate PASS. Resolve the contradiction by new evidence, status correction, or an explicit blocker/uncertainty statement. Likewise, a gate failure does not automatically make every mapped lens FAIL; preserve the actual ownership and evidence.
 
 Prefer one root finding with linked manifestations over duplicate independent findings.
 
@@ -199,7 +284,10 @@ The primary report must contain:
 - scope examined
 - files changed since prior relevant cycle when determinable
 - 25-gate summary, including unrun gates
+- 9-lens summary, including NOT_RUN/NOT_APPLICABLE and applicability rationale
+- evidence-assurance summary and any PASS ceilings that lowered status
 - tests/checks actually executed and exact outcomes
+- test-trustworthiness summary when automated tests were material evidence
 - complete finding register
 - cross-gate analysis
 - automatic remediation and validation
@@ -221,8 +309,12 @@ Do not alternate competing fixes with another QA/reviewer system. Once a remedia
 
 A comprehensive QA cycle is complete only when:
 - all 25 gates have an explicit status
-- every claimed PASS has current evidence
-- every BLOCKED/NOT_RUN/NOT_APPLICABLE gate has a reason
+- all 9 cross-cutting lenses have an explicit status and applicability rationale
+- every material gate/lens conclusion has an evidence-assurance classification
+- every claimed PASS has current evidence and respects PASS ceilings
+- decisive automated-test evidence has adequate LENS-01 trustworthiness evaluation
+- every BLOCKED/NOT_RUN/NOT_APPLICABLE gate/lens has a reason
+- gate/lens contradictions are resolved or explicitly blocked
 - findings are deduplicated and severity-assigned
 - performed remediation is revalidated
 - protected issues are routed by authority
@@ -231,6 +323,8 @@ A comprehensive QA cycle is complete only when:
 
 ## Dashboard history contract
 
-After every completed substantive QA cycle, create one immutable structured dashboard run record at `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json` using `templates/DASHBOARD_RUN.json` as the contract. Include project/branch/HEAD identity, all 25 gate statuses, finding counts, material finding summaries, and explicit new/resolved/gate-status changes compared with the prior structured run when one exists. Do not overwrite prior run records.
+After every completed substantive QA cycle, create one immutable structured dashboard run record at `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json` using `templates/DASHBOARD_RUN.json` as the contract. Include project/branch/HEAD identity, all 25 gate statuses, all 9 lens statuses, evidence-assurance summary, finding counts, material finding summaries, and explicit new/resolved/gate/lens-status changes compared with the prior structured run when one exists. Do not overwrite prior run records.
 
-After writing the structured run, refresh `dashboard/data.js` with `tools/dashboard-refresh.ps1` on Windows or `tools/dashboard-refresh.sh` when available. Dashboard generation is a presentation step only: it must never alter evidence, finding closure, gate status, or product source code. If refresh tooling is unavailable, preserve the run JSON and report that the visual dashboard is stale rather than fabricating data.
+Before treating a v2 structured run as complete, validate it with `tools/validate-run.ps1 -RunPath <run.json>` on PowerShell or `tools/validate-run.sh <run.json>` when the platform dependency is available. A validator failure is a QA record-integrity failure: correct the record/evidence classification rather than bypassing the validator. If the platform validator cannot execute, manually enforce the same 25-gate + 9-lens + PASS-ceiling contract and record the tooling limitation.
+
+After validation, refresh `dashboard/data.js` with `tools/dashboard-refresh.ps1` on Windows or `tools/dashboard-refresh.sh` when available. Dashboard generation is a presentation step only: it must never alter evidence, finding closure, gate status, or product source code. If refresh tooling is unavailable, preserve the run JSON and report that the visual dashboard is stale rather than fabricating data.

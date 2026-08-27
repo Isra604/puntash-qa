@@ -29,3 +29,13 @@ Compile/build; type checks; lint/static analysis; syntax validation; generated-c
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-03, LENS-09
+
+Build/type/lint success is not proof of behavioral correctness. If tests are used here as supporting evidence, consume LENS-01. Identify version/toolchain drift and compatibility-sensitive compiler/runtime changes.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

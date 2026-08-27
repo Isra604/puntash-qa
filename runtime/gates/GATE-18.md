@@ -29,3 +29,13 @@ Normal load; concurrency; saturation; spike; stress; soak/endurance; queue depth
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-05, LENS-06, LENS-07, LENS-09
+
+Load/stress/spike/soak must observe resource exhaustion, queues, connection pools, vendor quotas and metered AI/API cost. Load generators and assertions require trustworthy measurement; a test that overloads only the client is not product evidence.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

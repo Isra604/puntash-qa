@@ -29,3 +29,13 @@ Architecture review; SPOF; FMEA; risk register; dependency risk; capacity archit
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-02, LENS-03, LENS-04, LENS-05, LENS-06, LENS-07, LENS-08, LENS-09
+
+This gate is the final cross-cutting consistency check. All nine lens decisions must be visible. Resolve or explicitly block contradictions between gates/lenses, verify change blast radius, systemic risk, technical debt and Definition of Done. Missing applicable lens evidence prevents a complete architecture/DoD PASS.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

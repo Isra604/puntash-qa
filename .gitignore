@@ -2,3 +2,5 @@ dist/
 *.zip
 *.bak.*
 
+__pycache__/
+*.pyc

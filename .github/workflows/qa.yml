@@ -14,9 +14,14 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Run Windows self-test
         shell: pwsh
         run: ./scripts/self-test.ps1 -BuildPackage
+      - name: Run v2 upgrade and rollback red-team
+        shell: pwsh
+        run: ./scripts/v2-upgrade-red-team.ps1
 
   unix:
     strategy:

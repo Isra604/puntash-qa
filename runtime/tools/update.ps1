@@ -86,8 +86,9 @@ function Restore-Managed([string]$backup) {
   }
   foreach($d in @('tools')){
     $target=Join-Path $installRoot $d
-    New-Item -ItemType Directory -Path $target -Force | Out-Null
-    Copy-Item (Join-Path $backup "$d\*") $target -Recurse -Force
+    if(Test-Path $target){Remove-Item $target -Recurse -Force}
+    $source=Join-Path $backup $d
+    if(Test-Path $source){Copy-Item $source $target -Recurse -Force}
   }
   $files=@('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json','INSTALLATION.json')
   foreach($f in $files){$src=Join-Path $backup $f;$dst=Join-Path $installRoot $f;if(Test-Path $src){Copy-Item $src $dst -Force}elseif($f -in @('START_HERE.md','OPEN_DASHBOARD.cmd') -and (Test-Path $dst)){Remove-Item $dst -Force}}
@@ -123,6 +124,12 @@ try {
   if(-not (Test-Path (Join-Path $pkgRoot 'runtime\AGENT_INSTRUCTIONS.md'))){throw 'Downloaded package is missing runtime/AGENT_INSTRUCTIONS.md'}
   $gateCount=(Get-ChildItem (Join-Path $pkgRoot 'runtime\gates') -Filter 'GATE-*.md').Count
   if($gateCount -ne 25){throw "Downloaded package gate validation failed: $gateCount/25"}
+  if($newVersion -ge [version]'2.0.0'){
+    $lensDir=Join-Path $pkgRoot 'runtime\gates\lenses'
+    $lensCount=if(Test-Path $lensDir){(Get-ChildItem $lensDir -Filter 'LENS-*.md').Count}else{0}
+    if($lensCount -ne 9){throw "Downloaded package reliability-lens validation failed: $lensCount/9"}
+    if(-not(Test-Path (Join-Path $pkgRoot 'runtime\gates\reliability.yaml'))){throw 'Downloaded v2 package is missing gates/reliability.yaml'}
+  }
   $newTerms=(Get-Content (Join-Path $pkgRoot 'TERMS_VERSION') -Raw).Trim()
   $oldTerms=if(Test-Path (Join-Path $installRoot 'TERMS_VERSION')){(Get-Content (Join-Path $installRoot 'TERMS_VERSION') -Raw).Trim()}else{[string]$installed.terms_version}
   if($newTerms -ne $oldTerms){
@@ -143,8 +150,9 @@ try {
     if(Test-Path $target){Remove-Item $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force
   }
-  New-Item -ItemType Directory -Path (Join-Path $installRoot 'tools') -Force | Out-Null
-  Copy-Item (Join-Path $pkgRoot 'runtime\tools\*') (Join-Path $installRoot 'tools') -Recurse -Force
+  $toolsTarget=Join-Path $installRoot 'tools'
+  if(Test-Path $toolsTarget){Remove-Item $toolsTarget -Recurse -Force}
+  Copy-Item (Join-Path $pkgRoot 'runtime\tools') $toolsTarget -Recurse -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\config\update.json') (Join-Path $installRoot 'config\update.json') -Force
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $pkgRoot $f) (Join-Path $installRoot $f) -Force}
 
@@ -163,6 +171,7 @@ try {
   $meta | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $installRoot 'INSTALLATION.json') -Encoding UTF8
 
   if((Get-ChildItem (Join-Path $installRoot 'gates') -Filter 'GATE-*.md').Count -ne 25){throw 'Post-update validation failed: gate count is not 25.'}
+  if($newVersion -ge [version]'2.0.0'){if((Get-ChildItem (Join-Path $installRoot 'gates\lenses') -Filter 'LENS-*.md').Count -ne 9){throw 'Post-update validation failed: reliability lens count is not 9.'};if(-not(Test-Path (Join-Path $installRoot 'gates\reliability.yaml'))){throw 'Post-update validation failed: reliability policy missing.'}}
   foreach($p in @('profile','reports','evidence','artifacts','remediation','dispositions','state')){if(-not(Test-Path (Join-Path $installRoot $p))){throw "Post-update validation failed: preserved directory missing: $p"}}
   $dashRefresh=Join-Path $installRoot 'tools\dashboard-refresh.ps1'; if(Test-Path $dashRefresh){try{& $dashRefresh -ProjectPath $projectRoot|Out-Null;Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=PASS'}catch{Write-Host 'DASHBOARD_REFRESH_AFTER_UPDATE=WARNING'}}
   [ordered]@{updated_at=(Get-Date).ToString('o');from=$currentVersion.ToString();to=$newVersion.ToString();release_tag=$tag;backup=$backup;sha256=$actual;status='SUCCESS'} | ConvertTo-Json -Compress | Add-Content (Join-Path $installRoot 'state\UPDATE_HISTORY.jsonl') -Encoding UTF8

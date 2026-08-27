@@ -58,6 +58,26 @@ Delivered scope:
 - Links to reports/evidence stored locally.
 - No cloud account required for the basic dashboard.
 
+
+## v2.0.0 — Reliability & Professional QA Architecture
+
+Status: COMPLETED
+
+Goal: reduce false confidence and make the 25-gate QA model materially harder to pass with shallow, stale, contradictory, or untrustworthy evidence.
+
+Delivered scope:
+- Exactly 25 canonical Gates retained.
+- 9 mandatory cross-cutting Reliability Lenses.
+- STRONG / MODERATE / WEAK / INSUFFICIENT evidence assurance model with PASS ceilings.
+- Current evidence references required for structured PASS/FAIL conclusions.
+- Applicability evidence required for NOT_APPLICABLE decisions.
+- Test Trustworthiness and oracle/flakiness/mock/data/defect-sensitivity review.
+- Machine run validator and gate/lens contradiction checks.
+- v2 lens/assurance history in the local dashboard while preserving v1 history.
+- Permanent false-PASS Red-Team regression suite.
+- Permanent v1.4 -> v2 -> rollback preservation test.
+- Windows, Ubuntu and macOS CI/release gating.
+
 ## Adoption metrics / optional telemetry
 
 Status: DEFERRED UNTIL EXPLICIT PRIVACY DESIGN

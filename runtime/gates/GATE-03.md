@@ -29,3 +29,13 @@ Startup; health checks; critical entrypoints; basic API/UI/CLI sanity; configura
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-05, LENS-09
+
+Smoke success proves reachability/basic sanity only. Account for smoke-test oracle quality and critical external dependency failure behavior; do not convert a shallow smoke result into broader confidence.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

@@ -29,3 +29,13 @@ E2E journeys; browsers/devices/platforms; responsive behavior; keyboard/focus; a
 - remediation performed
 - post-fix validation
 - remaining risk
+
+## v2 cross-cutting reliability obligations
+
+Relevant lenses: LENS-01, LENS-04, LENS-07, LENS-08, LENS-09
+
+For human UI projects, LENS-08 is mandatory and automated accessibility scans alone are insufficient. Also include locale/RTL/encoding and AI-generated UI content when relevant. E2E automation used as decisive evidence consumes LENS-01.
+
+### Evidence-assurance rule
+
+Classify current evidence as STRONG, MODERATE, WEAK, or INSUFFICIENT under `gates/reliability.yaml`. If a relevant lens exposes a material contradiction or gap that directly affects this gate, the gate cannot remain PASS until the contradiction is resolved or its status is lowered appropriately. A gate PASS never substitutes for the required run-wide lens evaluation.

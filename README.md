@@ -2,7 +2,7 @@
 
 A portable, repository-aware QA operating system for AI coding agents and human QA teams.
 
-It is designed to enter an unfamiliar project, discover how the project works, build a project-specific QA profile, execute a stable 25-gate quality model, preserve evidence, identify cross-gate root causes, perform only explicitly safe remediation, revalidate changes, and produce a complete audit-ready report.
+It is designed to enter an unfamiliar project, discover how the project works, build a project-specific QA profile, execute a stable 25-gate quality model plus 9 mandatory cross-cutting reliability lenses, preserve evidence, identify cross-gate root causes, perform only explicitly safe remediation, revalidate changes, and produce a complete audit-ready report.
 
 ## Creator and attribution
 
@@ -13,7 +13,7 @@ Licensed under the MIT License. The copyright and permission notice must be pres
 
 ## What makes it portable
 
-The 25 gates are universal responsibility domains. The checks inside each gate are selected dynamically from the project that is discovered. A web application, API, mobile app, CLI, data pipeline, infrastructure repository, automation project, or mixed monorepo can therefore use the same QA architecture without pretending that every check is relevant.
+The 25 gates are universal responsibility domains. Version 2.0.0 adds 9 mandatory cross-cutting reliability lenses so important concerns cannot be hidden inside a broad gate: Test Trustworthiness, Privacy/Data Lifecycle, Compatibility/Upgrade Safety, Time/Locale/Precision/Encoding, Third-Party Failure/Quota Reality, Resource/Cost Exhaustion, AI Quality/Model Risk, Accessibility Depth, and Change Blast Radius. The checks inside each gate are selected dynamically from the project that is discovered. A web application, API, mobile app, CLI, data pipeline, infrastructure repository, automation project, or mixed monorepo can therefore use the same QA architecture without pretending that every check is relevant.
 
 The system never turns an unexecuted or irrelevant check into a PASS. It uses PASS, FAIL, BLOCKED, NOT_RUN, and NOT_APPLICABLE with evidence.
 
@@ -66,7 +66,7 @@ Version 1.3.0 runs a safe local QA Doctor readiness scan after installation. It 
 Open `.comprehensive-qa/START_HERE.md` for the simplest handoff. Give the QA-capable agent filesystem access to the project, then instruct it:
 
 ```text
-Read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full. Perform the discovery phase first. Do not assume the stack, product contract, test commands, environments, or authority boundaries. Build the project QA profile, map all 25 gates, then execute the authorized QA cycle and preserve evidence exactly as instructed.
+Read .comprehensive-qa/AGENT_INSTRUCTIONS.md in full. Perform the discovery phase first. Do not assume the stack, product contract, test commands, environments, or authority boundaries. Build the project QA profile, map all 25 gates and all 9 reliability lenses, classify evidence assurance, then execute the authorized QA cycle and preserve evidence exactly as instructed.
 ```
 
 For ChatGPT Projects, `CHATGPT_PROJECT_INSTRUCTIONS.md` contains a copy-ready project instruction block.
@@ -93,7 +93,7 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 - `skill.md` — portable behavior specification.
 - `CHATGPT_PROJECT_INSTRUCTIONS.md` — copy-ready project instructions.
 - `runtime/AGENT_INSTRUCTIONS.md` — authoritative installed runtime behavior.
-- `runtime/gates/` — the 25 gate specifications.
+- `runtime/gates/` — the 25 gate specifications plus the v2 reliability policy/map and 9 lens specifications.
 - `runtime/templates/` — report, evidence, finding, profile, remediation and closure templates.
 - `runtime/config/default.yaml` — default policy and status model.
 - `scripts/install.ps1` / `install.sh` — project installer.
@@ -106,6 +106,15 @@ If a capability is unavailable, the affected gate becomes BLOCKED, NOT_RUN, or N
 - `DATA_RESPONSIBILITY_NOTICE.md` — local receipt and project-data responsibility notice.
 - `HUMAN_ACCEPTANCE.md` — mandatory natural-person acceptance protocol.
 - `LEGAL_MANIFEST.json` — SHA-256 manifest of the presented legal documents.
+
+
+## v2 reliability model
+
+Version 2.0.0 is a reliability-focused major release. It keeps exactly 25 canonical gates and adds 9 mandatory cross-cutting lens decisions. Every material conclusion is classified as STRONG, MODERATE, WEAK, or INSUFFICIENT evidence. WEAK/INSUFFICIENT evidence cannot support material PASS, MODERATE PASS requires an explicit non-material gap attestation, and PASS/FAIL structured records require current evidence references. NOT_APPLICABLE requires current applicability evidence rather than a label alone.
+
+Test results used as decisive evidence are themselves subject to Test Trustworthiness review: oracle quality, flakiness, isolation, skipped/quarantined tests, mock fidelity, test-data relevance and defect sensitivity. Coverage percentage alone is never behavioral proof.
+
+A machine validator checks the 25+9 run contract and rejects false-confidence states such as stale-evidence PASS, missing lenses, unsupported N/A, inflated overall assurance, and silent core gate/lens contradictions. See `docs/V2_RELIABILITY_IMPLEMENTATION.md` and `docs/V2_REDTEAM_REPORT.md`.
 
 ## Local dashboard
 
@@ -121,4 +130,4 @@ This repository is public. Update checks and release downloads work anonymously 
 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
-Version: 1.4.0
+Version: 2.0.0
