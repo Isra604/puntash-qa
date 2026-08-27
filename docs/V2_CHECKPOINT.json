@@ -1,9 +1,9 @@
 {
   "target_version": "2.0.0",
   "branch": "feature/v2-reliability",
-  "status": "IN_PROGRESS",
+  "status": "COMPLETE",
   "current_phase": 8,
-  "last_completed_phase": 7,
+  "last_completed_phase": 8,
   "completed_phases": [
     0,
     1,
@@ -12,8 +12,15 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
-  "next_action": "Phase 8: finalize public v2.0.0 docs, run final CI, merge feature/v2-reliability to main, tag/release v2.0.0, verify anonymous assets/checksum and v1.4 update detection.",
-  "updated_at": "2026-08-27T14:50:00+03:00"
+  "next_action": "v2.0.0 COMPLETE. Public release verified anonymously; future work begins from v2.1.0.",
+  "updated_at": "2026-08-27T14:55:00+03:00",
+  "release": {
+    "tag": "v2.0.0",
+    "sha256": "D5CA618FC75A4636D049725F019E30FADF206BA7326A298ED9D4B54103ECDBAC",
+    "public_download_verified": true,
+    "v1_4_update_detection_verified": true
+  }
 }

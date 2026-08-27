@@ -1,6 +1,6 @@
 # v2.0.0 Reliability & Professional QA Architecture
 
-Status: IN PROGRESS
+Status: COMPLETE
 Target release: v2.0.0
 Started: 2026-08-26
 Owner / original creator and project architect: Ofir Israeli
@@ -110,7 +110,7 @@ Status: COMPLETE
 - Test public anonymous package/checksum/update detection.
 
 ### Phase 8 — Release
-Status: IN PROGRESS
+Status: COMPLETE
 - Final cross-platform CI PASS.
 - Mark all prior phases complete.
 - Merge controlled v2 branch into main.
@@ -208,3 +208,12 @@ During Phase 5, the reliability files were deliberately located under the existi
 - CI run 33068760738: Windows, Ubuntu and macOS PASS; Windows upgrade/rollback red-team PASS.
 - Public anonymous baseline: GitHub release API, ZIP and SHA-256 PASS before v2 publication.
 - Detailed evidence and limitations recorded in `docs/V2_REDTEAM_REPORT.md`.
+
+### 2026-08-27 — Phase 8 COMPLETE
+- Merged v2 reliability branch into `main`.
+- Final Windows, Ubuntu and macOS CI PASS, including upgrade/rollback red-team.
+- Published public `v2.0.0` GitHub Release.
+- Anonymous public ZIP download and SHA-256 verification PASS.
+- Public release contains exactly 25 gates and 9 reliability lenses plus reliability policy/map and run validators.
+- Existing v1.4.0 update checker detects `2.0.0` as available.
+- Authoritative public ZIP SHA-256: `D5CA618FC75A4636D049725F019E30FADF206BA7326A298ED9D4B54103ECDBAC`.
