@@ -1,5 +1,6 @@
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
+$currentVersion=(Get-Content (Join-Path $root 'VERSION') -Raw).Trim()
 $temp=Join-Path ([IO.Path]::GetTempPath()) ('qa-v2-upgrade-redteam-'+[guid]::NewGuid().ToString('N'))
 function Assert([bool]$ok,[string]$name){if(-not$ok){throw "UPGRADE_REDTEAM_FAIL=$name"};Write-Host "UPGRADE_REDTEAM_PASS=$name"}
 try{
@@ -8,7 +9,7 @@ try{
   if($LASTEXITCODE-ne0){throw 'Cannot archive v1.4.0 tag'}
   $oldPkg=Join-Path $temp 'oldpkg';Expand-Archive $oldZip $oldPkg -Force
   $distRel='.v2-upgrade-redteam-dist';$dist=Join-Path $root $distRel;if(Test-Path $dist){Remove-Item $dist -Recurse -Force};& (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory $distRel|Out-Null
-  $v2Zip=Join-Path $dist 'COMPREHENSIVE-QA-GATE-SYSTEM-v2.0.0.zip';Assert (Test-Path $v2Zip) 'v2 tracked package builds'
+  $v2Zip=Join-Path $dist ("COMPREHENSIVE-QA-GATE-SYSTEM-v$currentVersion.zip");Assert (Test-Path $v2Zip) 'v2 tracked package builds'
   $v2Pkg=Join-Path $temp 'v2pkg';Expand-Archive $v2Zip $v2Pkg -Force
   $project=Join-Path $temp 'project';$install=Join-Path $project '.comprehensive-qa';New-Item -ItemType Directory $install -Force|Out-Null
   Copy-Item (Join-Path $oldPkg 'runtime\*') $install -Recurse -Force
@@ -34,7 +35,7 @@ try{
   New-Item -ItemType Directory (Join-Path $install 'tools') -Force|Out-Null;Copy-Item (Join-Path $v2Pkg 'runtime\tools\*') (Join-Path $install 'tools') -Recurse -Force
   Copy-Item (Join-Path $v2Pkg 'runtime\config\update.json') (Join-Path $install 'config\update.json') -Force
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $v2Pkg $f) (Join-Path $install $f) -Force}
-  $meta=Get-Content (Join-Path $install 'INSTALLATION.json') -Raw|ConvertFrom-Json;$meta.version='2.0.0';$meta|ConvertTo-Json|Set-Content (Join-Path $install 'INSTALLATION.json') -Encoding UTF8
+  $meta=Get-Content (Join-Path $install 'INSTALLATION.json') -Raw|ConvertFrom-Json;$meta.version=$currentVersion;$meta|ConvertTo-Json|Set-Content (Join-Path $install 'INSTALLATION.json') -Encoding UTF8
 
   Assert ((Get-ChildItem (Join-Path $install 'gates') -Filter 'GATE-*.md').Count-eq25) 'v1.4 to v2 retains exactly 25 gates'
   Assert ((Get-ChildItem (Join-Path $install 'gates\lenses') -Filter 'LENS-*.md').Count-eq9) 'v1.4 updater receives all 9 nested lenses'

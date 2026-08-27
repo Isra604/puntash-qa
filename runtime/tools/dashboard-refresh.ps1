@@ -8,8 +8,10 @@ if(-not $ProjectPath){$ProjectPath=Split-Path -Parent $installRoot}
 $project=(Resolve-Path $ProjectPath).Path
 $runDir=Join-Path $installRoot 'reports\dashboard'
 $dashDir=Join-Path $installRoot 'dashboard'
+$stateDir=Join-Path $installRoot 'state'
 New-Item -ItemType Directory -Path $runDir -Force|Out-Null
 New-Item -ItemType Directory -Path $dashDir -Force|Out-Null
+New-Item -ItemType Directory -Path $stateDir -Force|Out-Null
 $runs=@()
 Get-ChildItem $runDir -Filter '*.json' -File -ErrorAction SilentlyContinue | ForEach-Object {
   try {

@@ -15,10 +15,18 @@ grep -q 'decisive_automated_test_pass_requires_test_trustworthiness_evaluation: 
 grep -q 'coverage_percentage_is_never_behavioral_proof: true' "$ROOT/runtime/gates/reliability.yaml" || fail 'coverage-only prohibition'
 [[ "$(grep -l 'v2 cross-cutting reliability obligations' "$ROOT"/runtime/gates/GATE-*.md | wc -l | tr -d ' ')" == "25" ]] || fail 'all gates v2 reliability obligations'
 pass '9 reliability lenses and policy contract'
-for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/runtime/tools/validate-run.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
+for f in "$ROOT/scripts/install.sh" "$ROOT/scripts/verify-install.sh" "$ROOT/runtime/tools/qa-doctor.sh" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/runtime/tools/validate-run.sh" "$ROOT/runtime/tools/policy-manager.sh" "$ROOT/runtime/tools/scheduler.sh" "$ROOT/runtime/tools/scheduled-run.sh" "$ROOT/runtime/tools/authorize-change.sh" "$ROOT/runtime/tools/open-dashboard.sh" "$ROOT/scripts/self-test.sh"; do bash -n "$f" || fail "bash syntax $f"; done
 pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
+if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then
+  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh scripts/v2.1-control-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
+  cmp -s "$ROOT/runtime/config/permission-policy.json" "$ROOT/runtime/templates/PERMISSION_POLICY.json" || fail 'permission policy compatibility copy mismatch'
+  grep -q 'authorize-change' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent mechanical authorization contract'
+  grep -q 'Agent permissions' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard agent permissions card'
+  grep -q 'Scheduled QA' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard scheduled QA card'
+  pass 'v2.1 control-center asset contract'
+fi
 if git -C "$ROOT" grep -n -E 'gh[op]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----' -- ':!scripts/self-test.sh' ':!scripts/self-test.ps1' >/tmp/qa-secret-hits.$$ 2>/dev/null; then cat /tmp/qa-secret-hits.$$; rm -f /tmp/qa-secret-hits.$$; fail 'common secret signature found'; fi
 rm -f /tmp/qa-secret-hits.$$ || true
 pass 'no common secret signatures'
@@ -70,6 +78,7 @@ PY
   pass 'run validator PASS ceilings and 25+9 completeness'
   python3 "$ROOT/scripts/v2-red-team.py" >/dev/null || fail 'v2 red-team suite'
   pass 'v2 red-team false-PASS attacks'
+  if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then python3 "$ROOT/scripts/v2.1-control-red-team.py" >/dev/null || fail 'v2.1 control red-team'; pass 'v2.1 control/permission attacks'; fi
 else
   echo 'SKIP: Python 3 unavailable for shell run-validator contract test'
 fi

@@ -4,7 +4,7 @@ INSTALL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT="${1:-$(cd "$INSTALL_ROOT/.." && pwd)}"
 RUN_DIR="$INSTALL_ROOT/reports/dashboard"
 DASH_DIR="$INSTALL_ROOT/dashboard"
-mkdir -p "$RUN_DIR" "$DASH_DIR"
+mkdir -p "$RUN_DIR" "$DASH_DIR" "$INSTALL_ROOT/state"
 PYTHON_BIN=''
 if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then PYTHON_BIN='python3';
 elif command -v python >/dev/null 2>&1 && python -c 'import sys' >/dev/null 2>&1; then PYTHON_BIN='python';

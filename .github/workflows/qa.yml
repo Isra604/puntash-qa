@@ -16,12 +16,18 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - name: Run Windows self-test
         shell: pwsh
         run: ./scripts/self-test.ps1 -BuildPackage
       - name: Run v2 upgrade and rollback red-team
         shell: pwsh
         run: ./scripts/v2-upgrade-red-team.ps1
+      - name: Run v2.1 direct-upgrade compatibility red-team
+        shell: pwsh
+        run: ./scripts/v2.1-upgrade-red-team.ps1
 
   unix:
     strategy:
@@ -30,6 +36,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - name: Run shell self-test
         shell: bash
         run: bash ./scripts/self-test.sh
