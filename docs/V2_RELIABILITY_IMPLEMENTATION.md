@@ -99,7 +99,7 @@ Status: COMPLETE
 - Expand secret/integrity/package checks.
 
 ### Phase 7 — Independent red-team
-Status: NOT_STARTED
+Status: COMPLETE
 - Attempt to produce false PASS with untrusted tests.
 - Attempt to hide a relevant concern behind a broad gate.
 - Attempt NOT_APPLICABLE misuse.
@@ -110,7 +110,7 @@ Status: NOT_STARTED
 - Test public anonymous package/checksum/update detection.
 
 ### Phase 8 — Release
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Final cross-platform CI PASS.
 - Mark all prior phases complete.
 - Merge controlled v2 branch into main.
@@ -195,3 +195,16 @@ During Phase 5, the reliability files were deliberately located under the existi
 - Hardened Unix lens numbering and Python-runtime probing.
 - Draft PR #1 opened only to exercise pull-request CI; no merge performed.
 - CI evidence: Windows PASS, Ubuntu PASS, macOS PASS on run 33067591254.
+
+### 2026-08-27 — Phase 7 COMPLETE
+- Added permanent false-PASS red-team suite and hardened v2 based on defects it exposed.
+- PASS/FAIL now requires current evidence references; stale evidence alone is mechanically rejected.
+- NOT_APPLICABLE now requires both rationale and applicability evidence.
+- Added machine-readable blocking gate/lens map and explicit contradiction-exception contract; Gate 25 remains strict with no unresolved-lens exception.
+- Made Test Trustworthiness decision mandatory and prevented decisive-suite PASS without adequate trust evidence.
+- Prevented run-level overall assurance from overstating the weakest component assurance.
+- Found and fixed rollback/update-failure tool residue by atomically replacing managed tools directories.
+- Added permanent v1.4 -> v2 -> v1.4 upgrade/rollback red-team with reports/history/evidence/state/config preservation.
+- CI run 33068760738: Windows, Ubuntu and macOS PASS; Windows upgrade/rollback red-team PASS.
+- Public anonymous baseline: GitHub release API, ZIP and SHA-256 PASS before v2 publication.
+- Detailed evidence and limitations recorded in `docs/V2_REDTEAM_REPORT.md`.
