@@ -56,14 +56,14 @@ Status: COMPLETE
 - Update authoritative agent instructions and first-run behavior.
 
 ### Phase 2 — Scheduler/executor
-Status: IN PROGRESS
+Status: COMPLETE
 - Windows Task Scheduler support.
 - Portable scheduled-run contract and overlap lock.
 - Unix cron support where available.
 - Explicit executor readiness/status.
 
 ### Phase 3 — Dashboard Control Center
-Status: NOT_STARTED
+Status: IN PROGRESS
 - Loopback-only local control server.
 - Schedule and permissions UI.
 - Read-only fallback when opened directly.
@@ -104,3 +104,12 @@ Read this file and `docs/V2_1_CHECKPOINT.json`; continue from the first incomple
 - Policy mutation requires explicit owner approval source; agent instructions forbid self-elevation.
 - Executor credentials/tokens are rejected from OWNER_POLICY.
 - Red-team evidence: self-elevation blocked, custom HIGH blocked, secret persistence blocked, audit history PASS.
+
+### 2026-08-27 — Phase 2 COMPLETE
+- Added owner-approved scheduled-run runners for PowerShell and Python/Unix.
+- Scheduled runner rechecks Human Acceptance + OWNER_POLICY on every invocation and blocks overlap with a lock.
+- Added structured local executor invocation without eval/Invoke-Expression and local stdout/stderr logs.
+- Added Windows Task Scheduler registration/removal and Unix cron registration where available.
+- Added AGENT_MANAGED mode with explicit NEEDS_PLATFORM_ACTIVATION vs ACTIVE state.
+- Real Windows Task Scheduler registration/removal PASS without Administrator.
+- Runner Human Acceptance gate PASS; Unix syntax contract PASS.

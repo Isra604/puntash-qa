@@ -2,12 +2,13 @@
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
   "status": "IN_PROGRESS",
-  "current_phase": 2,
-  "last_completed_phase": 1,
+  "current_phase": 3,
+  "last_completed_phase": 2,
   "completed_phases": [
     0,
-    1
+    1,
+    2
   ],
-  "next_action": "Phase 2: implement scheduled-run contract, overlap lock, Windows Task Scheduler and Unix cron registration with explicit executor readiness.",
-  "updated_at": "2026-08-27T15:15:00+03:00"
+  "next_action": "Phase 3: implement loopback-only dashboard control server and compact schedule/permission UI with read-only fallback.",
+  "updated_at": "2026-08-27T15:30:00+03:00"
 }
