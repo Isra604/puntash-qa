@@ -1111,9 +1111,9 @@ The Dashboard release is complete only when all items below are true.
 - [x] Existing 9 Reliability Lenses still pass.
 - [x] Existing v2.1 adversarial suites still pass.
 - [x] New Dashboard-specific adversarial suite passes.
-- [ ] Windows CI passes.
-- [ ] Ubuntu CI passes.
-- [ ] macOS CI passes.
+- [x] Windows CI passes.
+- [x] Ubuntu CI passes.
+- [x] macOS CI passes.
 - [x] Upgrade/rollback compatibility decision is documented and tested.
 - [x] final release package provenance/reproducibility passes.
 - [ ] final public artifact audit passes before closure.
@@ -1179,7 +1179,7 @@ Stage status:
 - [x] Stage 7 — Activity, history and what changed
 - [x] Stage 8 — Release readiness + Recovery Center
 - [x] Stage 9 — Onboarding + search/Ask surface + polish
-- [ ] Stage 10 — Final Dashboard adversarial QA
+- [x] Stage 10 — Final Dashboard adversarial QA
 
 Stage 0 evidence: `docs/V2_2_DASHBOARD_CAPABILITY_MATRIX.md`.
 
@@ -1229,3 +1229,17 @@ interim_zip_sha256=6E6FDB1DF4979A0E55AC2BF335B8920D21B867F62A78B21A702550BB942D6
 ```
 
 This SHA is implementation evidence, not the final release artifact hash; final documentation/CI evidence may create a later clean HEAD and therefore requires a final rebuild.
+
+### Stage 10 closure evidence
+
+```text
+CI_RUN=33220885792
+TESTED_SHA=d0eeb4e7cd093227a804df8849d18b3b9a147b09
+WINDOWS=PASS
+UBUNTU=PASS
+MACOS=PASS
+STAGE_10=COMPLETE
+TECHNICAL_STATUS=READY_FOR_OWNER_RELEASE_APPROVAL
+```
+
+All implementation stages 0–10 are technically complete. The remaining unchecked public-artifact item is intentionally a post-owner-approval publication verification and is not permission to merge, tag or publish.
