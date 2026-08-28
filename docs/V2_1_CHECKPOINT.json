@@ -1,29 +1,39 @@
 {
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
-  "status": "FINAL_ADVERSARIAL_REVIEW_IN_PROGRESS",
-  "current_phase": 5,
-  "last_completed_phase": 4,
+  "status": "READY_FOR_OWNER_RELEASE_APPROVAL",
+  "current_phase": 6,
+  "last_completed_phase": 5,
   "completed_phases": [
     0,
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
-  "validated_code_sha": "63d662314bd7680a1a17dc9299e438fcc818e0f7",
+  "validated_code_sha": "d8960a1854005e012ab6c7cedbb07796b808416a",
   "validation": {
-    "github_ci_run": "33124840958",
+    "github_ci_run": "33178292059",
     "windows": "PASS",
     "ubuntu": "PASS",
     "macos": "PASS",
     "required_redteam_evidence": "PASS",
+    "final_adversarial_brain_evidence_target_scope": "PASS",
+    "permission_policy_schema_v2_canonical_boundaries": "PASS",
+    "target_scope_junction_symlink_hardlink_alias_defense": "PASS",
+    "triple_overlap_race": "PASS",
+    "portable_timeout_process_tree": "PASS",
+    "windows_timeout_process_tree": "PASS",
     "v1_4_to_v2_1_rollback": "PASS",
     "v2_0_to_v2_1_rollback": "PASS",
-    "windows_timeout_process_tree": "PASS",
+    "reproducible_package": "PASS",
     "package_self_test": "PASS",
+    "verify_install_windows": "PASS",
+    "verify_install_shell": "PASS",
     "secret_scan": "PASS",
-    "private_project_isolation_scan": "PASS"
+    "private_project_isolation_scan": "PASS",
+    "working_tree_before_closure_docs": "CLEAN"
   },
   "publication_state": {
     "merged_to_main": false,
@@ -31,6 +41,6 @@
     "public_release_created": false,
     "owner_approval_required": true
   },
-  "next_action": "Final adversarial review reopened after identifying additional hardening gaps: remediation authorization linkage, untrusted project instruction boundary, evidence-reference existence, filesystem redirection hardening, and reproducible package provenance. Re-run all release gates before restoring READY.",
-  "updated_at": "2026-08-28T14:37:00+03:00"
+  "next_action": "Owner reviews final v2.1.0 choices and explicitly approves publication. No merge to main, tag creation, or public release before that approval.",
+  "updated_at": "2026-08-28T17:10:02+03:00"
 }

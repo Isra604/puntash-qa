@@ -1,37 +1,61 @@
 # v2.1.0 Release Candidate Verification Report
 
-Status: **FINAL ADVERSARIAL REVIEW IN PROGRESS**
+Status: **READY FOR OWNER RELEASE APPROVAL**
 
 Original creator and project architect: **Ofir Israeli**
 
-## Why the prior READY state was reopened
+## Final adversarial review conclusion
 
-A final adversarial architecture review intentionally invalidated the previous release-candidate approval after identifying additional hardening opportunities. The previous SHA/CI evidence is historical only and MUST NOT be treated as approval for the current working tree.
+The previous READY state was deliberately reopened and the release candidate was attacked again. The additional hardening set was implemented, committed, packaged reproducibly, tested through both historical upgrade paths, and verified by Windows, Ubuntu and macOS CI. No known technical release blocker remains in the reviewed implementation.
 
-## Final hardening added after the previous candidate
+## Verified implementation evidence
 
-- instruction firewall separating untrusted project content from QA authority
-- schema-v3 run/evidence validation with real preserved-evidence existence checks
-- current-run authorization-chain validation for every automatic remediation
-- permission-policy schema v2 with canonical managed boundaries
-- exact pre-mutation target-path authorization and post-mutation scope matching
-- protected QA/VCS/CI/credential path surfaces, path canonicalization, junction/symlink/hardlink defenses
-- Windows/Unix overlap-race hardening and atomic scheduler state writes
-- portable Windows process-tree timeout termination
-- installer/updater/rollback path-redirection hardening
-- deterministic clean-Git-HEAD package provenance/reproducibility checks
-- commit-SHA-pinned GitHub Actions and owner-only manual release publication
+- hardened implementation SHA: `d8960a1854005e012ab6c7cedbb07796b808416a`
+- GitHub Actions QA run: `33178292059`
+- Windows: PASS
+- Ubuntu: PASS
+- macOS: PASS
+- 25 canonical QA gates / 9 Reliability Lenses contract: PASS
+- schema-v3 real-evidence and remediation-chain validation: PASS
+- instruction firewall against untrusted-project authority/prompt injection: PASS
+- permission-policy schema v2 canonical boundaries: PASS
+- exact pre-mutation target-path authorization and post-mutation scope matching: PASS
+- QA/VCS/CI/credential path protection plus traversal/alias/junction/hardlink defenses: PASS
+- OWNER_POLICY strict validation/audit/concurrency/recovery: PASS
+- triple-overlap race protection: PASS
+- Windows and portable process-tree timeout termination: PASS
+- Windows Task Scheduler and AGENT_MANAGED lifecycle: PASS
+- rollback fail-closed scheduler/path safety: PASS
+- `v1.4.0 -> v2.1.0 -> rollback`: PASS
+- `v2.0.0 -> v2.1.0 -> rollback`: PASS
+- reproducible clean-HEAD package provenance: PASS
+- package self-test: PASS
+- Windows + shell Verify-Install: PASS
+- secret-signature scan: PASS
+- private-project isolation scan: PASS
 
-## Current evidence state
+## Final hardening delivered
 
-Local expanded PowerShell and shell self-tests, Target Scope Red-Team, Windows native lifecycle suites, and portable timeout/process-tree tests have passed on the uncommitted hardening working tree. A new clean candidate commit, reproducible package proof, cross-version package upgrade tests, and Windows/Ubuntu/macOS CI are still required before this report may return to READY.
+- project-controlled content is evidence/data, never QA authority
+- every automatic mutation requires a current-run ALLOW record and exact target files before mutation
+- actual changed files must match the authorized target scope exactly
+- CI/QA authority/VCS/credentials and sensitive path aliases cannot be auto-remediated
+- scheduler locks/state writes are race-safe and fail closed
+- installer/updater/rollback reject redirected managed paths
+- release artifacts are derived from clean Git HEAD with source commit/tree provenance and reproducibility checks
+- GitHub Actions are commit-SHA pinned
+- public release workflow is manual, owner-only, tag/version checked, main-ancestry checked, and requires cross-platform preflights
+
+## Closure-commit note
+
+This tracked report cannot embed the SHA of the commit that contains itself without creating a self-reference. The documentation-only closure commit that changes this report/checkpoint from review to READY must contain no runtime changes. Its exact HEAD, final CI run and final RC ZIP SHA-256 are recorded externally on Draft PR #2 after that closure commit passes CI. No additional source mutation is allowed after that evidence is recorded.
 
 ## Release boundary
 
-This report does **not** authorize publication. Until the final candidate is re-verified, the following remain prohibited:
+READY does **not** mean published. The following remain prohibited until explicit owner approval:
 
 - merge to `main`
 - create tag `v2.1.0`
 - create/publish GitHub Release `v2.1.0`
 
-The final candidate SHA, CI run and package SHA-256 will be recorded only after the hardened working tree is committed and re-verified.
+After owner approval, the hardened manual release workflow performs another Windows/Ubuntu/macOS preflight before publication.
