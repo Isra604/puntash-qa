@@ -1,16 +1,17 @@
 {
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
-  "status": "OWNER_APPROVED_READY_TO_PUBLISH",
+  "status": "RELEASED_PUBLICLY_VERIFIED",
   "current_phase": 6,
-  "last_completed_phase": 5,
+  "last_completed_phase": 6,
   "completed_phases": [
     0,
     1,
     2,
     3,
     4,
-    5
+    5,
+    6
   ],
   "validated_code_sha": "a1702f28d8b3858171c77058d29ec2a299db1af7",
   "validation": {
@@ -40,14 +41,14 @@
     "new_release_asset_naming": "PASS"
   },
   "publication_state": {
-    "merged_to_main": false,
-    "tag_created": false,
-    "public_release_created": false,
+    "merged_to_main": true,
+    "tag_created": true,
+    "public_release_created": true,
     "owner_approval_required": false,
     "owner_approval_received": true
   },
-  "next_action": "Merge the approved PUNTASH QA v2.1.0 candidate to main, create tag v2.1.0, then invoke the manual owner-gated release workflow and perform public artifact verification.",
-  "updated_at": "2026-08-28T18:02:59+03:00",
+  "next_action": "v2.1.0 is released and publicly verified. Future changes require a new version or an explicitly documented post-release maintenance change.",
+  "updated_at": "2026-08-28T22:20:54+03:00",
   "product_name": "PUNTASH QA",
   "product_subtitle": "Universal Comprehensive QA Gate System",
   "repository": "Isra604/puntash-qa",
@@ -57,5 +58,19 @@
     "approved_version": "2.1.0",
     "approved_brand": "PUNTASH QA",
     "approval_scope": "final v2.1.0 including official PUNTASH QA branding and dashboard branding"
+  },
+  "release": {
+    "main_merge_commit": "8d664f1ee3a678b936f92e7ce40f6aae5adf25bd",
+    "main_ci_run": "33202471302",
+    "release_workflow_run": "33202886738",
+    "tag": "v2.1.0",
+    "public_url": "https://github.com/Isra604/puntash-qa/releases/tag/v2.1.0",
+    "release_title": "PUNTASH QA v2.1.0",
+    "asset": "PUNTASH-QA-v2.1.0.zip",
+    "asset_sha256": "993BF452913486F333C3B0389F074184BB98D619DF7D9C97F0E9229F296AB2D2",
+    "source_commit": "8d664f1ee3a678b936f92e7ce40f6aae5adf25bd",
+    "source_tree": "5aaaf6fcfc2629286fe7cf279cb8b342ff6dbb72",
+    "public_artifact_audit": "PASS",
+    "public_api_anonymous_verification": "PASS"
   }
 }
