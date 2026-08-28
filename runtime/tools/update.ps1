@@ -146,6 +146,9 @@ try {
   if($newVersion -ge [version]'2.1.0'){
     foreach($required21 in @('runtime\templates\PERMISSION_POLICY.json','runtime\templates\OWNER_POLICY.json','runtime\tools\policy-manager.ps1','runtime\tools\scheduler.ps1','runtime\tools\scheduled-run.ps1','runtime\tools\dashboard-control.ps1','runtime\tools\dashboard-control.py','runtime\templates\SCHEDULED_QA.md')){if(-not(Test-Path (Join-Path $pkgRoot $required21))){throw "Downloaded v2.1 package missing: $required21"}}
   }
+  if($newVersion -ge [version]'2.2.0'){
+    foreach($required22 in @('runtime\templates\MANUAL_QA.md','runtime\prompts\MANUAL_QA.md','runtime\tools\manual-run.ps1','runtime\tools\manual-run.py','runtime\tools\manual-run.sh','runtime\dashboard\index.html')){if(-not(Test-Path (Join-Path $pkgRoot $required22))){throw "Downloaded v2.2 package missing: $required22"}}
+  }
   $newTerms=(Get-Content (Join-Path $pkgRoot 'TERMS_VERSION') -Raw).Trim()
   $oldTerms=if(Test-Path (Join-Path $installRoot 'TERMS_VERSION')){(Get-Content (Join-Path $installRoot 'TERMS_VERSION') -Raw).Trim()}else{[string]$installed.terms_version}
   if($newTerms -ne $oldTerms){

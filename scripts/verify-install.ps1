@@ -60,7 +60,12 @@ $required = @(
   'tools\authorize-change.sh',
   'tools\prepare-scheduler-for-rollback.ps1',
   'templates\PERMISSION_POLICY.json',
-  'templates\SCHEDULED_QA.md'
+  'templates\SCHEDULED_QA.md',
+  'templates\MANUAL_QA.md',
+  'prompts\MANUAL_QA.md',
+  'tools\manual-run.ps1',
+  'tools\manual-run.py',
+  'tools\manual-run.sh'
 )
 $attributionPending = Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 $attributionShown = Join-Path $dest 'state\ATTRIBUTION_SHOWN.txt'

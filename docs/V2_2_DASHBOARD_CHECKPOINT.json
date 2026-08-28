@@ -1,0 +1,47 @@
+{
+  "target_version": "2.2.0",
+  "product": "PUNTASH QA",
+  "branch": "feature/v2.2-dashboard-control-center",
+  "status": "FINAL_QA_IN_PROGRESS",
+  "current_stage": 10,
+  "last_completed_stage": 9,
+  "completed_stages": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "baseline": {
+    "version": "2.1.0",
+    "public_release": "v2.1.0",
+    "main_baseline": "076944f83fbd81eb7c5da9b254b5f81e4668dd6e"
+  },
+  "scope": "Dashboard-only human-friendly operating surface; engine changes only when required to safely expose an existing capability.",
+  "publication": {
+    "merge_to_main": false,
+    "tag_created": false,
+    "public_release_created": false
+  },
+  "next_action": "Stage 10: commit clean candidate, run clean-HEAD reproducibility/package gates, push branch, open Draft PR, and require Windows/Ubuntu/macOS CI PASS before owner release approval.",
+  "local_evidence": {
+    "windows_self_test": "PASS",
+    "portable_dashboard_redteam": "PASS",
+    "windows_dashboard_redteam": "PASS",
+    "v21_control_compatibility": "PASS",
+    "windows_authorization": "PASS",
+    "windows_path_safety": "PASS",
+    "windows_scheduler": "PASS",
+    "rollback_scheduler": "PASS",
+    "windows_timeout_process_tree": "PASS",
+    "portable_timeout_process_tree": "PASS",
+    "v21_to_v22_upgrade_rollback": "PASS",
+    "secret_scan": "PASS",
+    "private_project_isolation": "PASS"
+  }
+}

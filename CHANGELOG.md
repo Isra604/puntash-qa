@@ -1,6 +1,23 @@
 # Changelog
 
-## 2.1.0 - RELEASE CANDIDATE / NOT YET PUBLIC
+## 2.2.0 - DASHBOARD CONTROL CENTER
+
+- Rebuilt the local Dashboard as a human-friendly operating surface for PUNTASH QA rather than a technical report viewer.
+- Added prominent **SCAN NOW** with real local-runner preflight, shared overlap protection, live STARTING/RUNNING/SUCCESS/FAILED/TIMEOUT states and no fake scan progress.
+- Added Home, Scan, Findings, Activity, Permissions, Schedule, Approvals, Project Health, Release Readiness, Recovery, Ask PUNTASH and Settings/About navigation.
+- Added Overview / Details modes so technical IDs, policy JSON and raw state remain available without becoming the primary experience.
+- Added plain-language finding cards using “what happened / why it matters / what to do next”, plus bounded local evidence viewing.
+- Added a visual Permissions Center for Observe only, Fix safe things and More active protection while retaining all v2.1 hard boundaries.
+- Added a visual Schedule Builder for enable/disable, daily/weekdays/weekly schedules, local time and runner selection.
+- Added an owner Approval Queue that can approve/deny exact queued requests but still invokes the canonical authorization engine; protected/high-impact requests cannot be bypassed.
+- Added Activity timeline, remediation history, health trend and structured “what changed since the previous scan” views.
+- Added evidence-validated Release Readiness and a fail-closed Recovery Center with a canonical safe reset to Observe only.
+- Added first-use onboarding and deterministic local **Ask PUNTASH** search without cloud calls or telemetry.
+- Added schema-v3 Dashboard snapshots with atomic refresh, manual-scan status and safe local projections.
+- Added bounded Control APIs for overview, activity, diagnostics, evidence, manual scan, approvals, scheduler actions and recovery; raw state files remain unserved.
+- Added portable and native Windows v2.2 Dashboard Red-Team suites while retaining all v2.1 adversarial/security tests.
+
+## 2.1.0 - 2026-08-28
 
 - Official product branding: **PUNTASH QA** — Universal Comprehensive QA Gate System. The GitHub repository is `Isra604/puntash-qa`, the release artifact is `PUNTASH-QA-v2.1.0.zip`, and the installed `.comprehensive-qa` runtime path remains stable.
 

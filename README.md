@@ -150,3 +150,6 @@ This repository is public. Update checks and release downloads work anonymously 
 Discovery and reporting are always separated from mutation. Automatic remediation is opt-in and bounded. Protected changes are reported with evidence and authority requirements instead of being silently changed.
 
 Version: 2.1.0 release candidate (not yet publicly released)
+## PUNTASH QA v2.2 Dashboard
+
+The local Dashboard is now the primary control surface: use **SCAN NOW**, review findings in plain language, control permissions and automatic scan times, review approval requests, inspect activity/project health, check release readiness and use Recovery without editing JSON manually. Technical details remain available in **Details** mode.

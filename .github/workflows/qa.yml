@@ -27,6 +27,12 @@ jobs:
         run: |
           ./scripts/v2-upgrade-red-team.ps1
           ./scripts/v2.1-upgrade-red-team.ps1
+          ./scripts/v2.2-upgrade-red-team.ps1
+      - name: Dashboard v2.2 portable and Windows-native red-team
+        shell: pwsh
+        run: |
+          python ./scripts/v2.2-dashboard-red-team.py
+          ./scripts/v2.2-windows-dashboard-red-team.ps1
       - name: Permission, policy and runtime red-team
         shell: pwsh
         run: |
@@ -79,6 +85,9 @@ jobs:
       - name: Shell and package-contract self-test
         shell: bash
         run: bash ./scripts/self-test.sh
+      - name: Dashboard v2.2 portable red-team
+        shell: bash
+        run: python3 ./scripts/v2.2-dashboard-red-team.py
       - name: Portable permission and runtime red-team
         shell: bash
         run: |

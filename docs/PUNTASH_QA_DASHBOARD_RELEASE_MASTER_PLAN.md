@@ -4,7 +4,7 @@
 
 **Product:** PUNTASH QA
 **Subtitle:** Universal Comprehensive QA Gate System
-**Release version:** To be assigned before implementation begins
+**Release version:** 2.2.0
 **Workstream:** Dashboard-only release
 Original creator and project architect: Ofir Israeli
 Copyright © 2026 Ofir Israeli
@@ -1060,61 +1060,61 @@ The Dashboard release is complete only when all items below are true.
 
 ### Product
 
-- [ ] Home answers project status immediately.
-- [ ] SCAN NOW exists and is safe.
-- [ ] Live scan status is understandable.
-- [ ] Findings use what/why/action language.
-- [ ] Explain exists in the required contexts.
-- [ ] Permissions are controllable through GUI.
-- [ ] Schedule is controllable through GUI.
-- [ ] Approval requests are understandable and mechanically safe.
-- [ ] Activity timeline exists.
-- [ ] Before/after remediation view exists.
-- [ ] Undo is shown only where proven safe.
-- [ ] Project health history exists.
-- [ ] Changes since last scan are understandable.
-- [ ] Release readiness exists and cannot false-PASS.
-- [ ] Recovery Center exists.
-- [ ] First-run onboarding exists.
-- [ ] Overview / Details separation exists.
-- [ ] Search / Ask surface exists at the agreed release scope.
-- [ ] Every user-relevant existing PUNTASH QA capability has a documented Dashboard treatment.
+- [x] Home answers project status immediately.
+- [x] SCAN NOW exists and is safe.
+- [x] Live scan status is understandable.
+- [x] Findings use what/why/action language.
+- [x] Explain exists in the required contexts.
+- [x] Permissions are controllable through GUI.
+- [x] Schedule is controllable through GUI.
+- [x] Approval requests are understandable and mechanically safe.
+- [x] Activity timeline exists.
+- [x] Before/after remediation view exists.
+- [x] Undo is shown only where proven safe.
+- [x] Project health history exists.
+- [x] Changes since last scan are understandable.
+- [x] Release readiness exists and cannot false-PASS.
+- [x] Recovery Center exists.
+- [x] First-run onboarding exists.
+- [x] Overview / Details separation exists.
+- [x] Search / Ask surface exists at the agreed release scope.
+- [x] Every user-relevant existing PUNTASH QA capability has a documented Dashboard treatment.
 
 ### Language and usability
 
-- [ ] Primary copy is plain English.
-- [ ] Internal enums are not primary UI copy.
-- [ ] Technical details remain accessible.
-- [ ] Color is not the only status signal.
-- [ ] Consequential actions explain impact before execution.
-- [ ] Empty, loading, blocked and error states are understandable.
-- [ ] Keyboard/focus/accessibility review is complete.
+- [x] Primary copy is plain English.
+- [x] Internal enums are not primary UI copy.
+- [x] Technical details remain accessible.
+- [x] Color is not the only status signal.
+- [x] Consequential actions explain impact before execution.
+- [x] Empty, loading, blocked and error states are understandable.
+- [x] Keyboard/focus/accessibility review is complete.
 
 ### Security and correctness
 
-- [ ] Loopback-only boundary remains intact.
-- [ ] Dashboard authentication remains intact.
-- [ ] Owner Policy remains canonical.
-- [ ] Permission Policy remains canonical.
-- [ ] Target Scope authorization remains mandatory.
-- [ ] Protected paths remain protected.
-- [ ] Scheduling cannot elevate remediation authority.
-- [ ] GUI cannot create synthetic/fake evidence.
-- [ ] GUI cannot reuse stale authorization improperly.
-- [ ] project-controlled text cannot execute or gain authority through rendering.
-- [ ] new control endpoints have negative security tests.
-- [ ] no XSS/path traversal/command injection blocker remains.
+- [x] Loopback-only boundary remains intact.
+- [x] Dashboard authentication remains intact.
+- [x] Owner Policy remains canonical.
+- [x] Permission Policy remains canonical.
+- [x] Target Scope authorization remains mandatory.
+- [x] Protected paths remain protected.
+- [x] Scheduling cannot elevate remediation authority.
+- [x] GUI cannot create synthetic/fake evidence.
+- [x] GUI cannot reuse stale authorization improperly.
+- [x] project-controlled text cannot execute or gain authority through rendering.
+- [x] new control endpoints have negative security tests.
+- [x] no XSS/path traversal/command injection blocker remains.
 
 ### QA and release
 
-- [ ] Existing 25 Gates still pass.
-- [ ] Existing 9 Reliability Lenses still pass.
-- [ ] Existing v2.1 adversarial suites still pass.
-- [ ] New Dashboard-specific adversarial suite passes.
+- [x] Existing 25 Gates still pass.
+- [x] Existing 9 Reliability Lenses still pass.
+- [x] Existing v2.1 adversarial suites still pass.
+- [x] New Dashboard-specific adversarial suite passes.
 - [ ] Windows CI passes.
 - [ ] Ubuntu CI passes.
 - [ ] macOS CI passes.
-- [ ] Upgrade/rollback compatibility decision is documented and tested.
+- [x] Upgrade/rollback compatibility decision is documented and tested.
 - [ ] final release package provenance/reproducibility passes.
 - [ ] final public artifact audit passes before closure.
 
@@ -1161,6 +1161,30 @@ During implementation:
 
 ---
 
+## 32A. Live execution status
+
+Current implementation branch: `feature/v2.2-dashboard-control-center`
+
+Current release state: **IMPLEMENTATION_IN_PROGRESS**
+
+Stage status:
+
+- [x] Stage 0 — Baseline and capability inventory
+- [x] Stage 1 — Information architecture and UI state model
+- [x] Stage 2 — Home + SCAN NOW + live scan
+- [x] Stage 3 — Findings + Explain + evidence
+- [x] Stage 4 — Permissions Center
+- [x] Stage 5 — Schedule Builder
+- [x] Stage 6 — Approval and remediation controls
+- [x] Stage 7 — Activity, history and what changed
+- [x] Stage 8 — Release readiness + Recovery Center
+- [x] Stage 9 — Onboarding + search/Ask surface + polish
+- [ ] Stage 10 — Final Dashboard adversarial QA
+
+Stage 0 evidence: `docs/V2_2_DASHBOARD_CAPABILITY_MATRIX.md`.
+
+---
+
 ## 33. Starting checkpoint
 
 Current product baseline:
@@ -1185,3 +1209,9 @@ any v2.1.0 safety, evidence, authorization, scheduling or release invariant.
 Implementation has **not** started merely because this planning document exists.
 
 The next action is to assign the release version and begin **Stage 0 — Baseline and capability inventory** on a dedicated implementation branch.
+
+### v2.2 implementation evidence checkpoint — 2026-08-29
+
+Stages 1–9 are implemented and locally verified. Stage 10 local adversarial QA is PASS on Windows, including the portable and native Control Center paths, authorization, path safety, scheduler lifecycle, rollback preflight, timeout/process-tree handling, v2.1 compatibility, and v2.1 → v2.2 upgrade/rollback.
+
+Stage 10 remains open only for clean-HEAD reproducible-package proof and GitHub Actions Windows/Ubuntu/macOS evidence. Publication remains blocked pending explicit owner release approval.
