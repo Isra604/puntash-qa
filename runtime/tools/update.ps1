@@ -4,6 +4,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $installRoot = Split-Path -Parent $PSScriptRoot
 $projectRoot = Split-Path -Parent $installRoot
+$pathSafety=Join-Path $PSScriptRoot 'path-safety.ps1'
+if(-not(Test-Path -LiteralPath $pathSafety -PathType Leaf)){throw 'Path-safety helper missing from installed runtime.'}
+. $pathSafety
+Assert-NoReparsePoint -Path $installRoot -Label 'installed QA runtime before update' -Recursive
 $config = Get-Content (Join-Path $installRoot 'config\update.json') -Raw | ConvertFrom-Json
 $installed = Get-Content (Join-Path $installRoot 'INSTALLATION.json') -Raw | ConvertFrom-Json
 $currentVersion = [version]$installed.version
@@ -78,15 +82,21 @@ function Show-TermsAcceptance([string]$pkgRoot,[string]$newVersion,[string]$term
   return $script:legalAccepted
 }
 function Restore-Managed([string]$backup) {
+  Assert-PathWithin -Path $backup -Root (Join-Path $projectRoot '.comprehensive-qa-backups') -Label 'failure rollback backup' -MustExist
+  Assert-NoReparsePoint -Path $backup -Label 'failure rollback backup' -Recursive
   foreach($d in @('gates','templates','agent-guides','dashboard','prompts')){
     $target=Join-Path $installRoot $d
-    if(Test-Path $target){Remove-Item $target -Recurse -Force}
+    Assert-PathWithin -Path $target -Root $installRoot -Label "managed update target $d"
+    Assert-NoReparsePoint -Path $target -Label "managed update target $d" -Recursive
+    if(Test-Path $target){Remove-Item -LiteralPath $target -Recurse -Force}
     $source=Join-Path $backup $d
     if(Test-Path $source){Copy-Item $source $target -Recurse -Force}
   }
   foreach($d in @('tools')){
     $target=Join-Path $installRoot $d
-    if(Test-Path $target){Remove-Item $target -Recurse -Force}
+    Assert-PathWithin -Path $target -Root $installRoot -Label "managed update target $d"
+    Assert-NoReparsePoint -Path $target -Label "managed update target $d" -Recursive
+    if(Test-Path $target){Remove-Item -LiteralPath $target -Recurse -Force}
     $source=Join-Path $backup $d
     if(Test-Path $source){Copy-Item $source $target -Recurse -Force}
   }
@@ -118,6 +128,7 @@ try {
   if($actual -ne $expected){throw "SHA-256 verification failed. Expected $expected, got $actual"}
   $extract=Join-Path $temp 'package'; Expand-Archive $zipPath $extract -Force
   $pkgRoot=$extract
+  Assert-NoReparsePoint -Path $pkgRoot -Label 'downloaded update package' -Recursive
   if(-not (Test-Path (Join-Path $pkgRoot 'VERSION'))){
     $dirs=Get-ChildItem $extract -Directory
     if($dirs.Count -eq 1 -and (Test-Path (Join-Path $dirs[0].FullName 'VERSION'))){$pkgRoot=$dirs[0].FullName}
@@ -142,8 +153,10 @@ try {
     $confirm=[System.Windows.Forms.MessageBox]::Show("Update Universal Comprehensive QA Gate System from $currentVersion to $newVersion?`r`n`r`nA backup will be created first. Project QA reports, evidence, profile and state will be preserved.",'Confirm QA System Update',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Question)
     if($confirm -ne [System.Windows.Forms.DialogResult]::Yes){Write-Host 'Update cancelled by user.';exit 4}
   }
-  $backupRoot=Join-Path $projectRoot '.comprehensive-qa-backups'; New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
-  $backup=Join-Path $backupRoot ((Get-Date -Format 'yyyyMMdd_HHmmss')+"-v$currentVersion")
+  $backupRoot=Join-Path $projectRoot '.comprehensive-qa-backups'; Assert-PathWithin -Path $backupRoot -Root $projectRoot -Label 'update backup root'; Assert-NoReparsePoint -Path $backupRoot -Label 'update backup root' -Recursive; New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null; Assert-NoReparsePoint -Path $backupRoot -Label 'update backup root'
+  $backup=Join-Path $backupRoot ((Get-Date -Format 'yyyyMMdd_HHmmss')+"-v$currentVersion-"+[guid]::NewGuid().ToString('N'))
+  Assert-PathWithin -Path $backup -Root $backupRoot -Label 'update backup destination'
+  Assert-NoReparsePoint -Path $installRoot -Label 'installed QA runtime immediately before backup' -Recursive
   Copy-Item $installRoot $backup -Recurse -Force
 
   Copy-Item (Join-Path $pkgRoot 'runtime\AGENT_INSTRUCTIONS.md') (Join-Path $installRoot 'AGENT_INSTRUCTIONS.md') -Force
@@ -151,11 +164,15 @@ try {
   Copy-Item (Join-Path $pkgRoot 'runtime\OPEN_DASHBOARD.cmd') (Join-Path $installRoot 'OPEN_DASHBOARD.cmd') -Force
   foreach($d in @('gates','templates','agent-guides','dashboard','prompts')){
     $target=Join-Path $installRoot $d
-    if(Test-Path $target){Remove-Item $target -Recurse -Force}
+    Assert-PathWithin -Path $target -Root $installRoot -Label "managed update target $d"
+    Assert-NoReparsePoint -Path $target -Label "managed update target $d" -Recursive
+    if(Test-Path $target){Remove-Item -LiteralPath $target -Recurse -Force}
     Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force
   }
   $toolsTarget=Join-Path $installRoot 'tools'
-  if(Test-Path $toolsTarget){Remove-Item $toolsTarget -Recurse -Force}
+  Assert-PathWithin -Path $toolsTarget -Root $installRoot -Label 'managed update tools target'
+  Assert-NoReparsePoint -Path $toolsTarget -Label 'managed update tools target' -Recursive
+  if(Test-Path $toolsTarget){Remove-Item -LiteralPath $toolsTarget -Recurse -Force}
   Copy-Item (Join-Path $pkgRoot 'runtime\tools') $toolsTarget -Recurse -Force
   Copy-Item (Join-Path $pkgRoot 'runtime\config\update.json') (Join-Path $installRoot 'config\update.json') -Force
   $permPolicy=Join-Path $pkgRoot 'runtime\templates\PERMISSION_POLICY.json'

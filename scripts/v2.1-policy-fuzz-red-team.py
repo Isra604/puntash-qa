@@ -36,7 +36,7 @@ def main():
     good=copy.deepcopy(base);good['permissions']['preset']='SAFE_FIXES';candidate.write_text(json.dumps(good),encoding='utf-8');run(py+['apply','--policy-json',str(candidate),'--owner-approved','--approval-source','manual_cli'])
     state=install/'state';current=json.loads((state/'OWNER_POLICY.json').read_text(encoding='utf-8-sig'));current['permissions']['preset']='ACTIVE_REMEDIATION';(state/'OWNER_POLICY.json').write_text(json.dumps(current,indent=2)+'\n',encoding='utf-8')
     ok(subprocess.run(py+['get'],capture_output=True,text=True).returncode!=0,'valid_json_policy_tampering_detected_by_audit_hash')
-    auth=[sys.executable,str(install/'tools/authorize-change.py'),'--risk','MEDIUM','--category','source_code','--finding-id','F-TAMPER','--change-summary','tampered attempt','--evidence-ref','evidence/x','--expected-behavior-proven','--reversible']
+    auth=[sys.executable,str(install/'tools/authorize-change.py'),'--risk','MEDIUM','--category','source_code','--finding-id','F-TAMPER','--change-summary','tampered attempt','--evidence-ref','evidence/x','--target-path','src/tamper.py','--expected-behavior-proven','--reversible']
     ok(subprocess.run(auth,capture_output=True,text=True).returncode!=0,'authorize_change_fails_closed_on_tampered_policy')
     # owner-approved recovery restores integrity and advances revision
     candidate.write_text(json.dumps(good),encoding='utf-8');run(py+['apply','--policy-json',str(candidate),'--owner-approved','--approval-source','manual_cli']);restored=json.loads(run(py+['get']).stdout);ok(restored['policy_revision']==2 and restored['permissions']['preset']=='SAFE_FIXES','owner_approved_recovery_restores_audit_integrity')

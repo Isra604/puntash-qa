@@ -3,6 +3,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 pass(){ echo "PASS: $1"; }
+PYTHON=""
+for c in python3 python; do
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import sys' >/dev/null 2>&1; then PYTHON="$c"; break; fi
+done
 [[ "$(find "$ROOT/runtime/gates" -maxdepth 1 -type f -name 'GATE-*.md' | wc -l | tr -d ' ')" == "25" ]] || fail 'exactly 25 gates'
 pass 'exactly 25 gates'
 for i in $(seq -w 1 25); do [[ -f "$ROOT/runtime/gates/GATE-$i.md" ]] || fail "missing GATE-$i"; done
@@ -24,13 +28,21 @@ pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
 if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then
-  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/prepare-scheduler-for-rollback.ps1 runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh scripts/v2.1-control-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
+  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/templates/UNTRUSTED_PROJECT_CONTENT.md runtime/tools/path-safety.ps1 runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/prepare-scheduler-for-rollback.ps1 runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh scripts/v2.1-control-red-team.py scripts/v2.1-overlap-red-team.py scripts/v2.1-target-scope-red-team.py scripts/v2.1-portable-timeout-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
   cmp -s "$ROOT/runtime/config/permission-policy.json" "$ROOT/runtime/templates/PERMISSION_POLICY.json" || fail 'permission policy compatibility copy mismatch'
   cmp -s "$ROOT/runtime/prompts/SCHEDULED_QA.md" "$ROOT/runtime/templates/SCHEDULED_QA.md" || fail 'scheduled prompt compatibility copy mismatch'
   grep -q 'authorize-change' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent mechanical authorization contract'
+grep -q 'Instruction firewall for untrusted project content' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent instruction firewall contract'
+[[ -n "$PYTHON" ]] || fail 'Python 3 runtime required for v2.1 schema contract'; "$PYTHON" -c 'import json; d=json.load(open("runtime/templates/DASHBOARD_RUN.json",encoding="utf-8-sig")); assert d["schema_version"]>=3 and "automatic_remediation" in d' || fail 'schema-v3 remediation accounting contract'
   grep -q 'Agent permissions' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard agent permissions card'
   grep -q 'Scheduled QA' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard scheduled QA card'
   pass 'v2.1 control-center asset contract'
+  ! grep -Eq 'actions/(checkout|setup-python)@v[0-9]+' "$ROOT/.github/workflows/qa.yml" || fail 'mutable action tag in QA workflow'
+  ! grep -Eq 'actions/(checkout|setup-python)@v[0-9]+' "$ROOT/.github/workflows/release.yml" || fail 'mutable action tag in release workflow'
+  grep -q 'workflow_dispatch:' "$ROOT/.github/workflows/release.yml" || fail 'release workflow must be manual-dispatch'
+  grep -q 'github.actor.*Isra604' "$ROOT/.github/workflows/release.yml" || fail 'release owner authority guard missing'
+  grep -q 'merge-base --is-ancestor HEAD origin/main' "$ROOT/.github/workflows/release.yml" || fail 'release main ancestry guard missing'
+  pass 'workflow supply-chain/release authority contract'
 fi
 if git -C "$ROOT" grep -n -E 'gh[op]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----' -- ':!scripts/self-test.sh' ':!scripts/self-test.ps1' >/tmp/qa-secret-hits.$$ 2>/dev/null; then cat /tmp/qa-secret-hits.$$; rm -f /tmp/qa-secret-hits.$$; fail 'common secret signature found'; fi
 rm -f /tmp/qa-secret-hits.$$ || true
@@ -49,8 +61,8 @@ grep -q '25 gate map' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard ga
 grep -q 'Reliability assurance' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard reliability assurance'
 grep -q '9 cross-cutting lenses' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard lens strip'
 pass 'dashboard local UI contract'
-if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
-  python3 - "$ROOT" <<'PY'
+if [[ -n "$PYTHON" ]]; then
+  "$PYTHON" - "$ROOT" <<'PY'
 import hashlib,json,sys
 from pathlib import Path
 root=Path(sys.argv[1]); manifest=json.loads((root/'LEGAL_MANIFEST.json').read_text(encoding='utf-8-sig'))
@@ -62,7 +74,7 @@ PY
   pass 'legal document SHA-256 and LF contract'
 fi
 DASHROOT="$TMP/dashproject"; mkdir -p "$DASHROOT/.comprehensive-qa"; cp -R "$ROOT/runtime/." "$DASHROOT/.comprehensive-qa/"; printf '{"version":"%s"}\n' "$(tr -d '\r\n' < "$ROOT/VERSION")" > "$DASHROOT/.comprehensive-qa/INSTALLATION.json"; mkdir -p "$DASHROOT/.comprehensive-qa/reports/dashboard"
-printf '%s\n' '{"schema_version":1,"run_id":"RUN-SHELL-1","project":{"name":"Demo","branch":"main","head":"abc"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":20,"fail":2,"blocked":1,"not_run":1,"not_applicable":1},"findings_summary":{"open":3},"gates":[],"findings":[],"changes":{}}' > "$DASHROOT/.comprehensive-qa/reports/dashboard/RUN-SHELL-1.json"
+printf '%s\n' '{"schema_version":1,"run_id":"RUN-SHELL-1","project":{"name":"Demo","branch":"main","head":"abc"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":20,"fail":2,"blocked":1,"not_run":1,"not_applicable":1},"findings_summary":{"open":3},"gates":[],"findings":[],"changes":{},"automatic_remediation":{"performed":false,"entries":[]}}' > "$DASHROOT/.comprehensive-qa/reports/dashboard/RUN-SHELL-1.json"
 set +e
 bash "$DASHROOT/.comprehensive-qa/tools/dashboard-refresh.sh" "$DASHROOT" >/dev/null 2>&1
 DASH_RC=$?
@@ -75,33 +87,39 @@ elif [[ "$DASH_RC" == "2" && "${OS:-}" == "Windows_NT" ]]; then
 else
   fail "dashboard refresh shell exit $DASH_RC"
 fi
-if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
-  python3 - "$ROOT" "$TMP" <<'PY'
+if [[ -n "$PYTHON" ]]; then
+  "$PYTHON" - "$ROOT" "$TMP" <<'PY'
 import json,subprocess,sys
 from pathlib import Path
-root=Path(sys.argv[1]); tmp=Path(sys.argv[2])
-gates=[{"gate":i,"status":"PASS","assurance":"STRONG","summary":"self","evidence_freshness":"CURRENT","evidence_refs":[f"evidence/GATE-{i:02d}.txt"],"lens_impact_reviewed":False,"lens_exception_lenses":[],"lens_exception_rationale":""} for i in range(1,26)]
-lenses=[{"lens":i,"status":"PASS","assurance":"STRONG","applicability_rationale":"self","applicability_evidence":["profile/PROJECT_QA_PROFILE.md"],"evidence_freshness":"CURRENT","evidence_refs":[f"evidence/LENS-{i:02d}.txt"]} for i in range(1,10)]
-base={"schema_version":2,"run_id":"SELF","project":{"name":"self"},"completed_at":"2026-08-26T10:00:00Z","summary":{"pass":25,"fail":0,"blocked":0,"not_run":0,"not_applicable":0},"evidence_assurance":{"overall":"STRONG"},"gates":gates,"lenses":lenses,"test_trustworthiness":{"applicable":True,"status":"PASS","assurance":"STRONG","evidence_freshness":"CURRENT","evidence_refs":["evidence/LENS-01/test-trust.txt"],"decisive_suites":["critical"]},"findings":[],"changes":{}}
+root=Path(sys.argv[1]); tmp=Path(sys.argv[2]); install=tmp/"validator-install"; (install/"gates").mkdir(parents=True); (install/"state").mkdir(); (install/"evidence").mkdir(); (install/"profile").mkdir(); __import__("shutil").copy2(root/"runtime/gates/reliability-map.json",install/"gates/reliability-map.json"); (install/"profile/PROJECT_QA_PROFILE.md").write_text("profile",encoding="utf-8")
+gates=[]
+for i in range(1,26):
+ (install/f"evidence/GATE-{i:02d}.txt").write_text("gate",encoding="utf-8"); gates.append({"gate":i,"status":"PASS","assurance":"STRONG","summary":"self","evidence_freshness":"CURRENT","evidence_refs":[f"evidence/GATE-{i:02d}.txt"],"lens_impact_reviewed":False,"lens_exception_lenses":[],"lens_exception_rationale":""})
+lenses=[]
+for i in range(1,10):
+ (install/f"evidence/LENS-{i:02d}.txt").write_text("lens",encoding="utf-8"); lenses.append({"lens":i,"status":"PASS","assurance":"STRONG","applicability_rationale":"self","applicability_evidence":["profile/PROJECT_QA_PROFILE.md"],"evidence_freshness":"CURRENT","evidence_refs":[f"evidence/LENS-{i:02d}.txt"]})
+(install/"evidence/test-trust.txt").write_text("trust",encoding="utf-8")
+base={"schema_version":3,"run_id":"SELF","project":{"name":"self"},"started_at":"2026-08-28T10:00:00Z","completed_at":"2026-08-28T10:30:00Z","summary":{"pass":25,"fail":0,"blocked":0,"not_run":0,"not_applicable":0},"evidence_assurance":{"overall":"STRONG"},"gates":gates,"lenses":lenses,"test_trustworthiness":{"applicable":True,"status":"PASS","assurance":"STRONG","evidence_freshness":"CURRENT","evidence_refs":["evidence/test-trust.txt"],"decisive_suites":["critical"]},"findings":[],"changes":{},"automatic_remediation":{"performed":False,"entries":[]}}
 def run(obj,name,expect):
  p=tmp/name;p.write_text(json.dumps(obj),encoding="utf-8")
- rc=subprocess.run([sys.executable,str(root/'runtime/tools/validate-run.py'),str(p)],stdout=subprocess.DEVNULL).returncode
+ spec=__import__('importlib.util').util.spec_from_file_location('v',root/'runtime/tools/validate-run.py');m=__import__('importlib.util').util.module_from_spec(spec);spec.loader.exec_module(m);rc=0 if not m.validate_obj(obj,install) else 1
  if (rc==0)!=expect: raise SystemExit(f"validator case {name} rc={rc}")
 run(base,"valid-v2.json",True)
 bad=json.loads(json.dumps(base));bad["gates"][0]["assurance"]="WEAK";run(bad,"bad-weak.json",False)
 bad=json.loads(json.dumps(base));bad["lenses"][1]["status"]="BLOCKED";bad["lenses"][1]["reason"]="missing tool";run(bad,"bad-g25.json",False)
 bad=json.loads(json.dumps(base));bad["lenses"]=bad["lenses"][:-1];run(bad,"bad-lens-count.json",False)
+bad=json.loads(json.dumps(base));bad["gates"][0]["evidence_refs"]=["evidence/missing.txt"];run(bad,"bad-missing-evidence.json",False)
 PY
   pass 'run validator PASS ceilings and 25+9 completeness'
-  python3 "$ROOT/scripts/v2-red-team.py" >/dev/null || fail 'v2 red-team suite'
+  "$PYTHON" "$ROOT/scripts/v2-red-team.py" >/dev/null || fail 'v2 red-team suite'
   pass 'v2 red-team false-PASS attacks'
   if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" ]]; then
-    python3 "$ROOT/scripts/v2.1-control-red-team.py" >/dev/null || fail 'v2.1 control red-team suite'
-    python3 "$ROOT/scripts/v2.1-policy-fuzz-red-team.py" >/dev/null || fail 'v2.1 policy fuzz red-team suite'
-    python3 "$ROOT/scripts/v2.1-runtime-red-team.py" >/dev/null || fail 'v2.1 runtime lifecycle red-team suite'
-    pass 'v2.1 control/permission/runtime red-team'
+    for rt in v2.1-control-red-team.py v2.1-policy-fuzz-red-team.py v2.1-runtime-red-team.py v2.1-concurrency-red-team.py v2.1-final-adversarial-red-team.py v2.1-target-scope-red-team.py v2.1-overlap-red-team.py; do
+      "$PYTHON" "$ROOT/scripts/$rt" >/dev/null || fail "v2.1 red-team $rt"
+    done
+    pass 'v2.1 control/permission/runtime/brain/target/overlap red-team'
     if [[ "${OS:-}" != "Windows_NT" ]]; then
-      python3 "$ROOT/scripts/v2.1-unix-scheduler-red-team.py" >/dev/null || fail 'v2.1 unix scheduler red-team suite'
+      "$PYTHON" "$ROOT/scripts/v2.1-unix-scheduler-red-team.py" >/dev/null || fail 'v2.1 unix scheduler red-team suite'
       pass 'v2.1 unix scheduler red-team'
     fi
   fi

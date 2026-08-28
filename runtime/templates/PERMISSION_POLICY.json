@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "model": "owner-controlled-agent-remediation",
   "change_risks": [
     "LOW",
@@ -35,7 +35,6 @@
     "tests",
     "source_code",
     "local_non_secret_config",
-    "non_production_ci",
     "dependency_hygiene"
   ],
   "hard_boundaries": [
@@ -53,7 +52,10 @@
     "deployments",
     "production",
     "billing_or_paid_calls",
-    "destructive_operations"
+    "destructive_operations",
+    "ci_workflow_or_runner_configuration",
+    "qa_authority_or_policy",
+    "version_control_metadata"
   ],
   "rules": {
     "agent_may_never_self_elevate": true,
@@ -64,6 +66,48 @@
     "unknown_change_risk_requires_approval": true,
     "ambiguous_expected_behavior_requires_approval": true,
     "all_automatic_changes_must_be_reversible": true,
-    "automatic_change_requires_finding_evidence_and_authorization_id": true
-  }
+    "automatic_change_requires_finding_evidence_and_authorization_id": true,
+    "automatic_change_requires_declared_target_paths": true
+  },
+  "protected_path_prefixes": [
+    ".comprehensive-qa",
+    ".git",
+    ".hg",
+    ".svn",
+    ".github",
+    ".circleci",
+    ".buildkite",
+    ".teamcity",
+    ".ssh",
+    ".aws",
+    ".azure",
+    ".kube",
+    "secrets",
+    "credentials"
+  ],
+  "protected_path_basenames": [
+    ".gitlab-ci.yml",
+    "jenkinsfile",
+    "azure-pipelines.yml",
+    "bitbucket-pipelines.yml",
+    "codeowners",
+    ".npmrc",
+    ".pypirc",
+    ".netrc",
+    "id_rsa",
+    "id_ed25519",
+    "credentials.json",
+    "service-account.json"
+  ],
+  "protected_path_suffixes": [
+    ".key",
+    ".pem",
+    ".p12",
+    ".pfx",
+    ".jks",
+    ".keystore"
+  ],
+  "protected_path_name_prefixes": [
+    ".env"
+  ]
 }

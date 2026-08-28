@@ -4,17 +4,21 @@ if [[ $# -lt 1 ]]; then
   echo "Usage: $0 /path/to/project" >&2
   exit 2
 fi
-if [[ ! -t 0 || ! -t 1 ]]; then
-  echo "Human acceptance required. This installer refuses non-interactive/CI/unattended execution." >&2
-  exit 5
-fi
-PROJECT="$(cd "$1" && pwd)"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT="$(cd "$1" && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+PACKAGE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 DEST="$PROJECT/.comprehensive-qa"
+if [[ -L "$DEST" ]]; then
+  echo "Refusing symlinked QA runtime destination: $DEST" >&2
+  exit 3
+fi
 if [[ -e "$DEST" ]]; then
   echo "QA runtime already exists: $DEST. No files were changed. This shell installer does not overwrite an existing runtime." >&2
   exit 3
+fi
+if [[ ! -t 0 || ! -t 1 ]]; then
+  echo "Human acceptance required. This installer refuses non-interactive/CI/unattended execution." >&2
+  exit 5
 fi
 VERSION="$(tr -d '\r\n' < "$PACKAGE_ROOT/VERSION")"
 TERMS_VERSION="$(tr -d '\r\n' < "$PACKAGE_ROOT/TERMS_VERSION")"

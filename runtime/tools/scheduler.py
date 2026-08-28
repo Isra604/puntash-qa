@@ -27,6 +27,22 @@ def now():
     return datetime.now(timezone.utc).astimezone().isoformat()
 
 
+def atomic_json_write(path: Path, value: dict):
+    tmp = path.with_name(path.name + f'.tmp.{os.getpid()}.{__import__("time").time_ns()}')
+    data = json.dumps(value, indent=2) + '\n'
+    try:
+        with tmp.open('w', encoding='utf-8', newline='\n') as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    finally:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
 def schedule_signature(schedule: dict) -> str:
     material = {
         'enabled': bool(schedule.get('enabled')),
@@ -155,7 +171,7 @@ def main():
             'platform': platform,
         }
         record.update(extra)
-        registration_path.write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
+        atomic_json_write(registration_path, record)
         return record
 
     if args.operation == 'status':

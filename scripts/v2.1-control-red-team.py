@@ -19,9 +19,10 @@ def main():
         state=install/'state';state.mkdir(exist_ok=True)
         policy_tool=[sys.executable,str(install/'tools/policy-manager.py')]
         auth_tool=[sys.executable,str(install/'tools/authorize-change.py')]
-        def auth(risk,category,*flags,finding='F-REDTEAM',summary='bounded red-team change',evidence=('evidence/redteam.txt',)):
+        def auth(risk,category,*flags,finding='F-REDTEAM',summary='bounded red-team change',evidence=('evidence/redteam.txt',),targets=('docs/redteam.md',)):
             cmd=auth_tool+['--risk',risk,'--category',category,'--finding-id',finding,'--change-summary',summary]
             for ref in evidence: cmd += ['--evidence-ref',ref]
+            for target in targets: cmd += ['--target-path',target]
             cmd += list(flags)
             return cmd
         scheduler=[sys.executable,str(install/'tools/scheduler.py')]

@@ -12,6 +12,7 @@ This record is append-only for the cycle.
 - Expected-behavior evidence refs:
 - Reversibility proof / rollback method:
 - Authorization basis:
+- Authorized target paths (exact, from Authorization record):
 - Pre-fix evidence:
 - Exact files changed:
 - Diff summary:

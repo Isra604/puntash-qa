@@ -54,6 +54,8 @@ $required = @(
   'tools\dashboard-control.py',
   'tools\open-dashboard.sh',
   'tools\authorize-change.ps1',
+  'tools\path-safety.ps1',
+  'templates\UNTRUSTED_PROJECT_CONTENT.md',
   'tools\authorize-change.py',
   'tools\authorize-change.sh',
   'tools\prepare-scheduler-for-rollback.ps1',

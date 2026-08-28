@@ -43,16 +43,29 @@ function Reject-UnknownFields($obj,[string[]]$allowed,[string]$name,[System.Coll
 }
 function Validate-PermissionPolicy($policy){
   $errors=New-Object System.Collections.Generic.List[string]
-  Reject-UnknownFields $policy @('schema_version','model','change_risks','presets','auto_change_categories','hard_boundaries','rules') 'permission policy' $errors
-  if([int]$policy.schema_version-ne1){$errors.Add('permission policy schema_version must equal 1')}
+  Reject-UnknownFields $policy @('schema_version','model','change_risks','presets','auto_change_categories','hard_boundaries','protected_path_prefixes','protected_path_basenames','protected_path_suffixes','protected_path_name_prefixes','rules') 'permission policy' $errors
+  if([int]$policy.schema_version-ne2){$errors.Add('permission policy schema_version must equal 2')}
   if([string]$policy.model-ne'owner-controlled-agent-remediation'){$errors.Add('permission policy model is invalid')}
   if($null-eq$policy.presets){$errors.Add('permission policy presets must be an object')}
   $presetNames=@($policy.presets.PSObject.Properties.Name);$required=@('REPORT_ONLY','SAFE_FIXES','ACTIVE_REMEDIATION','CUSTOM')
   if((@($presetNames|Sort-Object)-join',') -ne (@($required|Sort-Object)-join',')){$errors.Add('permission policy presets must exactly define REPORT_ONLY, SAFE_FIXES, ACTIVE_REMEDIATION, CUSTOM')}
   $auto=Validate-StringArray $policy.auto_change_categories 'permission policy auto_change_categories' 128 $errors
   $hard=Validate-StringArray $policy.hard_boundaries 'permission policy hard_boundaries' 128 $errors
-  if(@($auto|Select-Object -Unique).Count-ne@($auto).Count){$errors.Add('permission policy auto_change_categories contains duplicates')}
-  if(@($hard|Select-Object -Unique).Count-ne@($hard).Count){$errors.Add('permission policy hard_boundaries contains duplicates')}
+  $prefixes=Validate-StringArray $policy.protected_path_prefixes 'permission policy protected_path_prefixes' 128 $errors
+  $basenames=Validate-StringArray $policy.protected_path_basenames 'permission policy protected_path_basenames' 128 $errors
+  $suffixes=Validate-StringArray $policy.protected_path_suffixes 'permission policy protected_path_suffixes' 64 $errors
+  $namePrefixes=Validate-StringArray $policy.protected_path_name_prefixes 'permission policy protected_path_name_prefixes' 32 $errors
+  $canonicalAuto=@('documentation','tests','source_code','local_non_secret_config','dependency_hygiene')
+  $canonicalHard=@('material_product_intent','architecture','public_api_contracts','security_policy','privacy_policy','authentication_semantics','authorization_semantics','database_schema','migrations','production_data','credentials','deployments','production','billing_or_paid_calls','destructive_operations','ci_workflow_or_runner_configuration','qa_authority_or_policy','version_control_metadata')
+  $canonicalPrefixes=@('.comprehensive-qa','.git','.hg','.svn','.github','.circleci','.buildkite','.teamcity','.ssh','.aws','.azure','.kube','secrets','credentials')
+  $canonicalBasenames=@('.gitlab-ci.yml','jenkinsfile','azure-pipelines.yml','bitbucket-pipelines.yml','codeowners','.npmrc','.pypirc','.netrc','id_rsa','id_ed25519','credentials.json','service-account.json')
+  $canonicalSuffixes=@('.key','.pem','.p12','.pfx','.jks','.keystore')
+  $canonicalNamePrefixes=@('.env')
+  foreach($pair in @(@($auto,$canonicalAuto,'auto_change_categories'),@($hard,$canonicalHard,'hard_boundaries'),@($prefixes,$canonicalPrefixes,'protected_path_prefixes'),@($basenames,$canonicalBasenames,'protected_path_basenames'),@($suffixes,$canonicalSuffixes,'protected_path_suffixes'),@($namePrefixes,$canonicalNamePrefixes,'protected_path_name_prefixes'))){
+    $actual=@($pair[0]);$want=@($pair[1]);$label=[string]$pair[2]
+    if(@($actual|Select-Object -Unique).Count-ne$actual.Count){$errors.Add("permission policy $label contains duplicates")}
+    if((@($actual|Sort-Object)-join',') -ne (@($want|Sort-Object)-join',')){$errors.Add("permission policy $label violates canonical managed values")}
+  }
   foreach($x in $auto){if($hard-contains$x){$errors.Add("permission policy auto-change category overlaps hard boundary: $x")}}
   $expected=@{REPORT_ONLY=@();SAFE_FIXES=@('LOW');ACTIVE_REMEDIATION=@('LOW','MEDIUM');CUSTOM=@()}
   foreach($name in $required){
@@ -60,7 +73,7 @@ function Validate-PermissionPolicy($policy){
     $risks=Validate-StringArray $node.auto_change_risks "permission policy $name auto_change_risks" 2 $errors
     if((@($risks|Sort-Object)-join',') -ne (@($expected[$name]|Sort-Object)-join',')){$errors.Add("permission policy $name auto_change_risks violates canonical ceiling")}
   }
-  foreach($rule in @('agent_may_never_self_elevate','owner_approval_required_for_policy_mutation','hard_boundaries_override_all_presets','unknown_change_risk_requires_approval','ambiguous_expected_behavior_requires_approval','all_automatic_changes_must_be_reversible','automatic_change_requires_finding_evidence_and_authorization_id')){if($policy.rules.$rule-ne$true){$errors.Add("permission policy safety rule must be true: $rule")}}
+  foreach($rule in @('agent_may_never_self_elevate','owner_approval_required_for_policy_mutation','hard_boundaries_override_all_presets','unknown_change_risk_requires_approval','ambiguous_expected_behavior_requires_approval','all_automatic_changes_must_be_reversible','automatic_change_requires_finding_evidence_and_authorization_id','automatic_change_requires_declared_target_paths')){if($policy.rules.$rule-ne$true){$errors.Add("permission policy safety rule must be true: $rule")}}
   if($errors.Count){throw ('Permission policy validation failed: '+($errors-join'; '))}
 }
 function Validate-Policy($p,[int64]$sourceBytes=-1){

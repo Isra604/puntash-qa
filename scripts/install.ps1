@@ -9,12 +9,17 @@ $packageRoot = Split-Path -Parent $PSScriptRoot
 $runtime = Join-Path $packageRoot 'runtime'
 $version = (Get-Content (Join-Path $packageRoot 'VERSION') -Raw).Trim()
 $termsVersion = (Get-Content (Join-Path $packageRoot 'TERMS_VERSION') -Raw).Trim()
+$pathSafety = Join-Path $runtime 'tools\path-safety.ps1'
+if (-not (Test-Path $pathSafety -PathType Leaf)) { throw 'Path-safety helper missing from package.' }
+. $pathSafety
 
 if (-not (Test-Path $ProjectPath -PathType Container)) {
   throw "Project path does not exist or is not a directory: $ProjectPath"
 }
 $project = (Resolve-Path $ProjectPath).Path
 $dest = Join-Path $project '.comprehensive-qa'
+Assert-PathWithin -Path $dest -Root $project -Label 'install destination'
+Assert-NoReparsePoint -Path $dest -Label 'existing QA runtime' -Recursive
 if ((Test-Path $dest) -and (-not $Force)) { throw "QA runtime already exists: $dest. No files were changed. Use -Force only if you intentionally want to reinstall; fresh human acceptance will still be required." }
 
 $legalNames = @(
@@ -154,8 +159,13 @@ Write-Host 'Copyright (c) 2026 Ofir Israeli | MIT License'
 Write-Host "Human acceptance recorded for Terms v$termsVersion"
 
 if (Test-Path $dest) {
-  $backup = "$dest.backup.$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+  Assert-NoReparsePoint -Path $dest -Label 'existing QA runtime before reinstall backup' -Recursive
+  $backup = "$dest.backup.$(Get-Date -Format 'yyyyMMdd_HHmmss').$([guid]::NewGuid().ToString('N'))"
+  Assert-PathWithin -Path $backup -Root $project -Label 'reinstall backup destination'
   Copy-Item $dest $backup -Recurse
+  if($Force){
+    foreach($managed in @('gates','templates','agent-guides','dashboard','prompts','tools')){$mp=Join-Path $dest $managed;if(Test-Path -LiteralPath $mp){Assert-NoReparsePoint -Path $mp -Label "managed reinstall path $managed" -Recursive;Remove-Item -LiteralPath $mp -Recurse -Force}}
+  }
 }
 
 New-Item -ItemType Directory -Path $dest -Force | Out-Null

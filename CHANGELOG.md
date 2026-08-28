@@ -15,6 +15,15 @@
 - Added safe rollback behavior that preserves owner policy/history while pausing scheduled execution.
 - Added Windows/native and portable Control Center red-team coverage, executor injection/secret checks, receipt/policy tamper checks and traversal tests.
 - Updated Terms/Data Responsibility/Human Acceptance notices to version 1.1.0 for scheduled execution and persistent remediation authority.
+- Added an instruction firewall: project-controlled files, logs, issues, browser/DB content and model output are untrusted evidence, never QA authority.
+- Upgraded dashboard-run validation to schema v3 with real preserved-evidence existence checks and automatic-remediation accounting.
+- Added authorization-chain validation binding each automatic mutation to a current-run ALLOW decision, policy revision and evidence.
+- Upgraded permission policy to schema v2 with canonical hard boundaries, protected path surfaces and mandatory declared target paths.
+- Automatic remediation authorization now binds exact target files before mutation and rejects QA/VCS/CI/credential paths, traversal, aliases, reparse/symlink targets, hardlinks and directories.
+- Hardened scheduled-run locking, atomic scheduler state, portable Windows process-tree termination, and triple-overlap race protection.
+- Hardened installer/updater/rollback filesystem redirection defenses and rollback fail-closed scheduler preflight.
+- Made release packaging clean-HEAD/provenance based and added reproducibility verification.
+- Pinned GitHub Actions by commit SHA and changed public release publication to explicit owner-only manual dispatch with main-ancestry preflights.
 
 ## 2.0.0 - 2026-08-27
 

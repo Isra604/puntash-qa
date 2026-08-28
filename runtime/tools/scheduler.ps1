@@ -28,11 +28,30 @@ function Get-ScheduleSignature($schedule) {
     $material=[ordered]@{enabled=[bool]$schedule.enabled;frequency=[string]$schedule.frequency;local_time=[string]$schedule.local_time;days_of_week=@($schedule.days_of_week);timezone_mode=[string]$schedule.timezone_mode;executor_mode=[string]$schedule.executor_mode}
     return (Hash-Text ($material|ConvertTo-Json -Depth 6 -Compress)).Substring(0,20)
 }
+function Write-JsonAtomic([string]$Path,$Value,[int]$Depth=10) {
+    $dir=Split-Path -Parent $Path
+    if(-not(Test-Path -LiteralPath $dir -PathType Container)){New-Item -ItemType Directory -Path $dir -Force|Out-Null}
+    $token=[guid]::NewGuid().ToString('N')
+    $tmp=Join-Path $dir ((Split-Path -Leaf $Path)+'.tmp.'+$token)
+    $backup=Join-Path $dir ((Split-Path -Leaf $Path)+'.bak.'+$token)
+    $json=($Value|ConvertTo-Json -Depth $Depth).Replace("`r`n","`n").Replace("`r","`n")+"`n"
+    [IO.File]::WriteAllText($tmp,$json,(New-Object Text.UTF8Encoding($false)))
+    try {
+        if(Test-Path -LiteralPath $Path){[IO.File]::Replace($tmp,$Path,$backup,$true);Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue}
+        else {
+            try{[IO.File]::Move($tmp,$Path)}catch{if(Test-Path -LiteralPath $Path){[IO.File]::Replace($tmp,$Path,$backup,$true);Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue}else{throw}}
+        }
+    } finally {
+        Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Save-Registration([string]$Status,[string]$Message,[hashtable]$Extra=@{}) {
     $platform=if($Extra.ContainsKey('platform')){[string]$Extra['platform']}else{'windows'}
     $record=[ordered]@{updated_at=(Get-Date).ToString('o');status=$Status;message=$Message;task_name=$taskName;platform=$platform}
     foreach($key in $Extra.Keys){if($key-ne'platform'){$record[$key]=$Extra[$key]}}
-    $record|ConvertTo-Json -Depth 10|Set-Content $registrationPath -Encoding UTF8
+    Write-JsonAtomic -Path $registrationPath -Value $record -Depth 10
     return [pscustomobject]$record
 }
 function Load-Registration {

@@ -65,3 +65,7 @@ reliability_model:
   config: gates/reliability.yaml
   require_lens_applicability_decision: true
   require_evidence_assurance: true
+
+current_run_schema_version: 3
+untrusted_project_content_policy: templates/UNTRUSTED_PROJECT_CONTENT.md
+path_safety_windows: tools/path-safety.ps1

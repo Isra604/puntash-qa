@@ -89,33 +89,44 @@ def validate_permission_policy(perm: dict):
     errors = []
     if not isinstance(perm, dict):
         raise ValueError('permission policy must be an object')
-    reject_unknown_keys(perm, {'schema_version','model','change_risks','presets','auto_change_categories','hard_boundaries','rules'}, 'permission policy', errors)
-    for key in ('presets', 'auto_change_categories', 'hard_boundaries'):
-        if key not in perm:
-            errors.append(f'permission policy missing {key}')
+    allowed={'schema_version','model','change_risks','presets','auto_change_categories','hard_boundaries','protected_path_prefixes','protected_path_basenames','protected_path_suffixes','protected_path_name_prefixes','rules'}
+    reject_unknown_keys(perm, allowed, 'permission policy', errors)
+    if perm.get('schema_version') != 2: errors.append('permission policy schema_version must equal 2')
+    if perm.get('model') != 'owner-controlled-agent-remediation': errors.append('permission policy model is invalid')
+    for key in ('presets','auto_change_categories','hard_boundaries','protected_path_prefixes','protected_path_basenames','protected_path_suffixes','protected_path_name_prefixes'):
+        if key not in perm: errors.append(f'permission policy missing {key}')
     presets=perm.get('presets')
     if not isinstance(presets, dict):
-        errors.append('permission policy presets must be an object')
-        presets={}
+        errors.append('permission policy presets must be an object');presets={}
     required={'REPORT_ONLY','SAFE_FIXES','ACTIVE_REMEDIATION','CUSTOM'}
-    if set(presets) != required:
-        errors.append('permission policy presets must exactly define REPORT_ONLY, SAFE_FIXES, ACTIVE_REMEDIATION, CUSTOM')
+    if set(presets) != required: errors.append('permission policy presets must exactly define REPORT_ONLY, SAFE_FIXES, ACTIVE_REMEDIATION, CUSTOM')
     auto=require_string_list(perm.get('auto_change_categories'), 'permission policy auto_change_categories', errors, 128)
     hard=require_string_list(perm.get('hard_boundaries'), 'permission policy hard_boundaries', errors, 128)
-    if len(set(auto)) != len(auto): errors.append('permission policy auto_change_categories contains duplicates')
-    if len(set(hard)) != len(hard): errors.append('permission policy hard_boundaries contains duplicates')
+    prefixes=require_string_list(perm.get('protected_path_prefixes'), 'permission policy protected_path_prefixes', errors, 128)
+    basenames=require_string_list(perm.get('protected_path_basenames'), 'permission policy protected_path_basenames', errors, 128)
+    suffixes=require_string_list(perm.get('protected_path_suffixes'), 'permission policy protected_path_suffixes', errors, 64)
+    name_prefixes=require_string_list(perm.get('protected_path_name_prefixes'), 'permission policy protected_path_name_prefixes', errors, 32)
+    canonical_auto={'documentation','tests','source_code','local_non_secret_config','dependency_hygiene'}
+    canonical_hard={'material_product_intent','architecture','public_api_contracts','security_policy','privacy_policy','authentication_semantics','authorization_semantics','database_schema','migrations','production_data','credentials','deployments','production','billing_or_paid_calls','destructive_operations','ci_workflow_or_runner_configuration','qa_authority_or_policy','version_control_metadata'}
+    canonical_prefixes={'.comprehensive-qa','.git','.hg','.svn','.github','.circleci','.buildkite','.teamcity','.ssh','.aws','.azure','.kube','secrets','credentials'}
+    canonical_basenames={'.gitlab-ci.yml','jenkinsfile','azure-pipelines.yml','bitbucket-pipelines.yml','codeowners','.npmrc','.pypirc','.netrc','id_rsa','id_ed25519','credentials.json','service-account.json'}
+    canonical_suffixes={'.key','.pem','.p12','.pfx','.jks','.keystore'}
+    canonical_name_prefixes={'.env'}
+    for value,name,want in ((auto,'auto_change_categories',canonical_auto),(hard,'hard_boundaries',canonical_hard),(prefixes,'protected_path_prefixes',canonical_prefixes),(basenames,'protected_path_basenames',canonical_basenames),(suffixes,'protected_path_suffixes',canonical_suffixes),(name_prefixes,'protected_path_name_prefixes',canonical_name_prefixes)):
+        if len(set(value)) != len(value): errors.append(f'permission policy {name} contains duplicates')
+        if set(value) != want: errors.append(f'permission policy {name} violates canonical managed values')
     if set(auto) & set(hard): errors.append('permission policy auto-change categories overlap hard boundaries')
     expected={'REPORT_ONLY':set(),'SAFE_FIXES':{'LOW'},'ACTIVE_REMEDIATION':{'LOW','MEDIUM'},'CUSTOM':set()}
     for name,want in expected.items():
         value=presets.get(name,{}) if isinstance(presets,dict) else {}
+        if isinstance(value,dict): reject_unknown_keys(value,{'auto_change_risks','description'},f'permission policy preset {name}',errors)
         risks=value.get('auto_change_risks',[]) if isinstance(value,dict) else []
         if set(risks)!=want: errors.append(f'permission policy {name} auto_change_risks violates canonical ceiling')
     rules=perm.get('rules',{})
-    for key in ('agent_may_never_self_elevate','owner_approval_required_for_policy_mutation','hard_boundaries_override_all_presets','unknown_change_risk_requires_approval','ambiguous_expected_behavior_requires_approval','all_automatic_changes_must_be_reversible','automatic_change_requires_finding_evidence_and_authorization_id'):
+    required_rules=('agent_may_never_self_elevate','owner_approval_required_for_policy_mutation','hard_boundaries_override_all_presets','unknown_change_risk_requires_approval','ambiguous_expected_behavior_requires_approval','all_automatic_changes_must_be_reversible','automatic_change_requires_finding_evidence_and_authorization_id','automatic_change_requires_declared_target_paths')
+    for key in required_rules:
         if rules.get(key) is not True: errors.append(f'permission policy safety rule must be true: {key}')
-    if errors:
-        raise ValueError('; '.join(errors))
-
+    if errors: raise ValueError('; '.join(errors))
 
 def validate(policy: dict, perm: dict):
     errors: list[str] = []

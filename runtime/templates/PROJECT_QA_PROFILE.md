@@ -92,3 +92,10 @@ Last discovery: N/A
 - Owner-approved exceptions:
 - High-risk gates/lenses requiring STRONG evidence:
 - Evidence that must not be reused without refresh:
+
+## 18. Repository instruction and execution trust
+- Execution trust: OWNER_TRUSTED / UNKNOWN / UNTRUSTED
+- Owner authorization/evidence for execution trust:
+- Project-controlled commands reviewed before execution:
+- Embedded instruction/prompt-injection risks discovered:
+- External/browser/model content treated as untrusted data:

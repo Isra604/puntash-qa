@@ -58,3 +58,6 @@ Upgrading from Terms 1.0.0 to v2.1 Terms 1.1.0 requires renewed human acceptance
 ## Trust boundary
 
 OWNER_POLICY, audit history and the local control token are application-level safety controls. They are not a cryptographic defense against malware, an administrator, or another process that already has unrestricted write/control access to the project and user account. Protect the workstation, repository and executor environment accordingly.
+
+## Target-path authorization
+Automatic remediation is exact-file scoped. Before mutation, the agent must submit every intended project-relative target path to `authorize-change`. QA authority/VCS/CI/credential paths, traversal, absolute paths and symlink/junction targets are denied. The final run record must prove that `files_changed` exactly matches the authorized target set.

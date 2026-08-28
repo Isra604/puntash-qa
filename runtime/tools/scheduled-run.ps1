@@ -41,6 +41,25 @@ function ConvertTo-WindowsArgument([string]$Value) {
     return $sb.ToString()
 }
 
+function Write-JsonAtomic([string]$Path,$Value,[int]$Depth=10) {
+    $dir=Split-Path -Parent $Path
+    if(-not(Test-Path -LiteralPath $dir -PathType Container)){New-Item -ItemType Directory -Path $dir -Force|Out-Null}
+    $token=[guid]::NewGuid().ToString('N')
+    $tmp=Join-Path $dir ((Split-Path -Leaf $Path)+'.tmp.'+$token)
+    $backup=Join-Path $dir ((Split-Path -Leaf $Path)+'.bak.'+$token)
+    $json=($Value|ConvertTo-Json -Depth $Depth).Replace("`r`n","`n").Replace("`r","`n")+"`n"
+    [IO.File]::WriteAllText($tmp,$json,(New-Object Text.UTF8Encoding($false)))
+    try {
+        if(Test-Path -LiteralPath $Path){[IO.File]::Replace($tmp,$Path,$backup,$true);Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue}
+        else {
+            try{[IO.File]::Move($tmp,$Path)}catch{if(Test-Path -LiteralPath $Path){[IO.File]::Replace($tmp,$Path,$backup,$true);Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue}else{throw}}
+        }
+    } finally {
+        Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $backup -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Save-Status([string]$Result, [string]$Message, [hashtable]$Extra = @{}) {
     $record = [ordered]@{
         updated_at = (Get-Date).ToString('o')
@@ -50,7 +69,7 @@ function Save-Status([string]$Result, [string]$Message, [hashtable]$Extra = @{})
         acceptance_receipt_integrity = $script:acceptanceReceiptIntegrity
     }
     foreach ($key in $Extra.Keys) { $record[$key] = $Extra[$key] }
-    $record | ConvertTo-Json -Depth 8 | Set-Content $statusPath -Encoding UTF8
+    Write-JsonAtomic -Path $statusPath -Value $record -Depth 8
 }
 
 if (-not (Test-Path $acceptancePath)) {
@@ -189,5 +208,4 @@ if(-not(Test-Path $promptPath)){$promptPath=Join-Path $installRoot 'templates\SC
     exit 10
 } finally {
     if ($lock) { $lock.Dispose() }
-    Remove-Item $lockPath -Force -ErrorAction SilentlyContinue
 }

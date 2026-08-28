@@ -36,7 +36,7 @@ def main():
         auth=[sys.executable,str(install/'tools/authorize-change.py')]
         commands=[]
         for n in range(20):
-            commands.append(auth+['--risk','LOW','--category','documentation','--finding-id',f'F-{n}','--change-summary',f'concurrent auth {n}','--evidence-ref',f'evidence/{n}.txt','--expected-behavior-proven','--reversible'])
+            commands.append(auth+['--risk','LOW','--category','documentation','--finding-id',f'F-{n}','--change-summary',f'concurrent auth {n}','--evidence-ref',f'evidence/{n}.txt','--target-path',f'docs/concurrent-{n}.md','--expected-behavior-proven','--reversible'])
         procs=[subprocess.Popen(c,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True) for c in commands]
         results=[p.communicate(timeout=30)+(p.returncode,) for p in procs]
         ok(all(rc==0 for _,_,rc in results),'authorization_concurrent_allows_complete')
