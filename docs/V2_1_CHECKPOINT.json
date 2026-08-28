@@ -1,7 +1,7 @@
 {
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
-  "status": "OWNER_RELEASE_APPROVED_BRANDING_REVALIDATION_IN_PROGRESS",
+  "status": "OWNER_APPROVED_READY_TO_PUBLISH",
   "current_phase": 6,
   "last_completed_phase": 5,
   "completed_phases": [
@@ -12,9 +12,9 @@
     4,
     5
   ],
-  "validated_code_sha": "d8960a1854005e012ab6c7cedbb07796b808416a",
+  "validated_code_sha": "a1702f28d8b3858171c77058d29ec2a299db1af7",
   "validation": {
-    "github_ci_run": "33178292059",
+    "github_ci_run": "33182755332",
     "windows": "PASS",
     "ubuntu": "PASS",
     "macos": "PASS",
@@ -33,7 +33,11 @@
     "verify_install_shell": "PASS",
     "secret_scan": "PASS",
     "private_project_isolation_scan": "PASS",
-    "working_tree_before_closure_docs": "CLEAN"
+    "working_tree_before_closure_docs": "CLEAN",
+    "puntash_brand_integrity": "PASS",
+    "dashboard_branding": "PASS",
+    "repository_rename_redirect": "PASS",
+    "new_release_asset_naming": "PASS"
   },
   "publication_state": {
     "merged_to_main": false,
@@ -42,8 +46,8 @@
     "owner_approval_required": false,
     "owner_approval_received": true
   },
-  "next_action": "Complete full post-branding revalidation on Windows, Ubuntu and macOS; then merge to main, create tag v2.1.0, and run the manual owner-gated release workflow.",
-  "updated_at": "2026-08-28T17:31:00+03:00",
+  "next_action": "Merge the approved PUNTASH QA v2.1.0 candidate to main, create tag v2.1.0, then invoke the manual owner-gated release workflow and perform public artifact verification.",
+  "updated_at": "2026-08-28T18:02:59+03:00",
   "product_name": "PUNTASH QA",
   "product_subtitle": "Universal Comprehensive QA Gate System",
   "repository": "Isra604/puntash-qa",
