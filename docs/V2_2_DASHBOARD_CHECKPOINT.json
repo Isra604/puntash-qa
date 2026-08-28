@@ -28,7 +28,7 @@
     "tag_created": false,
     "public_release_created": false
   },
-  "next_action": "Stage 10: commit clean candidate, run clean-HEAD reproducibility/package gates, push branch, open Draft PR, and require Windows/Ubuntu/macOS CI PASS before owner release approval.",
+  "next_action": "Stage 10 cross-platform gate: push candidate branch, open Draft PR, require Windows/Ubuntu/macOS GitHub Actions PASS, then record final evidence and rebuild the final RC from the resulting clean HEAD.",
   "local_evidence": {
     "windows_self_test": "PASS",
     "portable_dashboard_redteam": "PASS",
@@ -42,6 +42,13 @@
     "portable_timeout_process_tree": "PASS",
     "v21_to_v22_upgrade_rollback": "PASS",
     "secret_scan": "PASS",
-    "private_project_isolation": "PASS"
-  }
+    "private_project_isolation": "PASS",
+    "clean_head_package_self_test": "PASS",
+    "v14_to_v22_upgrade_rollback": "PASS",
+    "v20_to_v22_upgrade_rollback": "PASS",
+    "reproducible_package": "PASS",
+    "interim_package_sha256": "6E6FDB1DF4979A0E55AC2BF335B8920D21B867F62A78B21A702550BB942D6B4F",
+    "interim_package_source_commit": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f"
+  },
+  "implementation_sha": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f"
 }

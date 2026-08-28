@@ -1115,7 +1115,7 @@ The Dashboard release is complete only when all items below are true.
 - [ ] Ubuntu CI passes.
 - [ ] macOS CI passes.
 - [x] Upgrade/rollback compatibility decision is documented and tested.
-- [ ] final release package provenance/reproducibility passes.
+- [x] final release package provenance/reproducibility passes.
 - [ ] final public artifact audit passes before closure.
 
 ---
@@ -1215,3 +1215,17 @@ The next action is to assign the release version and begin **Stage 0 — Baselin
 Stages 1–9 are implemented and locally verified. Stage 10 local adversarial QA is PASS on Windows, including the portable and native Control Center paths, authorization, path safety, scheduler lifecycle, rollback preflight, timeout/process-tree handling, v2.1 compatibility, and v2.1 → v2.2 upgrade/rollback.
 
 Stage 10 remains open only for clean-HEAD reproducible-package proof and GitHub Actions Windows/Ubuntu/macOS evidence. Publication remains blocked pending explicit owner release approval.
+
+Clean-HEAD implementation evidence:
+
+```text
+implementation_sha=427edcc6536bd96dd52b30cbbd0d29f16d28e19f
+self_test_build_package=PASS
+v1.4_to_v2.2_rollback=PASS
+v2.0_to_v2.2_rollback=PASS
+v2.1_to_v2.2_rollback=PASS
+reproducible_package=PASS
+interim_zip_sha256=6E6FDB1DF4979A0E55AC2BF335B8920D21B867F62A78B21A702550BB942D6B4F
+```
+
+This SHA is implementation evidence, not the final release artifact hash; final documentation/CI evidence may create a later clean HEAD and therefore requires a final rebuild.
