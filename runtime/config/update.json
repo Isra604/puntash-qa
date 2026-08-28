@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "repository": "Isra604/comprehensive-qa-gate-system",
+  "repository": "Isra604/puntash-qa",
   "channel": "stable",
   "release_source": "github_releases",
   "current_visibility": "public",
@@ -23,6 +23,8 @@
     "config/default.yaml"
   ],
   "managed_paths": [
+    "config/permission-policy.json",
+    "prompts",
     "OPEN_DASHBOARD.cmd",
     "dashboard",
     "AGENT_INSTRUCTIONS.md",
@@ -47,5 +49,9 @@
     "lens_count": 9,
     "compatibility_layout": "gates/lenses",
     "policy": "gates/reliability.yaml"
+  },
+  "control_center": {
+    "owner_policy_preserved_in_state": true,
+    "scheduler_paused_on_rollback": true
   }
 }

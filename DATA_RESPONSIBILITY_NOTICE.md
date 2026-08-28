@@ -1,6 +1,6 @@
 # Privacy and Data Responsibility Notice
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 The QA package itself does not create a hosted service, account system, analytics service, telemetry backend, or data-upload endpoint. The distributed installer is designed to operate locally.
 
@@ -22,6 +22,14 @@ The receipt may contain:
 - SHA-256 hashes of the legal documents presented
 
 The installer does **not** transmit this receipt to Ofir Israeli or to any server operated by this package.
+
+## Local owner policy and scheduler records
+
+When the owner configures agent permissions or scheduled QA, the installed runtime may store local operational records under `.comprehensive-qa/state/`, including an owner-policy file, policy-change audit history, scheduler registration/status, and local scheduler logs. These records can include the selected remediation preset, schedule time/frequency, executor mode, executable name/path, non-secret argument templates, run status, and local log paths.
+
+The package is designed to keep these records local and does not provide a telemetry or hosted upload endpoint. Scheduled-run stdout/stderr logs can contain project-derived or AI-generated content and should be protected with the same care as other local QA evidence; the default runtime prunes scheduler logs older than 30 days, with a bounded owner-configurable retention period. Executor credentials, API tokens, private keys, and passwords must not be stored in the owner-policy file. Users remain responsible for the behavior and data practices of any AI provider, CLI, operating-system scheduler, plugin, connector, or other executor they choose.
+
+Scheduled execution can occur while the user is not actively viewing the project. The owner should therefore use an executor/environment appropriate for unattended processing and review what project data that executor can access.
 
 ## Project data
 

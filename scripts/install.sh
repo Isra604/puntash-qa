@@ -4,17 +4,21 @@ if [[ $# -lt 1 ]]; then
   echo "Usage: $0 /path/to/project" >&2
   exit 2
 fi
-if [[ ! -t 0 || ! -t 1 ]]; then
-  echo "Human acceptance required. This installer refuses non-interactive/CI/unattended execution." >&2
-  exit 5
-fi
-PROJECT="$(cd "$1" && pwd)"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT="$(cd "$1" && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+PACKAGE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 DEST="$PROJECT/.comprehensive-qa"
+if [[ -L "$DEST" ]]; then
+  echo "Refusing symlinked QA runtime destination: $DEST" >&2
+  exit 3
+fi
 if [[ -e "$DEST" ]]; then
   echo "QA runtime already exists: $DEST. No files were changed. This shell installer does not overwrite an existing runtime." >&2
   exit 3
+fi
+if [[ ! -t 0 || ! -t 1 ]]; then
+  echo "Human acceptance required. This installer refuses non-interactive/CI/unattended execution." >&2
+  exit 5
 fi
 VERSION="$(tr -d '\r\n' < "$PACKAGE_ROOT/VERSION")"
 TERMS_VERSION="$(tr -d '\r\n' < "$PACKAGE_ROOT/TERMS_VERSION")"
@@ -29,7 +33,8 @@ hash_file() {
 }
 
 clear 2>/dev/null || true
-echo "Universal Comprehensive QA Gate System v$VERSION"
+echo "PUNTASH QA v$VERSION"
+echo "Universal Comprehensive QA Gate System"
 echo "Original creator and project architect: Ofir Israeli"
 echo "Terms version: $TERMS_VERSION"
 echo "===================================================================="
@@ -63,7 +68,8 @@ mkdir -p "$DEST/profile" "$DEST/reports" "$DEST/reports/dashboard" "$DEST/eviden
 cp "$DEST/templates/PROJECT_QA_PROFILE.md" "$DEST/profile/PROJECT_QA_PROFILE.md"
 : > "$DEST/state/FINDING_LEDGER.jsonl"
 cat > "$DEST/state/FIRST_RUN_ATTRIBUTION_PENDING.txt" <<EOF
-Universal Comprehensive QA Gate System v$VERSION
+PUNTASH QA v$VERSION
+Universal Comprehensive QA Gate System
 Original creator and project architect: Ofir Israeli
 Copyright (c) 2026 Ofir Israeli
 Licensed under the MIT License.
@@ -73,7 +79,7 @@ EOF
 json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 {
   echo '{'
-  echo '  "system": "Universal Comprehensive QA Gate System",'
+  echo '  "system": "PUNTASH QA",'
   echo "  \"package_version\": \"$(json_escape "$VERSION")\","
   echo "  \"terms_version\": \"$(json_escape "$TERMS_VERSION")\","
   echo "  \"installation_id\": \"$(json_escape "$INSTALLATION_ID")\","
@@ -99,7 +105,7 @@ json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 
 cat > "$DEST/INSTALLATION.json" <<EOF
 {
-  "system": "Universal Comprehensive QA Gate System",
+  "system": "PUNTASH QA",
   "version": "$VERSION",
   "terms_version": "$TERMS_VERSION",
   "project_path": "$(json_escape "$PROJECT")",
@@ -119,6 +125,16 @@ if [[ -f "$DEST/tools/qa-doctor.sh" ]]; then
   fi
 fi
 
+if [[ ! -f "$DEST/state/OWNER_POLICY.json" ]]; then
+  if [[ -x "$DEST/tools/policy-manager.sh" ]] && command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
+    bash "$DEST/tools/policy-manager.sh" get >/dev/null || true
+  fi
+  if [[ ! -f "$DEST/state/OWNER_POLICY.json" && -f "$DEST/templates/OWNER_POLICY.json" ]]; then
+    cp "$DEST/templates/OWNER_POLICY.json" "$DEST/state/OWNER_POLICY.json"
+  fi
+fi
+echo "Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise."
+
 if [[ -f "$DEST/tools/dashboard-refresh.sh" ]]; then
   if bash "$DEST/tools/dashboard-refresh.sh" "$PROJECT"; then
     echo "Dashboard initialized."
@@ -132,4 +148,4 @@ echo "Created by Ofir Israeli."
 echo "Human acceptance recorded for Terms v$TERMS_VERSION."
 echo "Installed runtime: $DEST"
 echo "Acceptance receipt: $DEST/state/HUMAN_ACCEPTANCE_RECEIPT.json"
-echo "Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md and perform Discovery."
+echo "Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md, then choose owner permissions/scheduling when prompted or through the local Dashboard Control Center."

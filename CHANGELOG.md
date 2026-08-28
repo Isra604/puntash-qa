@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.1.0 - RELEASE CANDIDATE / NOT YET PUBLIC
+
+- Official product branding: **PUNTASH QA** — Universal Comprehensive QA Gate System. The GitHub repository is `Isra604/puntash-qa`, the release artifact is `PUNTASH-QA-v2.1.0.zip`, and the installed `.comprehensive-qa` runtime path remains stable.
+
+- Added explicit owner-controlled remediation presets: REPORT_ONLY, SAFE_FIXES and ACTIVE_REMEDIATION.
+- Added a mechanical `authorize-change` decision engine required before automatic product mutation.
+- Added immutable hard boundaries so agents cannot self-authorize high-impact/protected categories.
+- Added persistent owner-policy audit history and blocked agent self-elevation.
+- Added opt-in Scheduled QA with Windows Task Scheduler, Unix cron, and AGENT_MANAGED platform mode.
+- Added overlap locks, timeout/status records and local scheduler logs.
+- Scheduled runs now revalidate the current human Terms receipt and human-approved owner policy on every invocation.
+- Added local Dashboard Control Center for permission/schedule configuration with loopback-only binding and per-session tokens.
+- Restricted unauthenticated dashboard serving to dashboard assets only; report access is token-authenticated and constrained to the local reports tree.
+- Added cross-platform direct-upgrade compatibility from v2.0.0 without a bridge release.
+- Added safe rollback behavior that preserves owner policy/history while pausing scheduled execution.
+- Added Windows/native and portable Control Center red-team coverage, executor injection/secret checks, receipt/policy tamper checks and traversal tests.
+- Updated Terms/Data Responsibility/Human Acceptance notices to version 1.1.0 for scheduled execution and persistent remediation authority.
+- Added an instruction firewall: project-controlled files, logs, issues, browser/DB content and model output are untrusted evidence, never QA authority.
+- Upgraded dashboard-run validation to schema v3 with real preserved-evidence existence checks and automatic-remediation accounting.
+- Added authorization-chain validation binding each automatic mutation to a current-run ALLOW decision, policy revision and evidence.
+- Upgraded permission policy to schema v2 with canonical hard boundaries, protected path surfaces and mandatory declared target paths.
+- Automatic remediation authorization now binds exact target files before mutation and rejects QA/VCS/CI/credential paths, traversal, aliases, reparse/symlink targets, hardlinks and directories.
+- Hardened scheduled-run locking, atomic scheduler state, portable Windows process-tree termination, and triple-overlap race protection.
+- Hardened installer/updater/rollback filesystem redirection defenses and rollback fail-closed scheduler preflight.
+- Made release packaging clean-HEAD/provenance based and added reproducibility verification.
+- Pinned GitHub Actions by commit SHA and changed public release publication to explicit owner-only manual dispatch with main-ancestry preflights.
+
 ## 2.0.0 - 2026-08-27
 
 - Added 9 mandatory cross-cutting reliability lenses while preserving exactly 25 canonical gates.

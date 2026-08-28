@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "run_id": "RUN-YYYYMMDD-HHMMSS",
   "project": {
     "name": "",
@@ -81,5 +81,23 @@
       "evidence/YYYY-MM-DD/LENS-01/example.txt"
     ],
     "assurance_gap_non_material": false
+  },
+  "automatic_remediation": {
+    "performed": false,
+    "entries": [],
+    "entry_contract": {
+      "authorization_id": "",
+      "finding_id": "",
+      "policy_revision": 1,
+      "risk": "LOW",
+      "category": "",
+      "change_summary": "",
+      "authorization_evidence_refs": [],
+      "pre_fix_evidence_refs": [],
+      "post_fix_evidence_refs": [],
+      "revalidation_refs": [],
+      "files_changed": [],
+      "authorized_target_paths": []
+    }
   }
 }

@@ -13,23 +13,88 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
-      - name: Run Windows self-test
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Package and core self-test
         shell: pwsh
         run: ./scripts/self-test.ps1 -BuildPackage
-      - name: Run v2 upgrade and rollback red-team
+      - name: Cross-version upgrade and rollback red-team
         shell: pwsh
-        run: ./scripts/v2-upgrade-red-team.ps1
+        run: |
+          ./scripts/v2-upgrade-red-team.ps1
+          ./scripts/v2.1-upgrade-red-team.ps1
+      - name: Permission, policy and runtime red-team
+        shell: pwsh
+        run: |
+          python ./scripts/v2.1-control-red-team.py
+          python ./scripts/v2.1-policy-fuzz-red-team.py
+          python ./scripts/v2.1-runtime-red-team.py
+          python ./scripts/v2.1-concurrency-red-team.py
+      - name: Final adversarial brain, evidence and target-scope red-team
+        shell: pwsh
+        run: |
+          python ./scripts/v2.1-final-adversarial-red-team.py
+          python ./scripts/v2.1-target-scope-red-team.py
+          python ./scripts/v2.1-overlap-red-team.py
+      - name: Windows native control and authorization red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-control-red-team.ps1
+          ./scripts/v2.1-windows-authorization-red-team.ps1
+      - name: Windows filesystem redirection red-team
+        shell: pwsh
+        run: ./scripts/v2.1-windows-path-safety-red-team.ps1
+      - name: Windows Task Scheduler and rollback safety red-team
+        shell: pwsh
+        run: |
+          ./scripts/v2.1-windows-scheduler-red-team.ps1
+          ./scripts/v2.1-rollback-scheduler-red-team.ps1
+      - name: Windows timeout and process-tree red-team
+        shell: pwsh
+        run: ./scripts/v2.1-windows-timeout-red-team.ps1
+      - name: Portable process-tree timeout red-team
+        shell: pwsh
+        run: python ./scripts/v2.1-portable-timeout-red-team.py
+      - name: Reproducible package provenance red-team
+        shell: pwsh
+        run: ./scripts/v2.1-reproducible-package-red-team.ps1
 
   unix:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
-      - name: Run shell self-test
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Shell and package-contract self-test
         shell: bash
         run: bash ./scripts/self-test.sh
+      - name: Portable permission and runtime red-team
+        shell: bash
+        run: |
+          python3 ./scripts/v2.1-control-red-team.py
+          python3 ./scripts/v2.1-policy-fuzz-red-team.py
+          python3 ./scripts/v2.1-runtime-red-team.py
+          python3 ./scripts/v2.1-concurrency-red-team.py
+      - name: Final adversarial brain, evidence and target-scope red-team
+        shell: bash
+        run: |
+          python3 ./scripts/v2.1-final-adversarial-red-team.py
+          python3 ./scripts/v2.1-target-scope-red-team.py
+          python3 ./scripts/v2.1-overlap-red-team.py
+      - name: Unix scheduler preservation and failure red-team
+        shell: bash
+        run: python3 ./scripts/v2.1-unix-scheduler-red-team.py
+      - name: Portable process-tree timeout red-team
+        shell: bash
+        run: python3 ./scripts/v2.1-portable-timeout-red-team.py

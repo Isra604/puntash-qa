@@ -10,6 +10,10 @@
 - Suspected cause:
 - Current impact:
 - QA changed anything: YES / NO
+- Change risk / category:
+- Automatic-change Authorization ID (if any):
+- Owner policy revision used:
+- Reversibility / rollback path:
 - Exact fix performed:
 - Post-fix validation:
 - Regression risk:

@@ -17,6 +17,7 @@ Architecture review; SPOF; FMEA; risk register; dependency risk; capacity archit
 - If applicable checks cannot execute, use BLOCKED or NOT_RUN with reason.
 - If discovery proves this responsibility has no meaningful applicability, use NOT_APPLICABLE with evidence.
 - Record all material findings with stable IDs and link supporting artifacts.
+- Verify schema-v3 automatic-remediation accounting: every automatic mutation is declared and linked to a unique current-run ALLOW Authorization ID with preserved pre/post evidence.
 - If remediation is authorized, perform only SAFE bounded changes and revalidate this gate plus regression-sensitive adjacent gates.
 
 ## Required gate output

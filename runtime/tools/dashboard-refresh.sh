@@ -4,7 +4,7 @@ INSTALL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT="${1:-$(cd "$INSTALL_ROOT/.." && pwd)}"
 RUN_DIR="$INSTALL_ROOT/reports/dashboard"
 DASH_DIR="$INSTALL_ROOT/dashboard"
-mkdir -p "$RUN_DIR" "$DASH_DIR"
+mkdir -p "$RUN_DIR" "$DASH_DIR" "$INSTALL_ROOT/state"
 PYTHON_BIN=''
 if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then PYTHON_BIN='python3';
 elif command -v python >/dev/null 2>&1 && python -c 'import sys' >/dev/null 2>&1; then PYTHON_BIN='python';
@@ -30,7 +30,15 @@ except Exception: pass
 update=None
 try: update=json.loads((install_root/'state'/'LAST_UPDATE_CHECK.json').read_text(encoding='utf-8-sig'))
 except Exception: pass
-data={'schema_version':1,'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'system_version':version,'project_path':str(project),'run_count':len(runs),'update':update,'runs':runs}
+def read_json(p):
+    try:return json.loads(p.read_text(encoding='utf-8-sig'))
+    except Exception:return None
+owner_path=install_root/'state'/'OWNER_POLICY.json'
+if not owner_path.exists() and (install_root/'templates'/'OWNER_POLICY.json').exists(): owner_path.write_bytes((install_root/'templates'/'OWNER_POLICY.json').read_bytes())
+owner=read_json(owner_path)
+registration=read_json(install_root/'state'/'SCHEDULER_REGISTRATION.json')
+scheduler_status=read_json(install_root/'state'/'SCHEDULER_STATUS.json')
+data={'schema_version':2,'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'system_version':version,'project_path':str(project),'run_count':len(runs),'update':update,'owner_policy':owner,'scheduler_registration':registration,'scheduler_status':scheduler_status,'runs':runs}
 (dash_dir/'data.js').write_text('window.QA_DASHBOARD_DATA = '+json.dumps(data,separators=(',',':'))+';\n',encoding='utf-8')
 print(f'DASHBOARD_REFRESHED={len(runs)}')
 print(f'DASHBOARD={dash_dir / "index.html"}')

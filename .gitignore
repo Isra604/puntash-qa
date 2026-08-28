@@ -4,3 +4,8 @@ dist/
 
 __pycache__/
 *.pyc
+.selftest-dist*/
+.repro-dist*/
+.rc-dist/
+.v2-upgrade-redteam-dist/
+.v21-upgrade-redteam-dist/

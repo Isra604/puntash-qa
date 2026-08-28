@@ -1,6 +1,6 @@
 {
-  "name": "universal-comprehensive-qa-gate-system",
-  "version": "2.0.0",
+  "name": "puntash-qa",
+  "version": "2.1.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -23,7 +23,7 @@
   "license": "MIT",
   "copyright": "Copyright (c) 2026 Ofir Israeli",
   "notice": "NOTICE",
-  "terms_version": "1.0.0",
+  "terms_version": "1.1.0",
   "human_acceptance_required": true,
   "acceptance_mode": "interactive-human-attestation",
   "acceptance_receipt": "state/HUMAN_ACCEPTANCE_RECEIPT.json",
@@ -38,7 +38,7 @@
   ],
   "legal_manifest": "LEGAL_MANIFEST.json",
   "updates": {
-    "repository": "Isra604/comprehensive-qa-gate-system",
+    "repository": "Isra604/puntash-qa",
     "source": "github_releases",
     "current_visibility": "public",
     "windows_check": "runtime/tools/check-update.ps1",
@@ -65,7 +65,10 @@
     "refresh_unix": "runtime/tools/dashboard-refresh.sh",
     "open_windows": "runtime/tools/open-dashboard.ps1",
     "local_only": true,
-    "telemetry": false
+    "telemetry": false,
+    "control_center_windows": "runtime/tools/dashboard-control.ps1",
+    "control_center_portable": "runtime/tools/dashboard-control.py",
+    "loopback_only": true
   },
   "lens_count": 9,
   "reliability_model": {
@@ -78,5 +81,57 @@
       "WEAK",
       "INSUFFICIENT"
     ]
-  }
+  },
+  "control_center": {
+    "owner_policy": "runtime/templates/OWNER_POLICY.json",
+    "permission_policy": "runtime/config/permission-policy.json",
+    "windows_control": "runtime/tools/dashboard-control.ps1",
+    "portable_control": "runtime/tools/dashboard-control.py",
+    "scheduler_windows": "runtime/tools/scheduler.ps1",
+    "scheduler_unix": "runtime/tools/scheduler.sh",
+    "default_permission": "REPORT_ONLY",
+    "schedule_default_enabled": false,
+    "telemetry": false
+  },
+  "automation_and_permissions": {
+    "owner_policy": "runtime/templates/OWNER_POLICY.json",
+    "permission_policy": "runtime/config/permission-policy.json",
+    "authorization_windows": "runtime/tools/authorize-change.ps1",
+    "authorization_unix": "runtime/tools/authorize-change.sh",
+    "scheduler_windows": "runtime/tools/scheduler.ps1",
+    "scheduler_unix": "runtime/tools/scheduler.sh",
+    "scheduled_runner_windows": "runtime/tools/scheduled-run.ps1",
+    "scheduled_runner_unix": "runtime/tools/scheduled-run.sh",
+    "dashboard_control_windows": "runtime/tools/dashboard-control.ps1",
+    "dashboard_control_portable": "runtime/tools/dashboard-control.py",
+    "safe_default": "REPORT_ONLY + schedule disabled",
+    "telemetry": false
+  },
+  "run_schema_version": 3,
+  "instruction_firewall": "runtime/templates/UNTRUSTED_PROJECT_CONTENT.md",
+  "evidence_reference_policy": {
+    "preserved_paths_required": true,
+    "allowed_roots": [
+      "evidence",
+      "artifacts",
+      "profile",
+      "reports",
+      "remediation",
+      "dispositions"
+    ],
+    "missing_or_escaping_refs_rejected": true
+  },
+  "release_provenance": {
+    "build_source": "clean_git_head",
+    "reproducible_zip_required": true,
+    "source_commit_recorded": true,
+    "source_tree_recorded": true
+  },
+  "filesystem_safety": {
+    "windows_path_helper": "runtime/tools/path-safety.ps1",
+    "reparse_point_redirection_rejected": true,
+    "rollback_backup_confined_to_managed_root": true
+  },
+  "display_name": "PUNTASH QA",
+  "subtitle": "Universal Comprehensive QA Gate System"
 }

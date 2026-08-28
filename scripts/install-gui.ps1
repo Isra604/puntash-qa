@@ -7,7 +7,7 @@ $installer = Join-Path $PSScriptRoot 'install.ps1'
 if (-not (Test-Path $installer)) { throw "Installer not found: $installer" }
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = 'Universal Comprehensive QA Gate System - Easy Start'
+$form.Text = 'PUNTASH QA - Easy Start'
 $form.Size = New-Object System.Drawing.Size(720,330)
 $form.StartPosition = 'CenterScreen'
 $form.MaximizeBox = $false
@@ -18,7 +18,7 @@ $title = New-Object System.Windows.Forms.Label
 $title.Location = New-Object System.Drawing.Point(24,20)
 $title.Size = New-Object System.Drawing.Size(660,45)
 $title.Font = New-Object System.Drawing.Font('Segoe UI',14,[System.Drawing.FontStyle]::Bold)
-$title.Text = 'Install the QA system into your project'
+$title.Text = 'Install PUNTASH QA into your project'
 $form.Controls.Add($title)
 
 $info = New-Object System.Windows.Forms.Label

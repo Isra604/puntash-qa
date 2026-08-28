@@ -46,12 +46,24 @@ Adds, only when authorized:
 Can produce:
 - stronger observability, data, drift, resilience and readiness evidence
 
-## Level 5 — Safe remediation
+## Level 5 — Owner-authorized remediation
 Adds:
 - controlled write/edit and Git branch/worktree capability
+- a human-approved OWNER_POLICY
 
 Can perform:
-- owner-delegated SAFE remediation only
+- remediation up to the owner-selected REPORT_ONLY / SAFE_FIXES / ACTIVE_REMEDIATION ceiling
+- only changes that receive an ALLOW from the mechanical authorize-change tool
+
+Hard-boundary/high-impact changes remain approval-gated regardless of write capability.
+
+## Level 6 — Scheduled unattended QA
+Adds:
+- a human-approved schedule
+- an actual executor: LOCAL_COMMAND or an AI platform scheduler
+- an operating-system scheduler where local execution is used
+
+Scheduling does not grant remediation authority. A scheduler intent without a working executor is reported as NEEDS_EXECUTOR/NEEDS_PLATFORM_ACTIVATION, not ACTIVE. The machine/user environment must be available when the schedule fires; sleeping/offline machines and restricted user sessions can delay or block execution.
 
 ## Hard rule
 

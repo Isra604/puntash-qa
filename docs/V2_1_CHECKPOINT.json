@@ -1,0 +1,61 @@
+{
+  "target_version": "2.1.0",
+  "branch": "feature/v2.1-control-center",
+  "status": "OWNER_APPROVED_READY_TO_PUBLISH",
+  "current_phase": 6,
+  "last_completed_phase": 5,
+  "completed_phases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "validated_code_sha": "a1702f28d8b3858171c77058d29ec2a299db1af7",
+  "validation": {
+    "github_ci_run": "33182755332",
+    "windows": "PASS",
+    "ubuntu": "PASS",
+    "macos": "PASS",
+    "required_redteam_evidence": "PASS",
+    "final_adversarial_brain_evidence_target_scope": "PASS",
+    "permission_policy_schema_v2_canonical_boundaries": "PASS",
+    "target_scope_junction_symlink_hardlink_alias_defense": "PASS",
+    "triple_overlap_race": "PASS",
+    "portable_timeout_process_tree": "PASS",
+    "windows_timeout_process_tree": "PASS",
+    "v1_4_to_v2_1_rollback": "PASS",
+    "v2_0_to_v2_1_rollback": "PASS",
+    "reproducible_package": "PASS",
+    "package_self_test": "PASS",
+    "verify_install_windows": "PASS",
+    "verify_install_shell": "PASS",
+    "secret_scan": "PASS",
+    "private_project_isolation_scan": "PASS",
+    "working_tree_before_closure_docs": "CLEAN",
+    "puntash_brand_integrity": "PASS",
+    "dashboard_branding": "PASS",
+    "repository_rename_redirect": "PASS",
+    "new_release_asset_naming": "PASS"
+  },
+  "publication_state": {
+    "merged_to_main": false,
+    "tag_created": false,
+    "public_release_created": false,
+    "owner_approval_required": false,
+    "owner_approval_received": true
+  },
+  "next_action": "Merge the approved PUNTASH QA v2.1.0 candidate to main, create tag v2.1.0, then invoke the manual owner-gated release workflow and perform public artifact verification.",
+  "updated_at": "2026-08-28T18:02:59+03:00",
+  "product_name": "PUNTASH QA",
+  "product_subtitle": "Universal Comprehensive QA Gate System",
+  "repository": "Isra604/puntash-qa",
+  "release_asset": "PUNTASH-QA-v2.1.0.zip",
+  "owner_release_approval": {
+    "approved": true,
+    "approved_version": "2.1.0",
+    "approved_brand": "PUNTASH QA",
+    "approval_scope": "final v2.1.0 including official PUNTASH QA branding and dashboard branding"
+  }
+}

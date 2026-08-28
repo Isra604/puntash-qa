@@ -18,7 +18,9 @@ The updater:
 9. validates the new runtime;
 10. restores managed files from backup if validation fails.
 
-`tools/rollback.ps1` can restore the managed runtime from the most recent update backup while preserving reports and evidence created later.
+For v2.1, the updater also validates the 9 reliability lenses and Control Center/owner-policy assets. OWNER_POLICY, policy history, QA history/evidence and other state remain preserved. If a rollback is requested after scheduling has been enabled, the current local scheduled task is paused/removed before restoring the older managed runtime so an OS task cannot continue invoking tools that no longer exist.
+
+`tools/rollback.ps1` can restore the managed runtime from the most recent update backup while preserving reports, evidence and owner-policy history created later. Scheduled execution is intentionally left paused after rollback until the owner reviews/reactivates it.
 
 ## Public update channel
 
@@ -27,3 +29,9 @@ The GitHub repository is public. Update checks and release downloads use GitHub'
 ## Release process
 
 The repository workflow `.github/workflows/release.yml` runs when a version tag such as `v1.2.0` is pushed. It verifies that the tag matches `VERSION`, builds the ZIP, emits SHA-256 and `release-manifest.json`, and creates the GitHub Release.
+
+## v2.0.0 to v2.1.0 compatibility
+
+The already-released v2.0.0 updater manages `templates/` and `tools/` recursively but does not know about new top-level config/prompt paths. v2.1 therefore carries compatibility copies of its permission policy and scheduled-run prompt inside those already-managed trees. The v2.1 tools resolve the canonical path first and the compatibility copy second. This allows a direct v2.0.0 -> v2.1.0 update without a bridge release.
+
+Terms change from 1.0.0 to 1.1.0 in v2.1. The released v2.0 updater already contains renewed-Terms clickwrap behavior, so it must obtain fresh human acceptance before applying v2.1.

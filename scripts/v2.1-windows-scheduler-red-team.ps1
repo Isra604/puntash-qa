@@ -1,0 +1,23 @@
+$ErrorActionPreference='Stop'
+$root=Split-Path -Parent $PSScriptRoot
+$temp=Join-Path ([IO.Path]::GetTempPath()) ('qa-v21-win-scheduler-'+[guid]::NewGuid().ToString('N'))
+function Assert([bool]$ok,[string]$name){if(-not$ok){throw "V21_WIN_SCHED_REDTEAM_FAIL=$name"};Write-Host "V21_WIN_SCHED_REDTEAM_PASS=$name"}
+$taskName=$null
+try{
+ $project=Join-Path $temp 'project with spaces';$install=Join-Path $project '.comprehensive-qa';New-Item -ItemType Directory $project -Force|Out-Null;Copy-Item (Join-Path $root 'runtime') $install -Recurse -Force;New-Item -ItemType Directory (Join-Path $install 'state') -Force|Out-Null
+ $pm=Join-Path $install 'tools\policy-manager.ps1';$sched=Join-Path $install 'tools\scheduler.ps1';$candidate=Join-Path $temp 'policy.json'
+ $raw=& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Get;Assert ($LASTEXITCODE-eq0) 'policy_get';$p=($raw|Out-String)|ConvertFrom-Json;$p.permissions.preset='REPORT_ONLY';$p.schedule.enabled=$true;$p.schedule.executor_mode='LOCAL_COMMAND';$p.schedule.executor.command=(Get-Command cmd.exe -ErrorAction Stop).Source;$p.schedule.local_time='23:57';$p|ConvertTo-Json -Depth 20|Set-Content $candidate -Encoding UTF8
+ & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Apply -PolicyJsonPath $candidate -OwnerApproved -ApprovalSource manual_cli|Out-Null;Assert ($LASTEXITCODE-eq0) 'local_schedule_policy_applied'
+ $denied=$false;try{& $sched -Operation Apply|Out-Null}catch{$denied=$true};Assert $denied 'scheduler_mutation_requires_owner_approval'
+ & $sched -Operation Apply -OwnerApproved|Out-Null
+ $st=(& $sched -Operation Status|Out-String)|ConvertFrom-Json;$taskName=$st.task_name;Assert ($st.registered-eq$true -and $st.registration.status-eq'ACTIVE') 'windows_task_registered_and_status_active'
+ $task=Get-ScheduledTask -TaskName $taskName -ErrorAction Stop;$action=@($task.Actions)[0];$expectedPs=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe';Assert ([IO.Path]::GetFullPath($action.Execute)-eq[IO.Path]::GetFullPath($expectedPs)) 'windows_task_uses_absolute_windows_powershell';Assert ($action.Arguments-match [regex]::Escape('scheduled-run.ps1')) 'windows_task_targets_managed_runner';Assert ($task.Settings.MultipleInstances-eq'IgnoreNew') 'windows_task_os_overlap_policy_ignore_new'
+ $p=(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Get|Out-String)|ConvertFrom-Json;$p.schedule.executor_mode='AGENT_MANAGED';$p.schedule.executor.command='';$p.schedule.executor.arguments=@();$p|ConvertTo-Json -Depth 20|Set-Content $candidate -Encoding UTF8;& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Apply -PolicyJsonPath $candidate -OwnerApproved -ApprovalSource manual_cli|Out-Null
+ & $sched -Operation Apply -OwnerApproved|Out-Null;$st=(& $sched -Operation Status|Out-String)|ConvertFrom-Json;Assert ($st.registered-eq$false) 'switch_to_agent_managed_removes_local_windows_task';Assert ($st.registration.status-eq'NEEDS_PLATFORM_ACTIVATION') 'switch_to_agent_managed_requires_platform_activation'
+ & $sched -Operation MarkAgentManaged -OwnerApproved -ExternalId 'windows-agent-managed-1'|Out-Null;$st=(& $sched -Operation Status|Out-String)|ConvertFrom-Json;Assert ($st.registration.status-eq'AGENT_MANAGED_ACTIVE') 'windows_agent_managed_activation_recorded'
+ $p=(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Get|Out-String)|ConvertFrom-Json;$p.schedule.enabled=$false;$p|ConvertTo-Json -Depth 20|Set-Content $candidate -Encoding UTF8;& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pm -Operation Apply -PolicyJsonPath $candidate -OwnerApproved -ApprovalSource manual_cli|Out-Null
+ & $sched -Operation Remove -OwnerApproved|Out-Null;$st=(& $sched -Operation Status|Out-String)|ConvertFrom-Json;Assert ($st.registration.status-eq'NEEDS_PLATFORM_DEACTIVATION') 'windows_disable_agent_managed_requires_external_deactivation'
+ $bad=$false;try{& $sched -Operation ConfirmAgentManagedDisabled -OwnerApproved -ExternalId 'wrong'|Out-Null}catch{$bad=$true};Assert $bad 'windows_deactivation_rejects_wrong_external_id'
+ & $sched -Operation ConfirmAgentManagedDisabled -OwnerApproved -ExternalId 'windows-agent-managed-1'|Out-Null;$st=(& $sched -Operation Status|Out-String)|ConvertFrom-Json;Assert ($st.registration.status-eq'DISABLED') 'windows_external_deactivation_confirmation_closes_schedule'
+ Write-Host 'V21_WIN_SCHED_REDTEAM_RESULT=PASS'
+}finally{if($taskName){Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue};if(Test-Path $temp){Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue}}

@@ -1,6 +1,7 @@
 version: 2
-system_name: Universal Comprehensive QA Gate System
-mode: report_only
+system_name: PUNTASH QA
+system_subtitle: Universal Comprehensive QA Gate System
+mode: owner_policy
 statuses:
   - PASS
   - FAIL
@@ -22,10 +23,13 @@ output:
   dispositions: dispositions
   state: state
 remediation:
-  default: report_only
-  allowed_modes:
-    - report_only
-    - safe_auto
+  authority_source: state/OWNER_POLICY.json
+  safe_default: REPORT_ONLY
+  legacy_allowed_modes_are_not_authority: true
+  mechanical_authorization_required: true
+  authorization_tool_windows: tools/authorize-change.ps1
+  authorization_tool_unix: tools/authorize-change.sh
+  hard_boundary_policy: config/permission-policy.json
   never_auto_change:
     - material_product_intent
     - architecture
@@ -53,7 +57,7 @@ legal:
   acceptance_receipt: state/HUMAN_ACCEPTANCE_RECEIPT.json
   ai_may_accept_terms: false
   require_fresh_acceptance_on_reinstall: true
-  terms_version: 1.0.0
+  terms_version: 1.1.0
   installer_transmits_receipt: false
 
 reliability_model:
@@ -62,3 +66,7 @@ reliability_model:
   config: gates/reliability.yaml
   require_lens_applicability_decision: true
   require_evidence_assurance: true
+
+current_run_schema_version: 3
+untrusted_project_content_policy: templates/UNTRUSTED_PROJECT_CONTENT.md
+path_safety_windows: tools/path-safety.ps1

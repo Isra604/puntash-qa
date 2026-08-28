@@ -29,7 +29,7 @@ function Get-LatestRelease {
     } catch {}
   }
   try {
-    return Invoke-RestMethod -Headers @{ 'User-Agent'='Universal-Comprehensive-QA-Updater' } -Uri "https://api.github.com/repos/$repo/releases/latest"
+    return Invoke-RestMethod -Headers @{ 'User-Agent'='PUNTASH-QA-Updater' } -Uri "https://api.github.com/repos/$repo/releases/latest"
   } catch {
     if ($config.current_visibility -eq 'private') {
       throw "Could not check the private update channel. Authenticate GitHub CLI for repository $repo. When the repository becomes public, anonymous update checks will work automatically."
@@ -68,8 +68,8 @@ if (-not [System.Windows.Forms.SystemInformation]::UserInteractive) {
 }
 $notes = [string]$release.body
 if ($notes.Length -gt 1800) { $notes = $notes.Substring(0,1800) + "`r`n..." }
-$message = "Universal Comprehensive QA Gate System`r`n`r`nA new version is available.`r`n$current -> $latest`r`n`r`n$notes`r`n`r`nInstall this update now? A backup will be created first."
-$result = [System.Windows.Forms.MessageBox]::Show($message,'QA System Update Available',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Information)
+$message = "PUNTASH QA`r`nUniversal Comprehensive QA Gate System`r`n`r`nA new version is available.`r`n$current -> $latest`r`n`r`n$notes`r`n`r`nInstall this update now? A backup will be created first."
+$result = [System.Windows.Forms.MessageBox]::Show($message,'PUNTASH QA Update Available',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Information)
 if ($result -ne [System.Windows.Forms.DialogResult]::Yes) {
   Write-Host 'Update deferred by user.'
   exit 0

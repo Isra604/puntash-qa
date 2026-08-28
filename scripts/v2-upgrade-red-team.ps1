@@ -1,5 +1,6 @@
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
+$currentVersion=(Get-Content (Join-Path $root 'VERSION') -Raw).Trim()
 $temp=Join-Path ([IO.Path]::GetTempPath()) ('qa-v2-upgrade-redteam-'+[guid]::NewGuid().ToString('N'))
 function Assert([bool]$ok,[string]$name){if(-not$ok){throw "UPGRADE_REDTEAM_FAIL=$name"};Write-Host "UPGRADE_REDTEAM_PASS=$name"}
 try{
@@ -8,7 +9,7 @@ try{
   if($LASTEXITCODE-ne0){throw 'Cannot archive v1.4.0 tag'}
   $oldPkg=Join-Path $temp 'oldpkg';Expand-Archive $oldZip $oldPkg -Force
   $distRel='.v2-upgrade-redteam-dist';$dist=Join-Path $root $distRel;if(Test-Path $dist){Remove-Item $dist -Recurse -Force};& (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory $distRel|Out-Null
-  $v2Zip=Join-Path $dist 'COMPREHENSIVE-QA-GATE-SYSTEM-v2.0.0.zip';Assert (Test-Path $v2Zip) 'v2 tracked package builds'
+  $v2Zip=Join-Path $dist ("PUNTASH-QA-v$currentVersion.zip");Assert (Test-Path $v2Zip) 'v2 tracked package builds'
   $v2Pkg=Join-Path $temp 'v2pkg';Expand-Archive $v2Zip $v2Pkg -Force
   $project=Join-Path $temp 'project';$install=Join-Path $project '.comprehensive-qa';New-Item -ItemType Directory $install -Force|Out-Null
   Copy-Item (Join-Path $oldPkg 'runtime\*') $install -Recurse -Force
@@ -25,6 +26,7 @@ try{
   $oldUpdater=Get-Content (Join-Path $oldPkg 'runtime\tools\update.ps1') -Raw
   Assert ($oldUpdater.Contains("foreach(`$d in @('gates','templates','agent-guides','dashboard'))")) 'released v1.4 updater replaces managed runtime directories'
   Assert ($oldUpdater.Contains('Copy-Item (Join-Path $pkgRoot "runtime\$d") $target -Recurse -Force')) 'released v1.4 updater recursively copies gates tree'
+  if([version]$currentVersion -ge [version]'2.1.0'){Assert ($oldUpdater.Contains('Show-TermsAcceptance')) 'released v1.4 updater supports renewed Terms acceptance';Assert ($oldUpdater.Contains('if($newTerms -ne $oldTerms)')) 'released v1.4 updater detects Terms changes'}
 
   # Filesystem-only simulation of the already-released v1.4 updater after human confirmation.
   Copy-Item (Join-Path $v2Pkg 'runtime\AGENT_INSTRUCTIONS.md') (Join-Path $install 'AGENT_INSTRUCTIONS.md') -Force
@@ -34,7 +36,7 @@ try{
   New-Item -ItemType Directory (Join-Path $install 'tools') -Force|Out-Null;Copy-Item (Join-Path $v2Pkg 'runtime\tools\*') (Join-Path $install 'tools') -Recurse -Force
   Copy-Item (Join-Path $v2Pkg 'runtime\config\update.json') (Join-Path $install 'config\update.json') -Force
   foreach($f in @('LICENSE','NOTICE','CREDITS.md','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','TERMS_VERSION','LEGAL_MANIFEST.json')){Copy-Item (Join-Path $v2Pkg $f) (Join-Path $install $f) -Force}
-  $meta=Get-Content (Join-Path $install 'INSTALLATION.json') -Raw|ConvertFrom-Json;$meta.version='2.0.0';$meta|ConvertTo-Json|Set-Content (Join-Path $install 'INSTALLATION.json') -Encoding UTF8
+  $meta=Get-Content (Join-Path $install 'INSTALLATION.json') -Raw|ConvertFrom-Json;$meta.version=$currentVersion;$meta|ConvertTo-Json|Set-Content (Join-Path $install 'INSTALLATION.json') -Encoding UTF8
 
   Assert ((Get-ChildItem (Join-Path $install 'gates') -Filter 'GATE-*.md').Count-eq25) 'v1.4 to v2 retains exactly 25 gates'
   Assert ((Get-ChildItem (Join-Path $install 'gates\lenses') -Filter 'LENS-*.md').Count-eq9) 'v1.4 updater receives all 9 nested lenses'
@@ -45,7 +47,18 @@ try{
   Assert ((Get-Content (Join-Path $install 'evidence\PRESERVE_EVIDENCE.marker') -Raw).Trim()-eq'evidence-v14') 'evidence preserved during upgrade'
   Assert ((Get-Content (Join-Path $install 'state\PRESERVE_STATE.marker') -Raw).Trim()-eq'state-v14') 'state preserved during upgrade'
   Assert ((Get-FileHash (Join-Path $install 'config\default.yaml') -Algorithm SHA256).Hash-eq$configHash) 'owner config/default preserved by v1.4 updater'
-  Assert ((Get-Content (Join-Path $install 'TERMS_VERSION') -Raw).Trim()-eq'1.0.0') 'terms version unchanged across v1.4 to v2'
+  if([version]$currentVersion -ge [version]'2.1.0'){
+    Assert ((Get-Content (Join-Path $install 'TERMS_VERSION') -Raw).Trim()-eq'1.1.0') 'v1.4 to v2.1 receives Terms 1.1.0 after renewed acceptance contract'
+    Assert (Test-Path (Join-Path $install 'templates\PERMISSION_POLICY.json')) 'v1.4 updater receives v2.1 permission policy compatibility copy'
+    Assert (Test-Path (Join-Path $install 'templates\SCHEDULED_QA.md')) 'v1.4 updater receives v2.1 scheduled prompt compatibility copy'
+    foreach($tool in @('policy-manager.ps1','authorize-change.ps1','scheduler.ps1','scheduled-run.ps1','dashboard-control.ps1')){Assert (Test-Path (Join-Path $install ('tools\'+$tool))) ('v1.4 updater receives v2.1 tool '+$tool)}
+    & (Join-Path $install 'tools\dashboard-refresh.ps1') -ProjectPath $project|Out-Null
+    $owner=Get-Content (Join-Path $install 'state\OWNER_POLICY.json') -Raw|ConvertFrom-Json
+    Assert (-not $owner.configured -and $owner.permissions.preset-eq'REPORT_ONLY' -and -not $owner.schedule.enabled) 'v1.4 direct jump initializes safe v2.1 owner policy'
+    & (Join-Path $install 'tools\policy-manager.ps1') -Operation Get -ProjectPath $project|Out-Null;Assert $true 'v1.4 direct jump policy manager uses compatibility policy fallback'
+  } else {
+    Assert ((Get-Content (Join-Path $install 'TERMS_VERSION') -Raw).Trim()-eq'1.0.0') 'terms version unchanged across v1.4 to v2.0'
+  }
 
   # Filesystem-only simulation of current rollback managed restore. No GUI/acceptance bypass is used.
   foreach($d in @('gates','templates','agent-guides','dashboard')){$target=Join-Path $install $d;if(Test-Path $target){Remove-Item $target -Recurse -Force};$source=Join-Path $backup $d;if(Test-Path $source){Copy-Item $source $target -Recurse -Force}}
@@ -55,6 +68,7 @@ try{
 
   Assert (-not(Test-Path (Join-Path $install 'gates\lenses'))) 'rollback removes v2 lens tree'
   Assert (-not(Test-Path (Join-Path $install 'tools\validate-run.ps1'))) 'rollback removes v2-only validator residue'
+  if([version]$currentVersion -ge [version]'2.1.0'){Assert (-not(Test-Path (Join-Path $install 'tools\scheduler.ps1'))) 'rollback to v1.4 removes v2.1 scheduler residue';Assert (-not(Test-Path (Join-Path $install 'templates\PERMISSION_POLICY.json'))) 'rollback to v1.4 removes v2.1 permission compatibility residue'}
   Assert ((Get-Content (Join-Path $install 'INSTALLATION.json') -Raw|ConvertFrom-Json).version-eq'1.4.0') 'rollback restores v1.4 metadata'
   Assert ((Get-Content (Join-Path $install 'reports\dashboard\PRESERVE_HISTORY.marker') -Raw).Trim()-eq'history-v14') 'history survives rollback'
   Assert ((Get-Content (Join-Path $install 'evidence\PRESERVE_EVIDENCE.marker') -Raw).Trim()-eq'evidence-v14') 'evidence survives rollback'

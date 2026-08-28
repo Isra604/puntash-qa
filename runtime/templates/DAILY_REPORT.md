@@ -77,7 +77,15 @@ Use one complete section per material finding based on `FINDING.md`.
 ### Suspected false positives
 
 ## Automatic Remediation
+
+- Remediation authorization integrity: PASS / FAIL / NOT_APPLICABLE
+- Schema-v3 automatic_remediation declaration: performed=true / false
+- Authorization IDs used this run:
+- Every automatic mutation linked to current-run ALLOW: YES / NO
 - Record path:
+- Change-authorization audit: `state/CHANGE_AUTHORIZATION_HISTORY.jsonl`
+- Authorization IDs used:
+- Owner policy revision(s):
 - Branch/worktree if used:
 - Commits:
 

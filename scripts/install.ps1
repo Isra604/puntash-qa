@@ -9,12 +9,17 @@ $packageRoot = Split-Path -Parent $PSScriptRoot
 $runtime = Join-Path $packageRoot 'runtime'
 $version = (Get-Content (Join-Path $packageRoot 'VERSION') -Raw).Trim()
 $termsVersion = (Get-Content (Join-Path $packageRoot 'TERMS_VERSION') -Raw).Trim()
+$pathSafety = Join-Path $runtime 'tools\path-safety.ps1'
+if (-not (Test-Path $pathSafety -PathType Leaf)) { throw 'Path-safety helper missing from package.' }
+. $pathSafety
 
 if (-not (Test-Path $ProjectPath -PathType Container)) {
   throw "Project path does not exist or is not a directory: $ProjectPath"
 }
 $project = (Resolve-Path $ProjectPath).Path
 $dest = Join-Path $project '.comprehensive-qa'
+Assert-PathWithin -Path $dest -Root $project -Label 'install destination'
+Assert-NoReparsePoint -Path $dest -Label 'existing QA runtime' -Recursive
 if ((Test-Path $dest) -and (-not $Force)) { throw "QA runtime already exists: $dest. No files were changed. Use -Force only if you intentionally want to reinstall; fresh human acceptance will still be required." }
 
 $legalNames = @(
@@ -44,7 +49,8 @@ if (-not [System.Windows.Forms.SystemInformation]::UserInteractive) {
 }
 
 $combined = New-Object System.Text.StringBuilder
-[void]$combined.AppendLine("Universal Comprehensive QA Gate System v$version")
+[void]$combined.AppendLine("PUNTASH QA v$version")
+[void]$combined.AppendLine("Universal Comprehensive QA Gate System")
 [void]$combined.AppendLine("Original creator and project architect: Ofir Israeli")
 [void]$combined.AppendLine("Terms version: $termsVersion")
 [void]$combined.AppendLine(('=' * 80))
@@ -55,7 +61,7 @@ foreach ($name in $legalNames) {
 }
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Universal Comprehensive QA Gate System v$version - Human Acceptance Required"
+$form.Text = "PUNTASH QA v$version - Human Acceptance Required"
 $form.Size = New-Object System.Drawing.Size(980,820)
 $form.StartPosition = 'CenterScreen'
 $form.MinimizeBox = $false
@@ -148,14 +154,20 @@ if (-not $script:accepted) {
 $acceptedAt = (Get-Date).ToString('o')
 $installationId = [guid]::NewGuid().ToString()
 
-Write-Host "Installing Universal Comprehensive QA Gate System v$version"
+Write-Host "Installing PUNTASH QA v$version"
+Write-Host "Universal Comprehensive QA Gate System"
 Write-Host 'Original creator and project architect: Ofir Israeli'
 Write-Host 'Copyright (c) 2026 Ofir Israeli | MIT License'
 Write-Host "Human acceptance recorded for Terms v$termsVersion"
 
 if (Test-Path $dest) {
-  $backup = "$dest.backup.$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+  Assert-NoReparsePoint -Path $dest -Label 'existing QA runtime before reinstall backup' -Recursive
+  $backup = "$dest.backup.$(Get-Date -Format 'yyyyMMdd_HHmmss').$([guid]::NewGuid().ToString('N'))"
+  Assert-PathWithin -Path $backup -Root $project -Label 'reinstall backup destination'
   Copy-Item $dest $backup -Recurse
+  if($Force){
+    foreach($managed in @('gates','templates','agent-guides','dashboard','prompts','tools')){$mp=Join-Path $dest $managed;if(Test-Path -LiteralPath $mp){Assert-NoReparsePoint -Path $mp -Label "managed reinstall path $managed" -Recursive;Remove-Item -LiteralPath $mp -Recurse -Force}}
+  }
 }
 
 New-Item -ItemType Directory -Path $dest -Force | Out-Null
@@ -170,16 +182,24 @@ $profile = Join-Path $dest 'profile\PROJECT_QA_PROFILE.md'
 if (-not (Test-Path $profile)) { Copy-Item (Join-Path $dest 'templates\PROJECT_QA_PROFILE.md') $profile }
 $ledger = Join-Path $dest 'state\FINDING_LEDGER.jsonl'
 if (-not (Test-Path $ledger)) { New-Item -ItemType File -Path $ledger | Out-Null }
+$ownerPolicy = Join-Path $dest 'state\OWNER_POLICY.json'
+if (-not (Test-Path $ownerPolicy)) {
+  $ownerTemplate = Join-Path $dest 'templates\OWNER_POLICY.json'
+  if (-not (Test-Path $ownerTemplate -PathType Leaf)) { throw 'OWNER_POLICY template missing after runtime copy.' }
+  Copy-Item $ownerTemplate $ownerPolicy -Force
+}
+Write-Host 'Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise.'
 
 @"
-Universal Comprehensive QA Gate System v$version
+PUNTASH QA v$version
+Universal Comprehensive QA Gate System
 Original creator and project architect: Ofir Israeli
 Copyright (c) 2026 Ofir Israeli
 Licensed under the MIT License.
 "@ | Set-Content -Path (Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt') -Encoding UTF8
 
 $receipt = [ordered]@{
-  system = 'Universal Comprehensive QA Gate System'
+  system = 'PUNTASH QA'
   package_version = $version
   terms_version = $termsVersion
   installation_id = $installationId
@@ -200,7 +220,7 @@ $receipt = [ordered]@{
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -Path (Join-Path $dest 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Encoding UTF8
 
 $installed = [ordered]@{
-  system = 'Universal Comprehensive QA Gate System'
+  system = 'PUNTASH QA'
   version = $version
   terms_version = $termsVersion
   installed_at = (Get-Date).ToString('o')
@@ -226,6 +246,11 @@ if (Test-Path $doctor) {
   }
 }
 
+$policyManager = Join-Path $dest 'tools\policy-manager.ps1'
+if (Test-Path $policyManager) {
+  try { & $policyManager -Operation Get -ProjectPath $project | Out-Null; Write-Host 'Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise.' } catch { Write-Warning ("Owner policy initialization did not complete: " + $_.Exception.Message) }
+}
+
 $dashboardRefresh = Join-Path $dest 'tools\dashboard-refresh.ps1'
 if (Test-Path $dashboardRefresh) {
   try { & $dashboardRefresh -ProjectPath $project | Out-Host; Write-Host 'Dashboard initialized.' } catch { Write-Warning ("Dashboard initialization did not complete: " + $_.Exception.Message) }
@@ -235,4 +260,4 @@ Write-Host 'Comprehensive QA Gate System installed successfully.'
 Write-Host 'Created by Ofir Israeli.'
 Write-Host "Installed runtime: $dest"
 Write-Host "Acceptance receipt: $dest\state\HUMAN_ACCEPTANCE_RECEIPT.json"
-Write-Host 'Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md in full and perform Discovery.'
+Write-Host 'Next: ask your QA agent to read .comprehensive-qa/START_HERE.md and .comprehensive-qa/AGENT_INSTRUCTIONS.md in full, then choose owner permissions/scheduling when prompted or through the Dashboard Settings panel.'
