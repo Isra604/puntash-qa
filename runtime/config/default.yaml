@@ -1,5 +1,6 @@
 version: 2
-system_name: Universal Comprehensive QA Gate System
+system_name: PUNTASH QA
+system_subtitle: Universal Comprehensive QA Gate System
 mode: owner_policy
 statuses:
   - PASS

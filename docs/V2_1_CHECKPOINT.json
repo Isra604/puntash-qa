@@ -1,7 +1,7 @@
 {
   "target_version": "2.1.0",
   "branch": "feature/v2.1-control-center",
-  "status": "READY_FOR_OWNER_RELEASE_APPROVAL",
+  "status": "OWNER_RELEASE_APPROVED_BRANDING_REVALIDATION_IN_PROGRESS",
   "current_phase": 6,
   "last_completed_phase": 5,
   "completed_phases": [
@@ -39,8 +39,19 @@
     "merged_to_main": false,
     "tag_created": false,
     "public_release_created": false,
-    "owner_approval_required": true
+    "owner_approval_required": false,
+    "owner_approval_received": true
   },
-  "next_action": "Owner reviews final v2.1.0 choices and explicitly approves publication. No merge to main, tag creation, or public release before that approval.",
-  "updated_at": "2026-08-28T17:10:02+03:00"
+  "next_action": "Complete full post-branding revalidation on Windows, Ubuntu and macOS; then merge to main, create tag v2.1.0, and run the manual owner-gated release workflow.",
+  "updated_at": "2026-08-28T17:31:00+03:00",
+  "product_name": "PUNTASH QA",
+  "product_subtitle": "Universal Comprehensive QA Gate System",
+  "repository": "Isra604/puntash-qa",
+  "release_asset": "PUNTASH-QA-v2.1.0.zip",
+  "owner_release_approval": {
+    "approved": true,
+    "approved_version": "2.1.0",
+    "approved_brand": "PUNTASH QA",
+    "approval_scope": "final v2.1.0 including official PUNTASH QA branding and dashboard branding"
+  }
 }

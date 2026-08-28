@@ -3,7 +3,7 @@
 **Version:** 1.1.0
 **Copyright © 2026 Ofir Israeli**
 
-The Universal Comprehensive QA Gate System is a software quality-assistance framework. It does not guarantee that software is defect-free, secure, compliant, performant, recoverable, accessible, suitable for production, or suitable for any particular business or technical purpose.
+The PUNTASH QA (Universal Comprehensive QA Gate System) is a software quality-assistance framework. It does not guarantee that software is defect-free, secure, compliant, performant, recoverable, accessible, suitable for production, or suitable for any particular business or technical purpose.
 
 ## Use at your own risk
 

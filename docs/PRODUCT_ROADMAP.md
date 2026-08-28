@@ -1,6 +1,6 @@
 # Product Roadmap
 
-This file is the durable product roadmap for the Universal Comprehensive QA Gate System.
+This file is the durable product roadmap for the PUNTASH QA — Universal Comprehensive QA Gate System.
 
 Current public release at roadmap creation: v1.2.1.
 

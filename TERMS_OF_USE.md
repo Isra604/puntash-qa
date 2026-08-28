@@ -4,7 +4,7 @@
 **Effective date:** 2026-08-26
 **Original creator and project architect:** Ofir Israeli
 
-These Terms of Use govern use of the Universal Comprehensive QA Gate System through the distributed installer and installed runtime. The Software is separately licensed under the MIT License. These Terms supplement the license by recording the user's informed acceptance of responsibility, risk allocation, and installation conditions. They do not promise that every provision is enforceable in every jurisdiction.
+These Terms of Use govern use of PUNTASH QA, the Universal Comprehensive QA Gate System through the distributed installer and installed runtime. The Software is separately licensed under the MIT License. These Terms supplement the license by recording the user's informed acceptance of responsibility, risk allocation, and installation conditions. They do not promise that every provision is enforceable in every jurisdiction.
 
 ## 1. Human acceptance required
 

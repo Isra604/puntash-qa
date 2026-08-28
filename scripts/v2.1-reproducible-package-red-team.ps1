@@ -6,7 +6,7 @@ $a='.repro-dist-a';$b='.repro-dist-b'
 try{
  & (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory $a|Out-Null
  & (Join-Path $root 'scripts\build-release.ps1') -OutputDirectory $b|Out-Null
- $version=(Get-Content (Join-Path $root 'VERSION') -Raw).Trim();$name="COMPREHENSIVE-QA-GATE-SYSTEM-v$version.zip"
+ $version=(Get-Content (Join-Path $root 'VERSION') -Raw).Trim();$name="PUNTASH-QA-v$version.zip"
  $za=Join-Path $root "$a\$name";$zb=Join-Path $root "$b\$name";$shaA=(Get-FileHash $za -Algorithm SHA256).Hash;$shaB=(Get-FileHash $zb -Algorithm SHA256).Hash
  Assert ($shaA-eq$shaB) 'same_commit_produces_identical_zip_sha256'
  $ma=[IO.File]::ReadAllBytes((Join-Path $root "$a\release-manifest.json"));$mb=[IO.File]::ReadAllBytes((Join-Path $root "$b\release-manifest.json"));Assert ([Convert]::ToBase64String($ma)-eq[Convert]::ToBase64String($mb)) 'release_manifest_is_deterministic'

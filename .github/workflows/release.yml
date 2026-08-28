@@ -155,7 +155,7 @@ jobs:
       - name: Verify release artifacts exist and provenance matches HEAD
         shell: pwsh
         run: |
-          $zip="dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ inputs.tag }}.zip"
+          $zip="dist/PUNTASH-QA-${{ inputs.tag }}.zip"
           $sha="$zip.sha256"
           if(-not(Test-Path $zip) -or -not(Test-Path $sha) -or -not(Test-Path 'dist/release-manifest.json')){throw 'Release artifacts missing.'}
           $manifest=Get-Content dist/release-manifest.json -Raw|ConvertFrom-Json
@@ -174,8 +174,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ inputs.tag }}" `
-            "dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ inputs.tag }}.zip" `
-            "dist/COMPREHENSIVE-QA-GATE-SYSTEM-${{ inputs.tag }}.zip.sha256" `
+            "dist/PUNTASH-QA-${{ inputs.tag }}.zip" `
+            "dist/PUNTASH-QA-${{ inputs.tag }}.zip.sha256" `
             "dist/release-manifest.json" `
-            --title "Universal Comprehensive QA Gate System ${{ inputs.tag }}" `
+            --title "PUNTASH QA — PUNTASH QA ${{ inputs.tag }}" `
             --generate-notes

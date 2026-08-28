@@ -1,5 +1,5 @@
 {
-  "name": "universal-comprehensive-qa-gate-system",
+  "name": "puntash-qa",
   "version": "2.1.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
@@ -38,7 +38,7 @@
   ],
   "legal_manifest": "LEGAL_MANIFEST.json",
   "updates": {
-    "repository": "Isra604/comprehensive-qa-gate-system",
+    "repository": "Isra604/puntash-qa",
     "source": "github_releases",
     "current_visibility": "public",
     "windows_check": "runtime/tools/check-update.ps1",
@@ -131,5 +131,7 @@
     "windows_path_helper": "runtime/tools/path-safety.ps1",
     "reparse_point_redirection_rejected": true,
     "rollback_backup_confined_to_managed_root": true
-  }
+  },
+  "display_name": "PUNTASH QA",
+  "subtitle": "Universal Comprehensive QA Gate System"
 }

@@ -135,4 +135,15 @@ set -e
 [[ ! -e "$TMP/project/.comprehensive-qa" ]] || fail 'noninteractive installer wrote target files'
 rm -f /tmp/qa-install-out.$$
 pass 'human acceptance cannot be bypassed by noninteractive shell install'
+grep -Fq '"name": "puntash-qa"' "$ROOT/manifest.json" || fail 'PUNTASH QA package identity'; pass 'PUNTASH QA package identity'
+grep -Fq '"display_name": "PUNTASH QA"' "$ROOT/manifest.json" || fail 'PUNTASH QA branding identity'; pass 'PUNTASH QA branding identity'
+grep -Fq '"repository": "Isra604/puntash-qa"' "$ROOT/runtime/config/update.json" || fail 'PUNTASH QA update repository identity'; pass 'PUNTASH QA update repository identity'
+grep -Fq '<title>PUNTASH QA Dashboard</title>' "$ROOT/runtime/dashboard/index.html" || fail 'PUNTASH QA dashboard branding'; pass 'PUNTASH QA dashboard branding'
+grep -Fq 'PUNTASH-QA-v$version.zip' "$ROOT/scripts/build-release.ps1" || fail 'PUNTASH QA release artifact naming'; pass 'PUNTASH QA release artifact naming'
+legacy_repo='Isra604/'"comprehensive"'-qa-gate-system'
+if git -C "$ROOT" grep -I -F "$legacy_repo" -- . >/dev/null 2>&1; then
+  fail 'legacy repository slug absent from tracked content'
+else
+  pass 'legacy repository slug absent from tracked content'
+fi
 echo 'SELF_TEST_RESULT=PASS'

@@ -1,6 +1,6 @@
 # START HERE
 
-Universal Comprehensive QA Gate System
+PUNTASH QA — Universal Comprehensive QA Gate System
 
 Original creator and project architect: Ofir Israeli.
 

@@ -1,4 +1,6 @@
-# Skill: Universal Comprehensive QA Gate System
+# Skill: PUNTASH QA
+
+**Universal Comprehensive QA Gate System**
 
 **Original creator and project architect:** Ofir Israeli  
 **Copyright:** © 2026 Ofir Israeli  

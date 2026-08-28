@@ -37,7 +37,7 @@ function Get-Release([string]$tag) {
   }
   try {
     $uri=if ($tag) { "https://api.github.com/repos/$repo/releases/tags/$tag" } else { "https://api.github.com/repos/$repo/releases/latest" }
-    return Invoke-RestMethod -Headers @{ 'User-Agent'='Universal-Comprehensive-QA-Updater' } -Uri $uri
+    return Invoke-RestMethod -Headers @{ 'User-Agent'='PUNTASH-QA-Updater' } -Uri $uri
   } catch {
     if ($config.current_visibility -eq 'private') { throw "Private update channel requires authenticated GitHub CLI access to $repo." }
     throw
@@ -51,12 +51,13 @@ function Download-Asset($release,[string]$name,[string]$dest) {
   }
   $asset=$release.assets | Where-Object { $_.name -eq $name } | Select-Object -First 1
   if (-not $asset) { throw "Release asset not found: $name" }
-  Invoke-WebRequest -Headers @{ 'User-Agent'='Universal-Comprehensive-QA-Updater' } -Uri $asset.browser_download_url -OutFile $dest
+  Invoke-WebRequest -Headers @{ 'User-Agent'='PUNTASH-QA-Updater' } -Uri $asset.browser_download_url -OutFile $dest
 }
 function Show-TermsAcceptance([string]$pkgRoot,[string]$newVersion,[string]$termsVersion) {
   $legal=@('LICENSE','TERMS_OF_USE.md','DISCLAIMER.md','DATA_RESPONSIBILITY_NOTICE.md','HUMAN_ACCEPTANCE.md','NOTICE','CREDITS.md')
   $combined=New-Object System.Text.StringBuilder
-  [void]$combined.AppendLine("Universal Comprehensive QA Gate System v$newVersion")
+  [void]$combined.AppendLine("PUNTASH QA v$newVersion")
+  [void]$combined.AppendLine("Universal Comprehensive QA Gate System")
   [void]$combined.AppendLine("Updated Terms version: $termsVersion")
   [void]$combined.AppendLine(('='*80))
   foreach($f in $legal){
@@ -150,7 +151,7 @@ try {
   if($newTerms -ne $oldTerms){
     if(-not (Show-TermsAcceptance $pkgRoot $newVersion.ToString() $newTerms)){Write-Host 'Update cancelled because updated terms were not accepted.';exit 4}
   } else {
-    $confirm=[System.Windows.Forms.MessageBox]::Show("Update Universal Comprehensive QA Gate System from $currentVersion to $newVersion?`r`n`r`nA backup will be created first. Project QA reports, evidence, profile and state will be preserved.",'Confirm QA System Update',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Question)
+    $confirm=[System.Windows.Forms.MessageBox]::Show("Update PUNTASH QA from $currentVersion to $newVersion?`r`n`r`nA backup will be created first. Project QA reports, evidence, profile and state will be preserved.",'Confirm PUNTASH QA Update',[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Question)
     if($confirm -ne [System.Windows.Forms.DialogResult]::Yes){Write-Host 'Update cancelled by user.';exit 4}
   }
   $backupRoot=Join-Path $projectRoot '.comprehensive-qa-backups'; Assert-PathWithin -Path $backupRoot -Root $projectRoot -Label 'update backup root'; Assert-NoReparsePoint -Path $backupRoot -Label 'update backup root' -Recursive; New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null; Assert-NoReparsePoint -Path $backupRoot -Label 'update backup root'
@@ -184,7 +185,7 @@ try {
     $legalManifestPath=Join-Path $pkgRoot 'LEGAL_MANIFEST.json'
     if(Test-Path $legalManifestPath){try{$legalHashes=(Get-Content $legalManifestPath -Raw|ConvertFrom-Json).documents}catch{}}
     [ordered]@{
-      system='Universal Comprehensive QA Gate System'; package_version=$newVersion.ToString(); terms_version=$newTerms; accepted_at=(Get-Date).ToString('o'); acceptance_method='interactive_windows_gui_update_clickwrap'; accepted_by_human_attestation=$true; human_authority_attestation='I am a natural person authorized to accept these updated terms.'; acceptance_phrase='I ACCEPT'; local_os_user=[Environment]::UserName; local_machine_name=[Environment]::MachineName; creator='Ofir Israeli'; license='MIT'; legal_document_sha256=$legalHashes; transmitted_by_updater=$false
+      system='PUNTASH QA'; package_version=$newVersion.ToString(); terms_version=$newTerms; accepted_at=(Get-Date).ToString('o'); acceptance_method='interactive_windows_gui_update_clickwrap'; accepted_by_human_attestation=$true; human_authority_attestation='I am a natural person authorized to accept these updated terms.'; acceptance_phrase='I ACCEPT'; local_os_user=[Environment]::UserName; local_machine_name=[Environment]::MachineName; creator='Ofir Israeli'; license='MIT'; legal_document_sha256=$legalHashes; transmitted_by_updater=$false
     } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $installRoot 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Encoding UTF8
   }
   $meta=Get-Content (Join-Path $installRoot 'INSTALLATION.json') -Raw | ConvertFrom-Json

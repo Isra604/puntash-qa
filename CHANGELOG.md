@@ -2,6 +2,8 @@
 
 ## 2.1.0 - RELEASE CANDIDATE / NOT YET PUBLIC
 
+- Official product branding: **PUNTASH QA** — Universal Comprehensive QA Gate System. The GitHub repository is `Isra604/puntash-qa`, the release artifact is `PUNTASH-QA-v2.1.0.zip`, and the installed `.comprehensive-qa` runtime path remains stable.
+
 - Added explicit owner-controlled remediation presets: REPORT_ONLY, SAFE_FIXES and ACTIVE_REMEDIATION.
 - Added a mechanical `authorize-change` decision engine required before automatic product mutation.
 - Added immutable hard boundaries so agents cannot self-authorize high-impact/protected categories.

@@ -33,7 +33,8 @@ hash_file() {
 }
 
 clear 2>/dev/null || true
-echo "Universal Comprehensive QA Gate System v$VERSION"
+echo "PUNTASH QA v$VERSION"
+echo "Universal Comprehensive QA Gate System"
 echo "Original creator and project architect: Ofir Israeli"
 echo "Terms version: $TERMS_VERSION"
 echo "===================================================================="
@@ -67,7 +68,8 @@ mkdir -p "$DEST/profile" "$DEST/reports" "$DEST/reports/dashboard" "$DEST/eviden
 cp "$DEST/templates/PROJECT_QA_PROFILE.md" "$DEST/profile/PROJECT_QA_PROFILE.md"
 : > "$DEST/state/FINDING_LEDGER.jsonl"
 cat > "$DEST/state/FIRST_RUN_ATTRIBUTION_PENDING.txt" <<EOF
-Universal Comprehensive QA Gate System v$VERSION
+PUNTASH QA v$VERSION
+Universal Comprehensive QA Gate System
 Original creator and project architect: Ofir Israeli
 Copyright (c) 2026 Ofir Israeli
 Licensed under the MIT License.
@@ -77,7 +79,7 @@ EOF
 json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 {
   echo '{'
-  echo '  "system": "Universal Comprehensive QA Gate System",'
+  echo '  "system": "PUNTASH QA",'
   echo "  \"package_version\": \"$(json_escape "$VERSION")\","
   echo "  \"terms_version\": \"$(json_escape "$TERMS_VERSION")\","
   echo "  \"installation_id\": \"$(json_escape "$INSTALLATION_ID")\","
@@ -103,7 +105,7 @@ json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 
 cat > "$DEST/INSTALLATION.json" <<EOF
 {
-  "system": "Universal Comprehensive QA Gate System",
+  "system": "PUNTASH QA",
   "version": "$VERSION",
   "terms_version": "$TERMS_VERSION",
   "project_path": "$(json_escape "$PROJECT")",

@@ -49,7 +49,8 @@ if (-not [System.Windows.Forms.SystemInformation]::UserInteractive) {
 }
 
 $combined = New-Object System.Text.StringBuilder
-[void]$combined.AppendLine("Universal Comprehensive QA Gate System v$version")
+[void]$combined.AppendLine("PUNTASH QA v$version")
+[void]$combined.AppendLine("Universal Comprehensive QA Gate System")
 [void]$combined.AppendLine("Original creator and project architect: Ofir Israeli")
 [void]$combined.AppendLine("Terms version: $termsVersion")
 [void]$combined.AppendLine(('=' * 80))
@@ -60,7 +61,7 @@ foreach ($name in $legalNames) {
 }
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Universal Comprehensive QA Gate System v$version - Human Acceptance Required"
+$form.Text = "PUNTASH QA v$version - Human Acceptance Required"
 $form.Size = New-Object System.Drawing.Size(980,820)
 $form.StartPosition = 'CenterScreen'
 $form.MinimizeBox = $false
@@ -153,7 +154,8 @@ if (-not $script:accepted) {
 $acceptedAt = (Get-Date).ToString('o')
 $installationId = [guid]::NewGuid().ToString()
 
-Write-Host "Installing Universal Comprehensive QA Gate System v$version"
+Write-Host "Installing PUNTASH QA v$version"
+Write-Host "Universal Comprehensive QA Gate System"
 Write-Host 'Original creator and project architect: Ofir Israeli'
 Write-Host 'Copyright (c) 2026 Ofir Israeli | MIT License'
 Write-Host "Human acceptance recorded for Terms v$termsVersion"
@@ -189,14 +191,15 @@ if (-not (Test-Path $ownerPolicy)) {
 Write-Host 'Owner policy initialized safely: REPORT_ONLY / schedule disabled until the owner chooses otherwise.'
 
 @"
-Universal Comprehensive QA Gate System v$version
+PUNTASH QA v$version
+Universal Comprehensive QA Gate System
 Original creator and project architect: Ofir Israeli
 Copyright (c) 2026 Ofir Israeli
 Licensed under the MIT License.
 "@ | Set-Content -Path (Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt') -Encoding UTF8
 
 $receipt = [ordered]@{
-  system = 'Universal Comprehensive QA Gate System'
+  system = 'PUNTASH QA'
   package_version = $version
   terms_version = $termsVersion
   installation_id = $installationId
@@ -217,7 +220,7 @@ $receipt = [ordered]@{
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -Path (Join-Path $dest 'state\HUMAN_ACCEPTANCE_RECEIPT.json') -Encoding UTF8
 
 $installed = [ordered]@{
-  system = 'Universal Comprehensive QA Gate System'
+  system = 'PUNTASH QA'
   version = $version
   terms_version = $termsVersion
   installed_at = (Get-Date).ToString('o')

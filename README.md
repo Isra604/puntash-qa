@@ -1,4 +1,8 @@
-# Universal Comprehensive QA Gate System
+# PUNTASH QA
+
+**Universal Comprehensive QA Gate System**
+
+**PUNTASH QA** is an open-source, evidence-driven QA operating system for AI-assisted software development, release readiness, continuous quality assurance, and controlled remediation.
 
 A portable, repository-aware QA operating system for AI coding agents and human QA teams.
 

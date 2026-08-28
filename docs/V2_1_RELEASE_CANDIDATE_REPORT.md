@@ -1,8 +1,18 @@
-# v2.1.0 Release Candidate Verification Report
+# PUNTASH QA v2.1.0 Release Candidate Verification Report
 
-Status: **READY FOR OWNER RELEASE APPROVAL**
+Status: **OWNER APPROVED — PUNTASH QA BRANDING REVALIDATION IN PROGRESS**
 
 Original creator and project architect: **Ofir Israeli**
+
+
+## Official product identity approved
+
+- Product: **PUNTASH QA**
+- Subtitle: **Universal Comprehensive QA Gate System**
+- Repository: `Isra604/puntash-qa`
+- Release asset: `PUNTASH-QA-v2.1.0.zip`
+- Installed runtime directory remains `.comprehensive-qa` as a stable internal compatibility contract.
+- Owner approval for the final v2.1.0 release, including this branding, was received before publication.
 
 ## Final adversarial review conclusion
 

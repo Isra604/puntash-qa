@@ -4,7 +4,7 @@
 
 **Ofir Israeli**
 
-Created the original Universal Comprehensive QA Gate System architecture, including the portable 25-gate QA model, project discovery approach, evidence model, finding lifecycle, bounded automatic remediation model, revalidation flow, and audit-ready reporting structure.
+Created the original PUNTASH QA — Universal Comprehensive QA Gate System architecture, including the portable 25-gate QA model, project discovery approach, evidence model, finding lifecycle, bounded automatic remediation model, revalidation flow, and audit-ready reporting structure.
 
 ## Attribution
 

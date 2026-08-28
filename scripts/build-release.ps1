@@ -11,12 +11,12 @@ $tree=(& git -C $root rev-parse 'HEAD^{tree}').Trim();if($LASTEXITCODE-ne0-or-no
 $sourceTime=(& git -C $root show -s --format=%cI HEAD).Trim();if($LASTEXITCODE-ne0-or-not$sourceTime){throw 'Unable to resolve source commit time.'}
 $out=Join-Path $root $OutputDirectory
 New-Item -ItemType Directory -Path $out -Force|Out-Null
-$zipName="COMPREHENSIVE-QA-GATE-SYSTEM-v$version.zip";$zipPath=Join-Path $out $zipName
+$zipName="PUNTASH-QA-v$version.zip";$zipPath=Join-Path $out $zipName
 if(Test-Path -LiteralPath $zipPath){Remove-Item -LiteralPath $zipPath -Force}
 & git -C $root archive '--format=zip' "--output=$zipPath" HEAD
 if($LASTEXITCODE-ne0-or-not(Test-Path -LiteralPath $zipPath -PathType Leaf)){throw 'git archive failed to create release ZIP.'}
 $sha=(Get-FileHash -Algorithm SHA256 -LiteralPath $zipPath).Hash.ToUpperInvariant()
 [IO.File]::WriteAllText((Join-Path $out "$zipName.sha256"),"$sha  $zipName`n",(New-Object Text.UTF8Encoding($false)))
-$manifest=[ordered]@{schema_version=2;name='Universal Comprehensive QA Gate System';version=$version;tag="v$version";asset_name=$zipName;sha256=$sha;terms_version=$terms;repository='Isra604/comprehensive-qa-gate-system';source_commit=$head;source_tree=$tree;source_commit_time=$sourceTime;reproducible_from_clean_head=$true}|ConvertTo-Json -Depth 5
+$manifest=[ordered]@{schema_version=2;name='PUNTASH QA';version=$version;tag="v$version";asset_name=$zipName;sha256=$sha;terms_version=$terms;repository='Isra604/puntash-qa';source_commit=$head;source_tree=$tree;source_commit_time=$sourceTime;reproducible_from_clean_head=$true}|ConvertTo-Json -Depth 5
 $manifest=$manifest.Replace("`r`n","`n").Replace("`r","`n")+"`n";[IO.File]::WriteAllText((Join-Path $out 'release-manifest.json'),$manifest,(New-Object Text.UTF8Encoding($false)))
 Write-Host "ZIP=$zipPath";Write-Host "SHA256=$sha";Write-Host "VERSION=$version";Write-Host "SOURCE_COMMIT=$head";Write-Host "SOURCE_TREE=$tree"
