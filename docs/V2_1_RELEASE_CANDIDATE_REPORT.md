@@ -5,6 +5,26 @@ Status: **OWNER APPROVED — READY TO PUBLISH**
 Original creator and project architect: **Ofir Israeli**
 
 
+
+## Public release verification
+
+- Public product: **PUNTASH QA v2.1.0**
+- Repository: `Isra604/puntash-qa`
+- Main merge commit: `8d664f1ee3a678b936f92e7ce40f6aae5adf25bd`
+- Main QA CI run: `33202471302` — Windows / Ubuntu / macOS PASS
+- Manual release workflow run: `33202886738` — PASS
+- Tag: `v2.1.0`
+- Public release: `https://github.com/Isra604/puntash-qa/releases/tag/v2.1.0`
+- Asset: `PUNTASH-QA-v2.1.0.zip`
+- Public SHA-256: `993BF452913486F333C3B0389F074184BB98D619DF7D9C97F0E9229F296AB2D2`
+- Public source commit: `8d664f1ee3a678b936f92e7ce40f6aae5adf25bd`
+- Public source tree: `5aaaf6fcfc2629286fe7cf279cb8b342ff6dbb72`
+- Anonymous public API/download verification: PASS
+- Independent ZIP internal audit after public download: PASS
+- Release title normalized to `PUNTASH QA v2.1.0`.
+
+Note: the project's own anonymous release-verification download may increment GitHub's release download counter and should not be interpreted as an external user download.
+
 ## Official product identity approved
 
 - Product: **PUNTASH QA**

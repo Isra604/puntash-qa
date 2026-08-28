@@ -177,5 +177,5 @@ jobs:
             "dist/PUNTASH-QA-${{ inputs.tag }}.zip" `
             "dist/PUNTASH-QA-${{ inputs.tag }}.zip.sha256" `
             "dist/release-manifest.json" `
-            --title "PUNTASH QA — PUNTASH QA ${{ inputs.tag }}" `
+            --title "PUNTASH QA ${{ inputs.tag }}" `
             --generate-notes
