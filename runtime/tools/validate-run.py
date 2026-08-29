@@ -61,6 +61,21 @@ def validate_obj(data,install_root=None):
     except Exception:schema=0
     if schema < 3: errors.append("schema_version must be >=3 for v2.1 current-run validation")
     if not nonempty(data.get('run_id')): errors.append('run_id is required')
+    project=data.get('project')
+    if schema >= 4:
+        if not isinstance(project,dict): errors.append('schema-v4 project object is required')
+        else:
+            fp=project.get('fingerprint')
+            if not isinstance(fp,dict): errors.append('schema-v4 project.fingerprint object is required')
+            else:
+                if fp.get('algorithm')!='PUNTASH_SOURCE_V1': errors.append('project.fingerprint.algorithm must be PUNTASH_SOURCE_V1')
+                if not isinstance(fp.get('available'),bool): errors.append('project.fingerprint.available must be boolean')
+                elif fp.get('available') is True:
+                    if not isinstance(fp.get('sha256'),str) or not re.fullmatch(r'[0-9A-Fa-f]{64}',fp.get('sha256','')): errors.append('available project fingerprint requires 64-hex sha256')
+                    for key in ('file_count','byte_count'):
+                        v=fp.get(key)
+                        if isinstance(v,bool) or not isinstance(v,int) or v<0: errors.append(f'available project fingerprint {key} must be a non-negative integer')
+                elif not nonempty(fp.get('reason')): errors.append('unavailable project fingerprint requires reason')
     started=parse_time(data.get('started_at')); completed=parse_time(data.get('completed_at'))
     if started is None:errors.append('started_at must be a valid timestamp')
     if completed is None:errors.append('completed_at must be a valid timestamp')

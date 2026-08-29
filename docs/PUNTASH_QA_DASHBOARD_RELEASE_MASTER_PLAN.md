@@ -1165,7 +1165,7 @@ During implementation:
 
 Current implementation branch: `feature/v2.2-dashboard-control-center`
 
-Current release state: **IMPLEMENTATION_IN_PROGRESS**
+Current release state: **FINAL_HARDENING_LOCAL_PASS_CANDIDATE_PENDING_CI**
 
 Stage status:
 
@@ -1243,3 +1243,60 @@ TECHNICAL_STATUS=READY_FOR_OWNER_RELEASE_APPROVAL
 ```
 
 All implementation stages 0–10 are technically complete. The remaining unchecked public-artifact item is intentionally a post-owner-approval publication verification and is not permission to merge, tag or publish.
+
+### Final hardening and human-usability review — 2026-08-29
+
+The previous READY status was intentionally revoked and the Dashboard was attacked again before owner approval. The review opened and closed the following release-blocking trust edges:
+
+- Home health now uses a verified projection and cannot show **Good** from an invalid latest run.
+- **Ready to release?** now proves that the validated scan still covers the current Git HEAD and that no uncovered working-tree changes exist.
+- Approval decisions are bound to the exact request shown by `request_hash`; changed or duplicate IDs fail closed.
+- Recovery never claims automatic-scan cleanup succeeded unless the scheduler state proves it. A safe Policy reset with incomplete external cleanup is reported as partial success requiring attention.
+- Policy, Scheduler, Recovery and Approval mutations are serialized across separate Control Center processes using an OS-level mutation lock.
+- `SCAN NOW` checks the shared OS scan lock before writing STARTING, and all Control Centers can observe the shared active scan without overwriting its state.
+- Default Dashboard language was rewritten around user tasks and decisions. Engineering identifiers and raw state remain under **Details**.
+- The real Dashboard is smoke-tested in a Chromium browser at desktop and mobile viewport sizes.
+
+Permanent regression gates added:
+
+```text
+scripts/v2.2-final-adversarial-red-team.py
+scripts/v2.2-windows-final-adversarial-red-team.ps1
+scripts/v2.2-dashboard-usability-red-team.py
+scripts/v2.2-dashboard-browser-smoke.py
+```
+
+Local final-hardening evidence:
+
+```text
+V22_FINAL_ADVERSARIAL_RESULT=PASS
+V22_WIN_FINAL_ADVERSARIAL_RESULT=PASS
+V22_DASHBOARD_USABILITY_RESULT=PASS
+V22_BROWSER_SMOKE_RESULT=PASS
+POWER_SHELL_SELF_TEST=PASS
+SHELL_SELF_TEST=PASS
+VERIFY_INSTALL_WINDOWS_PATH_WITH_SPACES=PASS
+VERIFY_INSTALL_SHELL_PATH_WITH_SPACES=PASS
+WINDOWS_CONTROL_SAFETY_SUITE=PASS
+TIMEOUT_UPGRADE_SUITE=PASS
+```
+
+The release state remains **not approved** until this hardening is committed and the exact final HEAD passes clean-HEAD package reproducibility, upgrade/rollback, Windows/Ubuntu/macOS CI and final ZIP provenance/security audit.
+
+### Schema-v4 project-freshness hardening — 2026-08-29
+
+The final review also found that release freshness needed a durable non-Git contract. v2.2 run records now use schema 4 with `project.fingerprint`. The fingerprint is calculated from the **final project state actually verified**, after authorized remediation and required revalidation, immediately before run validation/report closure. If the project changes again before closure, the fingerprint must be recalculated or the run fails closed.
+
+Permanent evidence now covers:
+
+```text
+NON_GIT_MATCHING_FINGERPRINT_READY=PASS
+NON_GIT_FILE_CHANGE_INVALIDATES_READY=PASS
+NON_GIT_NEW_SNAPSHOT_RESTORES_READY=PASS
+WINDOWS_PORTABLE_FINGERPRINT_PARITY=PASS
+SCHEMA_V4_BRAIN_CONTRACT=PASS
+FINAL_DUAL_SELF_TEST=PASS
+WORKFLOW_YAML_PARSE=PASS
+```
+
+The exact post-hardening candidate still requires clean-HEAD reproducibility, cross-version upgrade/rollback, Windows/Ubuntu/macOS CI and final ZIP provenance/security audit before READY is restored.

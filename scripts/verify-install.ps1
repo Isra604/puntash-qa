@@ -65,7 +65,10 @@ $required = @(
   'prompts\MANUAL_QA.md',
   'tools\manual-run.ps1',
   'tools\manual-run.py',
-  'tools\manual-run.sh'
+  'tools\manual-run.sh',
+  'tools\project-fingerprint.ps1',
+  'tools\project-fingerprint.py',
+  'tools\project-fingerprint.sh'
 )
 $attributionPending = Join-Path $dest 'state\FIRST_RUN_ATTRIBUTION_PENDING.txt'
 $attributionShown = Join-Path $dest 'state\ATTRIBUTION_SHOWN.txt'

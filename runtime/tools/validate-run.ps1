@@ -40,6 +40,18 @@ function Check-Item($x,[string]$kind,[int]$num){
 }
 try{$schema=[int]$r.schema_version}catch{$schema=0};if($schema-lt3){$errors.Add('schema_version must be >=3 for v2.1 current-run validation')}
 if(-not(NonEmpty $r.run_id)){$errors.Add('run_id is required')}
+if($schema-ge4){
+ $fp=$r.project.fingerprint
+ if($null-eq$r.project-or$null-eq$fp){$errors.Add('schema-v4 project.fingerprint object is required')}
+ else{
+  if([string]$fp.algorithm-ne'PUNTASH_SOURCE_V1'){$errors.Add('project.fingerprint.algorithm must be PUNTASH_SOURCE_V1')}
+  if($fp.available-isnot[bool]){$errors.Add('project.fingerprint.available must be boolean')}
+  elseif($fp.available-eq$true){
+   if([string]$fp.sha256-notmatch'^[0-9A-Fa-f]{64}$'){$errors.Add('available project fingerprint requires 64-hex sha256')}
+   foreach($key in @('file_count','byte_count')){$v=$fp.$key;if($v-is[bool]-or$v-isnot[int]-and$v-isnot[long]-or[int64]$v-lt0){$errors.Add("available project fingerprint $key must be a non-negative integer")}}
+  }elseif(-not(NonEmpty $fp.reason)){$errors.Add('unavailable project fingerprint requires reason')}
+ }
+}
 $started=Parse-Time $r.started_at;$completed=Parse-Time $r.completed_at;if($null-eq$started){$errors.Add('started_at must be a valid timestamp')};if($null-eq$completed){$errors.Add('completed_at must be a valid timestamp')};if($started-and$completed-and$completed-lt$started){$errors.Add('completed_at cannot precede started_at')}
 $gates=@($r.gates);$lenses=@($r.lenses)
 if($gates.Count-ne25){$errors.Add('exactly 25 gate records required')}else{$nums=@();foreach($g in $gates){$n=[int]$g.gate;$nums+=$n;Check-Item $g 'GATE' $n};if((($nums|Sort-Object)-join',')-ne((1..25)-join',')){$errors.Add('gate numbers must be unique 1..25')}}

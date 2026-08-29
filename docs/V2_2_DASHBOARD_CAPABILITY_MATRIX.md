@@ -25,13 +25,13 @@ This matrix is release-blocking. Every user-relevant capability is assigned a Da
 | Frequency/time/day | Owner Policy | Schedule Builder | OWNER_APPROVAL | DAILY/WEEKDAYS/WEEKLY only; local time validation |
 | Local scheduler apply/remove | scheduler tool | Schedule Builder action/result | OWNER_APPROVAL | Canonical scheduler tool only |
 | External AGENT_MANAGED activation/update/deactivation | external AI platform | Status + exact guidance | VIEW_ONLY_PROTECTED | Dashboard cannot claim it changed an external platform |
-| Permission preset | Owner Policy | Permissions Center | OWNER_APPROVAL | REPORT_ONLY / SAFE_FIXES / ACTIVE_REMEDIATION mapped to plain language |
+| Permission preset | Owner Policy | **What PUNTASH can change** | OWNER_APPROVAL | REPORT_ONLY / SAFE_FIXES / ACTIVE_REMEDIATION mapped to plain language |
 | Custom permissions | Owner Policy | Details-only advanced editor where valid | OWNER_APPROVAL | Canonical policy validation and hard ceilings still apply |
 | Protected boundaries | Permission Policy | Always-visible explanation | VIEW_ONLY_PROTECTED | Cannot be disabled from Dashboard |
 | Automatic remediation authorization | authorize-change | Approval queue invokes canonical authorization for eligible queued requests | OWNER_APPROVAL | Exact target paths/evidence/current policy revision required |
 | HIGH/PROTECTED remediation | owner/external decision | Explain why it cannot be auto-approved | VIEW_ONLY_PROTECTED | Dashboard does not create a bypass |
-| Findings | Run record | Plain-language cards | DIRECT view | What / why / next action, technical IDs secondary |
-| Finding evidence | Reports/evidence | Evidence viewer | DIRECT view | Contained reads only; allowlisted roots/extensions; no arbitrary filesystem access |
+| Findings | Run record | **Things to review** plain-language cards | DIRECT view | What / why / next action, technical IDs secondary |
+| Finding evidence | Reports/evidence | **Proof** viewer | DIRECT view | Contained reads only; allowlisted roots/extensions; no arbitrary filesystem access |
 | Technical gate/lens detail | Run record | Details layer | DIRECT view | Same source of truth as Overview |
 | Reports/history | reports/dashboard | Activity + run history | DIRECT view | Completed reports immutable |
 | Remediation history | run automatic_remediation | Before/after/remediation cards | DIRECT view | Claims require authorization + post-fix evidence |
@@ -40,15 +40,15 @@ This matrix is release-blocking. Every user-relevant capability is assigned a Da
 | Authorization audit history | state history | Activity / technical details | DIRECT view | No secrets; decision IDs visible only in Details |
 | Health history | run history | Project Health | DIRECT view | Trend states, not vanity score |
 | Changes since last scan | run changes | Comparison view | DIRECT view | Distinguish project changes vs PUNTASH changes |
-| Release readiness | latest run/lenses | Dedicated card/page | DIRECT view | Ready only from complete current evidence; incomplete => Could not fully verify |
-| Policy health | Policy Manager | Recovery Center | DIRECT view | Invalid policy => fail closed |
-| Scheduler health | scheduler status | Recovery Center/Schedule | DIRECT view | Raw states translated, raw IDs in Details |
-| Human Terms status | acceptance receipt | Settings/Recovery status | DIRECT view | Dashboard never accepts Terms for user |
+| Release readiness | latest run/lenses | **Ready to release?** card/page | DIRECT view | Ready only from complete current evidence; incomplete => Could not fully verify |
+| Policy health | Policy Manager | **Fix PUNTASH QA** | DIRECT view | Invalid policy => fail closed |
+| Scheduler health | scheduler status | **Fix PUNTASH QA / Automatic scans** | DIRECT view | Raw states translated, raw IDs in Details |
+| Human Terms status | acceptance receipt | **Settings & privacy / Fix PUNTASH QA** | DIRECT view | Dashboard never accepts Terms for user |
 | Terms acceptance | installer | Explain only | VIEW_ONLY_PROTECTED | Human interactive installer/update flow only |
 | Update availability | LAST_UPDATE_CHECK / update tool | Settings/About status | DIRECT view | Applying an update remains separate human-confirmed updater flow |
 | Update execution | updater | Launch guidance/status, no silent update | VIEW_ONLY_PROTECTED | Existing human confirmation stays mandatory |
-| QA Doctor status | QA Doctor state | Recovery / system health | DIRECT view | Discovery hints are never QA PASS |
-| Control Center status | loopback server | Settings/About | DIRECT view | Loopback only, token auth, no telemetry |
+| QA Doctor status | QA Doctor state | **Fix PUNTASH QA / system health** | DIRECT view | Discovery hints are never QA PASS |
+| Control Center status | loopback server | **Settings & privacy** | DIRECT view | Loopback only, token auth, no telemetry |
 | Raw JSON / scheduler signatures / authorization IDs | technical state | Details only | DIRECT view | Not primary copy |
 | Internal lock files | runtime | Not exposed as user control | INTERNAL | OS locking remains authoritative |
 | Permission Policy mutation | code-distributed canonical ceiling | Never editable from Dashboard | INTERNAL / VIEW_ONLY_PROTECTED | Prevent self-elevation |
@@ -74,13 +74,13 @@ All require the local control token except the static Dashboard HTML. The contro
 - `GET /api/diagnostics` — fail-closed system/recovery status.
 - `GET /api/approvals` — bounded pending approval queue.
 - `GET /api/evidence?path=...` — contained evidence/artifact/report viewer.
-- `GET /api/release-readiness` — validator-backed release readiness projection.
+- `GET /api/overview` — includes validator-backed release readiness and verified project-health projections.
 - `POST /api/approval` — approve/deny an eligible exact queued request through canonical authorization rules.
 - `POST /api/scheduler-action` — explicit canonical apply/remove only where appropriate.
-- `POST /api/recovery/reset-policy` — owner-approved reset through canonical Policy Manager to safe Observe-only state.
+- `POST /api/recovery` — bounded owner-approved recovery actions, including reset through canonical Policy Manager to safe Observe-only state.
 
 No new endpoint may accept a raw shell command, arbitrary path, arbitrary URL, raw HTML, or an unbounded payload.
 
 ## Coverage conclusion
 
-The v2.1 engine already provides the required authority primitives but not a complete human operating surface. The main missing pieces are manual-run orchestration, bounded Dashboard projections, approval-queue presentation, live status, plain-language navigation and recovery/readiness views. These treatments are implemented. Local portable and Windows-native Dashboard red-team suites pass; cross-platform CI remains the final release-candidate gate.
+The v2.1 engine already provides the required authority primitives but not a complete human operating surface. The main missing pieces are manual-run orchestration, bounded Dashboard projections, approval-queue presentation, live status, plain-language navigation and recovery/readiness views. These treatments are implemented. Local portable and Windows-native Dashboard red-team suites, final adversarial suites, human-usability gate and real-browser desktop/mobile smoke test pass. Cross-platform CI on the final candidate remains the release-candidate gate.

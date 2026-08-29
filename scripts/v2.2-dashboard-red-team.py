@@ -7,8 +7,9 @@ def ok(c,n):
     if not c: raise AssertionError('V22_DASHBOARD_REDTEAM_FAIL='+n)
     print('V22_DASHBOARD_REDTEAM_PASS='+n)
 
-def req(url,token=None,method='GET',body=None,expect=200):
+def req(url,token=None,method='GET',body=None,expect=200,headers_extra=None):
     headers={}
+    if headers_extra: headers.update(headers_extra)
     data=None
     if token: headers['X-QA-Control-Token']=token
     if body is not None:
@@ -32,7 +33,7 @@ def apply_policy(install,candidate,source='manual_cli'):
 
 def main():
   html=(ROOT/'runtime/dashboard/index.html').read_text(encoding='utf-8')
-  for token in ['SCAN NOW','Observe only','Fix safe things','More active protection','Recovery Center','Ask PUNTASH','Overview','Details','Local only · no telemetry','/api/scan-now','/api/approval','/api/evidence','/api/recovery','const esc=','history.replaceState']:
+  for token in ['SCAN NOW','Observe only','Fix safe things','More active protection','Fix PUNTASH QA','Ask PUNTASH','Things to review','Your decisions','Overview','Details','Stays on this computer · no data sent by this Dashboard','/api/scan-now','/api/approval','/api/evidence','/api/recovery','const esc=','history.replaceState']:
       ok(token in html,'ui_contract_'+hashlib.sha256(token.encode()).hexdigest()[:8])
   ok('<script src="https://' not in html and '<link href="https://' not in html,'no_external_dashboard_dependencies')
   ok(not any(x in html for x in ['innerHTML=f.title','innerHTML=f.summary','innerHTML=f.description','innerHTML=e.detail','innerHTML=e.message']),'no_obvious_raw_field_innerhtml')
@@ -53,6 +54,7 @@ def main():
     try:
       line=proc.stdout.readline().strip();bind=proc.stdout.readline().strip();ok(line.startswith('DASHBOARD_CONTROL_URL=http://127.0.0.1:'),'loopback_url');ok(bind=='DASHBOARD_CONTROL_BIND=127.0.0.1','loopback_bind');baseurl=line.split('=',1)[1]
       req(baseurl+'api/overview',expect=403);ok(True,'unauthorized_overview_denied')
+      req(baseurl+'api/overview',token,expect=403,headers_extra={'Origin':'http://evil.example'});ok(True,'cross_origin_token_reuse_denied')
       req(baseurl+'state/OWNER_POLICY.json',expect=404);ok(True,'state_static_denied')
       ov=req(baseurl+'api/overview',token);ok(ov['ok'] and ov['overview']['diagnostics']['acceptance']['valid'],'overview_human_acceptance_projection')
       # Scan Now refuses false start without a runner.
@@ -86,18 +88,20 @@ def main():
       current=json.loads(subprocess.run([sys.executable,str(install/'tools/policy-manager.py'),'get'],capture_output=True,text=True,check=True).stdout)
       approval={'request_id':'REQ-V22-1','created_at':'2026-08-28T20:00:00+00:00','policy_revision':current['policy_revision'],'finding_id':'F-V22-1','risk':'LOW','category':'documentation','change_summary':'Update a local documentation note','evidence_refs':['evidence/proof.txt'],'target_paths':['docs/approved.md'],'expected_behavior_proven':True,'reversible':True}
       with (state/'APPROVAL_REQUESTS.jsonl').open('a',encoding='utf-8') as h:h.write(json.dumps(approval)+'\n')
-      q=req(baseurl+'api/approvals',token)['approvals'];ok(any(x['request_id']=='REQ-V22-1' for x in q),'approval_queue_visible')
-      dec=req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-1','decision':'APPROVE'});ok(dec['ok'] and dec['decision'].get('authorization_id'),'approval_invokes_canonical_authorization')
-      req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-1','decision':'APPROVE'},409);ok(True,'approval_reuse_denied')
+      q=req(baseurl+'api/approvals',token)['approvals'];item=next(x for x in q if x['request_id']=='REQ-V22-1');ok(item['request_hash'] and not item.get('conflict'),'approval_queue_visible')
+      dec=req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-1','request_hash':item['request_hash'],'decision':'APPROVE'});ok(dec['ok'] and dec['decision'].get('authorization_id'),'approval_invokes_canonical_authorization')
+      req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-1','request_hash':item['request_hash'],'decision':'APPROVE'},409);ok(True,'approval_reuse_denied')
       # Protected request reaches canonical DENY, never UI bypass.
       approval2=dict(approval,request_id='REQ-V22-2',finding_id='F-V22-2',risk='PROTECTED',category='architecture',target_paths=['docs/protected.md'],policy_revision=current['policy_revision'])
       with (state/'APPROVAL_REQUESTS.jsonl').open('a',encoding='utf-8') as h:h.write(json.dumps(approval2)+'\n')
-      d=req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-2','decision':'APPROVE'},409);ok(d['error']=='canonical_authorization_denied','protected_approval_cannot_bypass_policy')
+      item2=next(x for x in req(baseurl+'api/approvals',token)['approvals'] if x['request_id']=='REQ-V22-2')
+      d=req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-2','request_hash':item2['request_hash'],'decision':'APPROVE'},409);ok(d['error']=='canonical_authorization_denied','protected_approval_cannot_bypass_policy')
       # A stale request is refused after policy revision changes.
       approval3=dict(approval,request_id='REQ-V22-3',finding_id='F-V22-3',policy_revision=current['policy_revision'])
       with (state/'APPROVAL_REQUESTS.jsonl').open('a',encoding='utf-8') as h:h.write(json.dumps(approval3)+'\n')
+      item3=next(x for x in req(baseurl+'api/approvals',token)['approvals'] if x['request_id']=='REQ-V22-3')
       latest=json.loads(subprocess.run([sys.executable,str(install/'tools/policy-manager.py'),'get'],capture_output=True,text=True,check=True).stdout);latest['permissions']['preset']='REPORT_ONLY';apply_policy(install,latest)
-      req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-3','decision':'APPROVE'},409);ok(True,'stale_approval_policy_revision_denied')
+      req(baseurl+'api/approval',token,'POST',{'request_id':'REQ-V22-3','request_hash':item3['request_hash'],'decision':'APPROVE'},409);ok(True,'stale_approval_policy_revision_denied')
       # Recovery from corrupt Owner Policy is fail closed then canonical safe reset.
       (state/'OWNER_POLICY.json').write_text('{bad-json',encoding='utf-8')
       dg=req(baseurl+'api/diagnostics',token)['diagnostics'];ok(any(x['code']=='POLICY_INVALID' for x in dg['issues']),'recovery_detects_invalid_policy')

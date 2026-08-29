@@ -23,6 +23,14 @@ def main():
     install=Path(__file__).resolve().parent.parent;project=install.parent;state=install/'state';state.mkdir(exist_ok=True);status=state/'MANUAL_SCAN_STATUS.json';policy=state/'OWNER_POLICY.json';accept=state/'HUMAN_ACCEPTANCE_RECEIPT.json';logs=state/'manual/logs';logs.mkdir(parents=True,exist_ok=True)
     def save(result,message,**extra):
         d={'updated_at':now(),'last_attempt':now(),'last_result':result,'message':message,'acceptance_receipt_integrity':acceptance_integrity};d.update(extra);atomic_json_write(status,d)
+    def save_overlap():
+        try:
+            current=json.loads(status.read_text(encoding='utf-8-sig')) if status.is_file() else {}
+        except Exception:
+            current={}
+        if str(current.get('last_result') or '') in {'STARTING','RUNNING'}:
+            return
+        save('SKIPPED_OVERLAP','Another QA scan is already active.')
     if not accept.exists():save('BLOCKED','Human acceptance receipt missing.');return 5
     try: receipt=json.loads(accept.read_text(encoding='utf-8-sig'))
     except Exception: save('BLOCKED','Human acceptance receipt is invalid JSON.');return 5
@@ -73,10 +81,10 @@ def main():
             if lock.tell()==0:lock.write(b'0');lock.flush()
             lock.seek(0)
             try:msvcrt.locking(lock.fileno(),msvcrt.LK_NBLCK,1);lock_acquired=True
-            except OSError:save('SKIPPED_OVERLAP','Another QA scan is already active.');return 8
+            except OSError:save_overlap();return 8
         elif fcntl:
             try:fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB);lock_acquired=True
-            except BlockingIOError:save('SKIPPED_OVERLAP','Another QA scan is already active.');return 8
+            except BlockingIOError:save_overlap();return 8
         else:
             save('BLOCKED','No supported OS file-lock primitive is available for scan overlap protection.');return 8
         run='MANUAL-'+datetime.now().strftime('%Y%m%d-%H%M%S-%f');out=logs/f'{run}.stdout.log';err=logs/f'{run}.stderr.log';prompt=install/'prompts/MANUAL_QA.md';prompt=prompt if prompt.exists() else install/'templates/MANUAL_QA.md'

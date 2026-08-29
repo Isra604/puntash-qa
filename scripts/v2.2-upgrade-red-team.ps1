@@ -30,6 +30,9 @@ try{
 
   Assert (Test-Path (Join-Path $install 'tools\manual-run.ps1')) 'v21 updater receives Windows manual runner'
   Assert (Test-Path (Join-Path $install 'tools\manual-run.py')) 'v21 updater receives portable manual runner'
+  Assert (Test-Path (Join-Path $install 'tools\project-fingerprint.ps1')) 'v21 updater receives Windows project fingerprint helper'
+  Assert (Test-Path (Join-Path $install 'tools\project-fingerprint.py')) 'v21 updater receives portable project fingerprint helper'
+  Assert (Test-Path (Join-Path $install 'tools\project-fingerprint.sh')) 'v21 updater receives shell project fingerprint wrapper'
   Assert (Test-Path (Join-Path $install 'templates\MANUAL_QA.md')) 'v21 updater receives manual prompt compatibility copy'
   Assert (Test-Path (Join-Path $install 'prompts\MANUAL_QA.md')) 'v21 updater receives canonical manual prompt'
   Assert ((Get-Content (Join-Path $install 'reports\PRESERVE_REPORT.marker') -Raw).Trim()-eq'report-v21') 'reports preserved across v21 to v22'
@@ -44,6 +47,9 @@ try{
   foreach($f in @('AGENT_INSTRUCTIONS.md','START_HERE.md','OPEN_DASHBOARD.cmd','INSTALLATION.json','LEGAL_MANIFEST.json')){$src=Join-Path $backup $f;$dst=Join-Path $install $f;if(Test-Path $src){Copy-Item $src $dst -Force}}
   Assert (-not(Test-Path (Join-Path $install 'tools\manual-run.ps1'))) 'rollback removes v22 Windows manual runner'
   Assert (-not(Test-Path (Join-Path $install 'tools\manual-run.py'))) 'rollback removes v22 portable manual runner'
+  Assert (-not(Test-Path (Join-Path $install 'tools\project-fingerprint.ps1'))) 'rollback removes v22 Windows project fingerprint helper'
+  Assert (-not(Test-Path (Join-Path $install 'tools\project-fingerprint.py'))) 'rollback removes v22 portable project fingerprint helper'
+  Assert (-not(Test-Path (Join-Path $install 'tools\project-fingerprint.sh'))) 'rollback removes v22 shell project fingerprint wrapper'
   Assert (-not(Test-Path (Join-Path $install 'templates\MANUAL_QA.md'))) 'rollback removes v22 manual prompt template'
   Assert ((Get-Content (Join-Path $install 'reports\PRESERVE_REPORT.marker') -Raw).Trim()-eq'report-v21') 'reports survive v22 rollback'
   Assert ((Get-Content (Join-Path $install 'state\PRESERVE_STATE.marker') -Raw).Trim()-eq'state-v21') 'state survives v22 rollback'

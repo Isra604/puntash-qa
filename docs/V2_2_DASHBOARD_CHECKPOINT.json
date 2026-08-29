@@ -2,7 +2,7 @@
   "target_version": "2.2.0",
   "product": "PUNTASH QA",
   "branch": "feature/v2.2-dashboard-control-center",
-  "status": "READY_FOR_OWNER_RELEASE_APPROVAL",
+  "status": "FINAL_HARDENING_LOCAL_PASS_CANDIDATE_PENDING_CI",
   "current_stage": 10,
   "last_completed_stage": 10,
   "completed_stages": [
@@ -30,7 +30,7 @@
     "public_release_created": false,
     "owner_release_approval_required": true
   },
-  "next_action": "Owner release approval boundary. Do not merge to main, create v2.2.0 tag, or publish a GitHub Release until explicit owner approval. After approval, rerun release workflow preflights and verify the public artifact.",
+  "next_action": "Commit the completed final hardening, run clean-HEAD reproducibility/upgrade/package gates, push the exact candidate to Draft PR #4, then require Windows/Ubuntu/macOS CI and final artifact audit before restoring READY_FOR_OWNER_RELEASE_APPROVAL.",
   "local_evidence": {
     "windows_self_test": "PASS",
     "portable_dashboard_redteam": "PASS",
@@ -50,7 +50,24 @@
     "v20_to_v22_upgrade_rollback": "PASS",
     "reproducible_package": "PASS",
     "interim_package_sha256": "6E6FDB1DF4979A0E55AC2BF335B8920D21B867F62A78B21A702550BB942D6B4F",
-    "interim_package_source_commit": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f"
+    "interim_package_source_commit": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f",
+    "final_portable_adversarial": "PASS",
+    "final_windows_adversarial": "PASS",
+    "human_usability_redteam": "PASS",
+    "real_browser_desktop_mobile_smoke": "PASS",
+    "shell_self_test_after_final_hardening": "PASS",
+    "powershell_self_test_after_final_hardening": "PASS",
+    "verify_install_windows_path_with_spaces": "PASS",
+    "verify_install_shell_path_with_spaces": "PASS",
+    "final_windows_control_safety_bundle": "PASS",
+    "final_timeout_bundle": "PASS",
+    "final_v21_to_v22_upgrade_rollback": "PASS",
+    "final_dual_self_test": "PASS",
+    "workflow_yaml_parse": "PASS",
+    "non_git_fingerprint_freshness": "PASS",
+    "windows_portable_fingerprint_parity": "PASS",
+    "schema_v4_fingerprint_brain_contract": "PASS",
+    "fingerprint_final_verified_state_timing": "PASS"
   },
   "implementation_sha": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f",
   "cross_platform_ci": {
@@ -59,5 +76,18 @@
     "windows": "PASS",
     "ubuntu": "PASS",
     "macos": "PASS"
-  }
+  },
+  "final_adversarial_reopened": true,
+  "final_hardening_findings": [
+    "Home health could previously derive Good from an unvalidated latest summary.",
+    "Release readiness could previously remain Ready after project changes made after the verified scan.",
+    "Approval requests required binding to the exact request shown to prevent TOCTOU or duplicate-ID ambiguity.",
+    "Recovery could previously overstate scheduler cleanup success after a safe policy reset.",
+    "Dashboard mutations required cross-process serialization across multiple Control Center windows.",
+    "A second Control Center could previously disturb shared manual-scan status before the canonical scan lock rejected overlap.",
+    "Primary Dashboard copy still exposed unnecessary engineering jargon in default Overview paths.",
+    "Capability documentation contained two stale planned endpoint names.",
+    "Non-Git projects previously lacked an enforced final project snapshot contract for release freshness.",
+    "The first schema-v4 fingerprint instruction captured the snapshot too early; it now represents the final verified project state after authorized remediation and revalidation."
+  ]
 }

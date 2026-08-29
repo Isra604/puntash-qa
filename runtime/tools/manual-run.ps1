@@ -72,6 +72,13 @@ function Save-Status([string]$Result, [string]$Message, [hashtable]$Extra = @{})
     Write-JsonAtomic -Path $statusPath -Value $record -Depth 8
 }
 
+function Save-OverlapStatus {
+    $current=$null
+    try{if(Test-Path -LiteralPath $statusPath -PathType Leaf){$current=Get-Content -LiteralPath $statusPath -Raw|ConvertFrom-Json}}catch{}
+    if($null-ne$current -and [string]$current.last_result -in @('STARTING','RUNNING')){return}
+    Save-Status 'SKIPPED_OVERLAP' 'Another QA scan is already active.'
+}
+
 if (-not (Test-Path $acceptancePath)) {
     Save-Status 'BLOCKED' 'Human acceptance receipt missing.'
     exit 5
@@ -142,7 +149,7 @@ try {
     try {
         $lock = [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
     } catch {
-        Save-Status 'SKIPPED_OVERLAP' 'Another QA scan is already active.'
+        Save-OverlapStatus
         exit 8
     }
     $runId = 'MANUAL-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8)

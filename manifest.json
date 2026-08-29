@@ -89,7 +89,10 @@
       "overview_details_modes"
     ],
     "approval_queue": "state/APPROVAL_REQUESTS.jsonl",
-    "approval_decisions": "state/OWNER_APPROVAL_DECISIONS.jsonl"
+    "approval_decisions": "state/OWNER_APPROVAL_DECISIONS.jsonl",
+    "project_fingerprint_windows": "runtime/tools/project-fingerprint.ps1",
+    "project_fingerprint_portable": "runtime/tools/project-fingerprint.py",
+    "project_fingerprint_unix": "runtime/tools/project-fingerprint.sh"
   },
   "lens_count": 9,
   "reliability_model": {
@@ -113,7 +116,8 @@
     "default_permission": "REPORT_ONLY",
     "schedule_default_enabled": false,
     "telemetry": false,
-    "dashboard_generation": "human_friendly_v2_2"
+    "dashboard_generation": "human_friendly_v2_2",
+    "project_fingerprint_portable": "runtime/tools/project-fingerprint.py"
   },
   "automation_and_permissions": {
     "owner_policy": "runtime/templates/OWNER_POLICY.json",

@@ -28,16 +28,20 @@ pass 'bash syntax'
 [[ -f "$ROOT/runtime/START_HERE.md" && -f "$ROOT/docs/PRODUCT_ROADMAP.md" ]] || fail 'Easy Start/roadmap files'
 pass 'Easy Start/roadmap files'
 if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.1.0" || "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.2.0" ]]; then
-  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/templates/UNTRUSTED_PROJECT_CONTENT.md runtime/tools/path-safety.ps1 runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/prepare-scheduler-for-rollback.ps1 runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh runtime/templates/MANUAL_QA.md runtime/prompts/MANUAL_QA.md runtime/tools/manual-run.py runtime/tools/manual-run.sh scripts/v2.2-dashboard-red-team.py scripts/v2.2-upgrade-red-team.ps1 scripts/v2.1-control-red-team.py scripts/v2.1-overlap-red-team.py scripts/v2.1-target-scope-red-team.py scripts/v2.1-portable-timeout-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
+  for f in runtime/templates/OWNER_POLICY.json runtime/templates/PERMISSION_POLICY.json runtime/templates/SCHEDULED_QA.md runtime/templates/UNTRUSTED_PROJECT_CONTENT.md runtime/tools/path-safety.ps1 runtime/tools/policy-manager.py runtime/tools/authorize-change.py runtime/tools/prepare-scheduler-for-rollback.ps1 runtime/tools/scheduler.py runtime/tools/scheduled-run.py runtime/tools/dashboard-control.py runtime/tools/open-dashboard.sh runtime/templates/MANUAL_QA.md runtime/prompts/MANUAL_QA.md runtime/tools/manual-run.py runtime/tools/manual-run.sh runtime/tools/project-fingerprint.ps1 runtime/tools/project-fingerprint.py runtime/tools/project-fingerprint.sh scripts/v2.2-dashboard-red-team.py scripts/v2.2-final-adversarial-red-team.py scripts/v2.2-dashboard-usability-red-team.py scripts/v2.2-dashboard-browser-smoke.py scripts/v2.2-upgrade-red-team.ps1 scripts/v2.1-control-red-team.py scripts/v2.1-overlap-red-team.py scripts/v2.1-target-scope-red-team.py scripts/v2.1-portable-timeout-red-team.py scripts/v2.1-upgrade-red-team.ps1; do [[ -f "$ROOT/$f" ]] || fail "missing v2.1 asset $f"; done
   cmp -s "$ROOT/runtime/config/permission-policy.json" "$ROOT/runtime/templates/PERMISSION_POLICY.json" || fail 'permission policy compatibility copy mismatch'
   cmp -s "$ROOT/runtime/prompts/SCHEDULED_QA.md" "$ROOT/runtime/templates/SCHEDULED_QA.md" || fail 'scheduled prompt compatibility copy mismatch'
   grep -q 'authorize-change' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent mechanical authorization contract'
 grep -q 'Instruction firewall for untrusted project content' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'agent instruction firewall contract'
-[[ -n "$PYTHON" ]] || fail 'Python 3 runtime required for v2.1 schema contract'; "$PYTHON" -c 'import json; d=json.load(open("runtime/templates/DASHBOARD_RUN.json",encoding="utf-8-sig")); assert d["schema_version"]>=3 and "automatic_remediation" in d' || fail 'schema-v3 remediation accounting contract'
+[[ -n "$PYTHON" ]] || fail 'Python 3 runtime required for v2.1 schema contract'; "$PYTHON" -c 'import json; d=json.load(open("runtime/templates/DASHBOARD_RUN.json",encoding="utf-8-sig")); assert d["schema_version"]>=3 and "automatic_remediation" in d' || fail 'schema-v3+ remediation accounting compatibility contract'
   if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.2.0" ]]; then
     grep -q 'SCAN NOW' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard SCAN NOW'
-    grep -q 'Recovery Center' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard Recovery Center'
+    grep -q 'Fix PUNTASH QA' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard recovery page'
     grep -q 'Ask PUNTASH' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard Ask PUNTASH'
+    cmp -s "$ROOT/runtime/prompts/MANUAL_QA.md" "$ROOT/runtime/templates/MANUAL_QA.md" || fail 'manual prompt compatibility copy mismatch'
+    cmp -s "$ROOT/runtime/prompts/SCHEDULED_QA.md" "$ROOT/runtime/templates/SCHEDULED_QA.md" || fail 'scheduled prompt compatibility copy mismatch'
+    grep -q 'New v2.2 runs use schema 4' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'v2.2 schema-v4 agent contract'
+    grep -q 'tools/project-fingerprint' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'v2.2 project fingerprint agent contract'
   else
     grep -q 'Agent permissions' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard agent permissions card'
     grep -q 'Scheduled QA' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard scheduled QA card'
@@ -62,9 +66,9 @@ grep -q '"doctor_version": "2.0"' "$TMP/doctor/QA_DOCTOR.json" || fail 'QA Docto
 pass 'QA Doctor v2 reliability hints'
 
 for f in "$ROOT/runtime/dashboard/index.html" "$ROOT/runtime/dashboard/data.js" "$ROOT/runtime/templates/DASHBOARD_RUN.json" "$ROOT/runtime/tools/dashboard-refresh.sh" "$ROOT/docs/DASHBOARD.md"; do [[ -f "$f" ]] || fail "missing dashboard asset $f"; done
-grep -q 'Local only · no telemetry' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard privacy label'
+grep -q 'Stays on this computer · no data sent by this Dashboard' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard privacy label'
 if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.2.0" ]]; then
-  for token in 'SCAN NOW' 'What changed' 'Activity timeline' 'Observe only' 'Automatic scans' 'Approval requests' 'Ready to release?' 'Recovery Center' 'Ask PUNTASH' 'Overview' 'Details'; do grep -q "$token" "$ROOT/runtime/dashboard/index.html" || fail "dashboard v2.2 token $token"; done
+  for token in 'SCAN NOW' 'What changed' 'Activity timeline' 'Observe only' 'Automatic scans' 'Things to review' 'Your decisions' 'Ready to release?' 'Fix PUNTASH QA' 'Ask PUNTASH' 'Overview' 'Details'; do grep -q "$token" "$ROOT/runtime/dashboard/index.html" || fail "dashboard v2.2 token $token"; done
 else
   grep -q '25 gate map' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard gate map'
   grep -q 'Reliability assurance' "$ROOT/runtime/dashboard/index.html" || fail 'dashboard reliability assurance'
@@ -130,7 +134,12 @@ PY
     pass 'v2.1 control/permission/runtime/brain/target/overlap red-team'
     if [[ "$(tr -d '\r\n' < "$ROOT/VERSION")" == "2.2.0" ]]; then
       "$PYTHON" "$ROOT/scripts/v2.2-dashboard-red-team.py" >/dev/null || fail 'v2.2 Dashboard red-team suite'
-      pass 'v2.2 Dashboard red-team'
+      "$PYTHON" "$ROOT/scripts/v2.2-final-adversarial-red-team.py" >/dev/null || fail 'v2.2 final adversarial red-team suite'
+      "$PYTHON" "$ROOT/scripts/v2.2-dashboard-usability-red-team.py" >/dev/null || fail 'v2.2 human usability red-team suite'
+      pass 'v2.2 Dashboard/final-adversarial/human-usability red-team'
+    grep -q 'final project state that was actually verified' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'v2.2 final-state fingerprint brain contract'
+    grep -q 'immediately before final run validation/report closure' "$ROOT/runtime/AGENT_INSTRUCTIONS.md" || fail 'v2.2 fingerprint closure timing contract'
+    pass 'v2.2 final-state fingerprint brain contract'
     fi
     if [[ "${OS:-}" != "Windows_NT" ]]; then
       "$PYTHON" "$ROOT/scripts/v2.1-unix-scheduler-red-team.py" >/dev/null || fail 'v2.1 unix scheduler red-team suite'
