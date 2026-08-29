@@ -2,7 +2,7 @@
   "target_version": "2.2.0",
   "product": "PUNTASH QA",
   "branch": "feature/v2.2-dashboard-control-center",
-  "status": "FINAL_HARDENING_LOCAL_PASS_CANDIDATE_PENDING_CI",
+  "status": "FINAL_HARDENING_CLEAN_HEAD_PASS_FINAL_CI_PENDING",
   "current_stage": 10,
   "last_completed_stage": 10,
   "completed_stages": [
@@ -30,7 +30,7 @@
     "public_release_created": false,
     "owner_release_approval_required": true
   },
-  "next_action": "Commit the completed final hardening, run clean-HEAD reproducibility/upgrade/package gates, push the exact candidate to Draft PR #4, then require Windows/Ubuntu/macOS CI and final artifact audit before restoring READY_FOR_OWNER_RELEASE_APPROVAL.",
+  "next_action": "Commit final closure documentation, push the exact docs-only final HEAD to Draft PR #4, require fresh Windows/Ubuntu/macOS CI on that SHA, then rebuild and audit the final ZIP without changing the tested HEAD.",
   "local_evidence": {
     "windows_self_test": "PASS",
     "portable_dashboard_redteam": "PASS",
@@ -67,15 +67,23 @@
     "non_git_fingerprint_freshness": "PASS",
     "windows_portable_fingerprint_parity": "PASS",
     "schema_v4_fingerprint_brain_contract": "PASS",
-    "fingerprint_final_verified_state_timing": "PASS"
+    "fingerprint_final_verified_state_timing": "PASS",
+    "hardened_implementation_tree": "5d47b7418f836a22d54fb4049f04304a85ed654a",
+    "hardened_clean_head_package_sha256": "985848238008F11B310A310548F7D8635EDD9D0269AA6B6CE7C53F6EFDEDBAD7",
+    "hardened_clean_head_package_self_test": "PASS",
+    "hardened_v14_to_v22_upgrade_rollback": "PASS",
+    "hardened_v20_to_v22_upgrade_rollback": "PASS",
+    "hardened_v21_to_v22_upgrade_rollback": "PASS",
+    "hardened_reproducible_package": "PASS"
   },
-  "implementation_sha": "427edcc6536bd96dd52b30cbbd0d29f16d28e19f",
+  "implementation_sha": "7b8c943fc27a1807a737f78f156d8a938c4965ca",
   "cross_platform_ci": {
     "run_id": 33220885792,
     "tested_sha": "d0eeb4e7cd093227a804df8849d18b3b9a147b09",
     "windows": "PASS",
     "ubuntu": "PASS",
-    "macos": "PASS"
+    "macos": "PASS",
+    "status": "SUPERSEDED_BY_FINAL_HARDENING_PENDING_FRESH_CI"
   },
   "final_adversarial_reopened": true,
   "final_hardening_findings": [

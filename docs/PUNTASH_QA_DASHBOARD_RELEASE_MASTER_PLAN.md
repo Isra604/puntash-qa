@@ -1165,7 +1165,7 @@ During implementation:
 
 Current implementation branch: `feature/v2.2-dashboard-control-center`
 
-Current release state: **FINAL_HARDENING_LOCAL_PASS_CANDIDATE_PENDING_CI**
+Current release state: **FINAL_HARDENING_CLEAN_HEAD_PASS_FINAL_CI_PENDING**
 
 Stage status:
 
