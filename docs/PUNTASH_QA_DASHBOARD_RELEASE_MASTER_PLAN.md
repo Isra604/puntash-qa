@@ -1165,7 +1165,7 @@ During implementation:
 
 Current implementation branch: `feature/v2.2-dashboard-control-center`
 
-Current release state: **FINAL_HARDENING_CLEAN_HEAD_PASS_FINAL_CI_PENDING**
+Current release state: **READY_FOR_OWNER_RELEASE_APPROVAL**
 
 Stage status:
 
@@ -1214,7 +1214,7 @@ The next action is to assign the release version and begin **Stage 0 — Baselin
 
 Stages 1–9 are implemented and locally verified. Stage 10 local adversarial QA is PASS on Windows, including the portable and native Control Center paths, authorization, path safety, scheduler lifecycle, rollback preflight, timeout/process-tree handling, v2.1 compatibility, and v2.1 → v2.2 upgrade/rollback.
 
-Stage 10 remains open only for clean-HEAD reproducible-package proof and GitHub Actions Windows/Ubuntu/macOS evidence. Publication remains blocked pending explicit owner release approval.
+Stage 10 is complete. Clean-HEAD reproducibility, final adversarial review, human-usability review, real-browser smoke, and Windows/Ubuntu/macOS CI are required before owner release approval. Exact final closure-HEAD CI and artifact hashes are recorded externally in Draft PR #4 to avoid changing the tested HEAD merely to record self-referential evidence. Publication remains blocked pending explicit owner release approval.
 
 Clean-HEAD implementation evidence:
 
@@ -1281,7 +1281,7 @@ WINDOWS_CONTROL_SAFETY_SUITE=PASS
 TIMEOUT_UPGRADE_SUITE=PASS
 ```
 
-The release state remains **not approved** until this hardening is committed and the exact final HEAD passes clean-HEAD package reproducibility, upgrade/rollback, Windows/Ubuntu/macOS CI and final ZIP provenance/security audit.
+The final hardening is closed and the release state is **READY_FOR_OWNER_RELEASE_APPROVAL** once the exact final closure HEAD passes Windows/Ubuntu/macOS CI and final ZIP provenance/security audit. Those exact-HEAD values are recorded externally in Draft PR #4 so no evidence-only commit invalidates the tested candidate. Publication still requires explicit owner approval.
 
 ### Schema-v4 project-freshness hardening — 2026-08-29
 

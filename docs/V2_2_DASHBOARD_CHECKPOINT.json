@@ -2,7 +2,7 @@
   "target_version": "2.2.0",
   "product": "PUNTASH QA",
   "branch": "feature/v2.2-dashboard-control-center",
-  "status": "FINAL_HARDENING_CLEAN_HEAD_PASS_FINAL_CI_PENDING",
+  "status": "READY_FOR_OWNER_RELEASE_APPROVAL",
   "current_stage": 10,
   "last_completed_stage": 10,
   "completed_stages": [
@@ -30,7 +30,7 @@
     "public_release_created": false,
     "owner_release_approval_required": true
   },
-  "next_action": "Commit final closure documentation, push the exact docs-only final HEAD to Draft PR #4, require fresh Windows/Ubuntu/macOS CI on that SHA, then rebuild and audit the final ZIP without changing the tested HEAD.",
+  "next_action": "Await explicit owner release approval. Final exact-HEAD CI and artifact SHA evidence is recorded externally in Draft PR #4 so this tracked checkpoint does not create a self-referential release artifact.",
   "local_evidence": {
     "windows_self_test": "PASS",
     "portable_dashboard_redteam": "PASS",
@@ -78,14 +78,16 @@
   },
   "implementation_sha": "7b8c943fc27a1807a737f78f156d8a938c4965ca",
   "cross_platform_ci": {
-    "run_id": 33220885792,
-    "tested_sha": "d0eeb4e7cd093227a804df8849d18b3b9a147b09",
-    "windows": "PASS",
-    "ubuntu": "PASS",
-    "macos": "PASS",
-    "status": "SUPERSEDED_BY_FINAL_HARDENING_PENDING_FRESH_CI"
+    "status": "FINAL_EVIDENCE_RECORDED_EXTERNALLY_TO_AVOID_SELF_REFERENCE",
+    "evidence_location": "Draft PR #4 conversation",
+    "required_platforms": [
+      "windows",
+      "ubuntu",
+      "macos"
+    ],
+    "required_result": "PASS_ON_EXACT_FINAL_HEAD"
   },
-  "final_adversarial_reopened": true,
+  "final_adversarial_reopened": false,
   "final_hardening_findings": [
     "Home health could previously derive Good from an unvalidated latest summary.",
     "Release readiness could previously remain Ready after project changes made after the verified scan.",
@@ -97,5 +99,6 @@
     "Capability documentation contained two stale planned endpoint names.",
     "Non-Git projects previously lacked an enforced final project snapshot contract for release freshness.",
     "The first schema-v4 fingerprint instruction captured the snapshot too early; it now represents the final verified project state after authorized remediation and revalidation."
-  ]
+  ],
+  "final_hardening_closed": true
 }

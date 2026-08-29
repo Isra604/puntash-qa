@@ -3,7 +3,7 @@
 Original creator and project architect: Ofir Israeli
 Copyright © 2026 Ofir Israeli
 
-Status: **FINAL HARDENING CLEAN-HEAD PASS — FINAL CROSS-PLATFORM CI PENDING**
+Status: **READY_FOR_OWNER_RELEASE_APPROVAL**
 
 ## Scope completed
 
@@ -64,9 +64,9 @@ This implementation ZIP hash is evidence for the hardened implementation commit.
 
 ## Cross-platform CI
 
-The earlier CI run `33220885792` on `d0eeb4e7cd093227a804df8849d18b3b9a147b09` passed Windows/Ubuntu/macOS but is now **historical pre-hardening evidence only**. It is not the final approval basis.
+The earlier CI run `33220885792` on `d0eeb4e7cd093227a804df8849d18b3b9a147b09` remains historical pre-hardening evidence only.
 
-A fresh CI run is required on the exact final closure HEAD after this report is committed. Required jobs:
+The exact final closure-HEAD CI run and final ZIP SHA/provenance are intentionally recorded in the Draft PR #4 conversation **after** this report is committed. This avoids an evidence-only commit changing the very HEAD and ZIP bytes being attested. The required final jobs remain:
 
 ```text
 Windows = PASS
