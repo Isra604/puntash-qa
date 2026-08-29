@@ -1,6 +1,6 @@
 {
   "name": "puntash-qa",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "entrypoint": "runtime/AGENT_INSTRUCTIONS.md",
   "project_install_dir": ".comprehensive-qa",
   "gate_count": 25,
@@ -68,7 +68,31 @@
     "telemetry": false,
     "control_center_windows": "runtime/tools/dashboard-control.ps1",
     "control_center_portable": "runtime/tools/dashboard-control.py",
-    "loopback_only": true
+    "loopback_only": true,
+    "schema_version": 3,
+    "manual_runner_windows": "runtime/tools/manual-run.ps1",
+    "manual_runner_portable": "runtime/tools/manual-run.py",
+    "manual_prompt": "runtime/prompts/MANUAL_QA.md",
+    "features": [
+      "scan_now",
+      "live_scan_status",
+      "plain_language_findings",
+      "evidence_viewer",
+      "activity_timeline",
+      "permissions_center",
+      "schedule_builder",
+      "owner_approval_queue",
+      "health_history",
+      "release_readiness",
+      "recovery_center",
+      "ask_puntash_local_search",
+      "overview_details_modes"
+    ],
+    "approval_queue": "state/APPROVAL_REQUESTS.jsonl",
+    "approval_decisions": "state/OWNER_APPROVAL_DECISIONS.jsonl",
+    "project_fingerprint_windows": "runtime/tools/project-fingerprint.ps1",
+    "project_fingerprint_portable": "runtime/tools/project-fingerprint.py",
+    "project_fingerprint_unix": "runtime/tools/project-fingerprint.sh"
   },
   "lens_count": 9,
   "reliability_model": {
@@ -91,7 +115,9 @@
     "scheduler_unix": "runtime/tools/scheduler.sh",
     "default_permission": "REPORT_ONLY",
     "schedule_default_enabled": false,
-    "telemetry": false
+    "telemetry": false,
+    "dashboard_generation": "human_friendly_v2_2",
+    "project_fingerprint_portable": "runtime/tools/project-fingerprint.py"
   },
   "automation_and_permissions": {
     "owner_policy": "runtime/templates/OWNER_POLICY.json",
@@ -105,7 +131,9 @@
     "dashboard_control_windows": "runtime/tools/dashboard-control.ps1",
     "dashboard_control_portable": "runtime/tools/dashboard-control.py",
     "safe_default": "REPORT_ONLY + schedule disabled",
-    "telemetry": false
+    "telemetry": false,
+    "manual_runner_windows": "runtime/tools/manual-run.ps1",
+    "manual_runner_unix": "runtime/tools/manual-run.sh"
   },
   "run_schema_version": 3,
   "instruction_firewall": "runtime/templates/UNTRUSTED_PROJECT_CONTENT.md",

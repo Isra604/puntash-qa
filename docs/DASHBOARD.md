@@ -1,18 +1,101 @@
-# Local QA Dashboard
+# PUNTASH QA Dashboard
 
-Version 1.4.0 introduced the calm local-first dashboard. Version 2.0.0 adds Reliability Assurance. Version 2.1.0 adds a compact owner Control Center for remediation permissions and scheduled QA without turning the first screen into a settings wall.
+PUNTASH QA v2.2.0 turns the local Dashboard into the main day-to-day control surface for the QA system. The Dashboard is designed to explain what is happening before exposing technical detail.
 
-## Principles
+## Main idea
 
-- Local only by default. No account, cloud upload, analytics, tracking, or telemetry.
-- The first screen is intentionally concise: health, coverage, urgent findings, trend, changes, gate map and recent history.
-- Colors have stable meaning: green PASS/resolved, red FAIL/Critical/High, amber BLOCKED/Medium, blue NOT_RUN/Low, gray NOT_APPLICABLE.
-- Historical runs are preserved as individual JSON records under `reports/dashboard/`.
-- The dashboard never replaces the evidence report. It is a navigation and comprehension layer over structured QA summaries.
-- v2 runs add all 9 reliability lens statuses and STRONG/MODERATE/WEAK/INSUFFICIENT evidence assurance.
-- Legacy v1.x run records remain readable and are labeled as legacy rather than falsely showing missing lenses as failures.
+A user should be able to answer three questions from Home:
 
-## Open on Windows
+1. What is the state of my project?
+2. What did PUNTASH QA do or find?
+3. What can I safely do next?
+
+The Dashboard does not replace evidence or authority controls. It is a safe human interface over the same canonical runtime tools used by the CLI/agent workflows.
+
+## Main screens
+
+- **Home** — project health, latest scan, attention items, next automatic scan, release readiness and recent activity.
+- **Scan** — SCAN NOW, live status and real progress only when progress can be proven.
+- **Things to review** — plain-language explanations of what PUNTASH QA noticed, why it matters, what to do next, and proof when available.
+- **Activity** — scan history, permission/schedule changes and authorized remediation history.
+- **What PUNTASH can change** — Observe only, Fix safe things, or More active protection, explained without internal policy names.
+- **Automatic scans** — turn automatic checking on/off, choose days/time, and choose where scans run.
+- **Your decisions** — changes that need a human decision, including what changes, why, how risky it is, whether it can be undone, and proof.
+- **Project health** — health history and what changed since the previous scan.
+- **Ready to release?** — evidence-based Ready / Not yet / Could not verify, including whether the project changed after the verified scan.
+- **Fix PUNTASH QA** — problems with PUNTASH QA itself, explained in plain language with the safest next action.
+- **Ask PUNTASH** — deterministic search over local QA information; no external AI call.
+- **Settings & privacy** — version, Terms status and data-sharing information; raw technical state stays in Details mode.
+
+## SCAN NOW
+
+SCAN NOW never simulates a scan. It starts a real manual runner only when Owner Policy contains a valid `LOCAL_COMMAND` executor. If the project is configured for `AGENT_MANAGED`, the Dashboard explains that the external AI/platform must start the run. If no runner is configured, it directs the user to **Automatic scans**.
+
+Manual and scheduled runs share the same OS-level overlap lock. A manual run does not increase remediation authority. It uses the same Terms validation, Owner Policy, timeout and process-tree safety contract as scheduled runs.
+
+## What PUNTASH can change
+
+The Dashboard maps the canonical presets to plain language:
+
+- `REPORT_ONLY` → **Observe only**
+- `SAFE_FIXES` → **Fix safe things**
+- `ACTIVE_REMEDIATION` → **More active protection**
+
+The canonical Permission Policy remains immutable authority. Protected categories, credentials, QA/CI/VCS authority, production/destructive boundaries and non-reversible automatic changes cannot be enabled from the Dashboard.
+
+## Your decisions
+
+`state/APPROVAL_REQUESTS.jsonl` may contain bounded pending owner decisions. The Dashboard displays the finding, risk, reason, exact target paths, reversibility and evidence. Approving a request does **not** execute the mutation. It calls the canonical `authorize-change` engine and records the resulting Authorization ID only if that engine returns ALLOW.
+
+Decision audit records are appended to `state/OWNER_APPROVAL_DECISIONS.jsonl`. Stale policy revisions and repeated decisions are rejected.
+
+## Proof viewer
+
+The authenticated evidence API permits bounded reads only from preserved QA roots:
+
+```text
+evidence/
+artifacts/
+profile/
+reports/
+remediation/
+dispositions/
+```
+
+Traversal, absolute paths, state files, symlink/reparse escapes, unsafe extensions and oversized files are rejected. SVG is intentionally not rendered.
+
+## Ready to release?
+
+Ready is not calculated from a cosmetic score. The current structured run must be complete, pass the canonical run validator, and still match the project that exists now. In a Git project, PUNTASH QA requires the scanned commit to match the current commit and requires no uncovered working-tree changes. If the project changed after the verified scan, the Dashboard says **Scan again** rather than keeping an old Ready result. Missing or invalid proof becomes **Could not verify**, never Ready.
+
+## Fix PUNTASH QA
+
+The recovery flow is fail closed. Damaged permission settings block automatic change authority. The safe recovery action resets to **Observe only** and disables automatic scans through the canonical policy tool.
+
+Recovery does not claim success unless automatic-scan cleanup is also verified. If permissions are safe but an external/platform schedule still needs cleanup, the Dashboard says so explicitly instead of claiming that automatic scans are fully off.
+
+The Dashboard never accepts Terms on behalf of a user. Terms recovery remains a human installer/update action.
+
+## Human-language and multi-window safety
+
+Overview is the default mode. Internal identifiers such as policy revisions, request IDs, authorization IDs, executor fields, raw JSON, Git hashes and scheduler internals are kept in **Details**. Primary navigation uses task-oriented names such as **Things to review**, **What PUNTASH can change**, **Your decisions** and **Fix PUNTASH QA**.
+
+Approval decisions are bound to a SHA-256 hash of the exact request shown to the user. If the request changes or a duplicate request ID appears, the Dashboard refuses the decision and requires a refresh.
+
+Dashboard mutations are serialized with an OS-level cross-process lock. Two Control Center windows therefore cannot race a Policy/Scheduler/Recovery/Approval transaction into inconsistent state. Manual scans also use the shared OS scan lock, so a second Dashboard cannot overwrite the active scan status.
+
+## Local security model
+
+- Control server binds only to `127.0.0.1`.
+- A random per-session token is required for every API.
+- The token is delivered in the URL fragment and removed from the address bar immediately after bootstrap.
+- Static HTTP serving exposes only `dashboard/index.html`; `state/` and `data.js` are not served.
+- `file://` opening remains a read-only view.
+- No Dashboard telemetry or hosted account is added.
+- API bodies and evidence reads are bounded.
+- No Control endpoint accepts an arbitrary shell command, arbitrary filesystem path, arbitrary URL or raw HTML.
+
+## Windows
 
 Double-click:
 
@@ -20,44 +103,22 @@ Double-click:
 .comprehensive-qa\OPEN_DASHBOARD.cmd
 ```
 
-The launcher refreshes local dashboard data and opens `dashboard/index.html` in the default browser.
+This starts the native Windows loopback Control Center.
 
-## History contract
+## macOS / Linux
 
-Each completed QA cycle writes one immutable structured run file:
-
-```text
-reports/dashboard/RUN-YYYYMMDD-HHMMSS.json
-```
-
-The v2 run contains project/commit identity, all 25 gate statuses, all 9 reliability lens statuses, evidence assurance, test-trustworthiness summary, finding summaries, material findings and explicit gate/lens/assurance changes from the prior run. `tools/dashboard-refresh.ps1` or `tools/dashboard-refresh.sh` rebuilds `dashboard/data.js` from those records without sending data anywhere.
-
-## Health and coverage
-
-Dashboard **QA Health** is a presentation metric, not a product-certification score:
+When Python 3 is available:
 
 ```text
-PASS / (PASS + FAIL + BLOCKED)
+.comprehensive-qa/tools/open-dashboard.sh
 ```
 
-NOT_APPLICABLE and NOT_RUN are excluded from health. Coverage is shown separately so incomplete execution cannot look equivalent to a fully-tested project.
+## Structured history
 
-## Evidence freshness and assurance in v2
-A v2 PASS/FAIL run record is valid only when it references current evidence. NOT_APPLICABLE requires current applicability evidence. The dashboard shows the recorded assurance but never upgrades it; overall assurance cannot exceed the weakest gate/lens/test-trustworthiness assurance.
+Completed runs stay immutable under:
 
-## v2.1 Control Center
+```text
+reports/dashboard/*.json
+```
 
-The normal dashboard remains concise and shows only two additional status cards: **Agent permissions** and **Scheduled QA**. Detailed choices stay behind `Settings`.
-
-On Windows, `.comprehensive-qa\OPEN_DASHBOARD.cmd` starts a local Control Center. On macOS/Linux, use `.comprehensive-qa/tools/open-dashboard.sh` when Python 3 is available. The Control Center:
-- binds only to `127.0.0.1` on an ephemeral/local port
-- creates a random per-session control token
-- never adds telemetry or a hosted account
-- keeps direct `file://` dashboard opening read-only
-- serves only dashboard assets without authentication
-- requires the session token for policy/scheduler APIs and full-report access
-- limits full-report access to `.comprehensive-qa/reports/` and safe text/JSON extensions
-
-The permission/schedule setting is stored locally as `state/OWNER_POLICY.json`; changes append audit metadata to `state/OWNER_POLICY_HISTORY.jsonl`. Scheduler status and run logs remain local under `state/`.
-
-A saved schedule is not equivalent to an active schedule. The dashboard distinguishes OFF, NEEDS_EXECUTOR, NEEDS_PLATFORM_ACTIVATION, ACTIVE, AGENT_MANAGED_ACTIVE and failure/last-run status.
+`dashboard-refresh.ps1` / `.sh` build schema-v3 `dashboard/data.js` atomically for read-only/offline viewing.

@@ -288,7 +288,7 @@ Never auto-change material product intent, architecture, public contracts, secur
 
 Before each automatic mutation, obtain a fresh `ALLOW` from `authorize-change` during the current QA run and record its unique `AUTHORIZATION_ID`. An authorization is single-run evidence: do not reuse it across runs or for a different Finding ID, risk, category, change summary or evidence set.
 
-Record pre-fix evidence. Apply the smallest fix. Re-run relevant tests plus regression checks. Record exact post-fix evidence. Every completed run must explicitly declare `automatic_remediation.performed=true/false` in the schema-v3 dashboard run record. When true, every remediation entry must match a current-run ALLOW record in `state/CHANGE_AUTHORIZATION_HISTORY.jsonl`; otherwise run validation must fail. If validation fails, do not hide the failure.
+Record pre-fix evidence. Apply the smallest fix. Re-run relevant tests plus regression checks. Record exact post-fix evidence. Every completed run must explicitly declare `automatic_remediation.performed=true/false` in the current schema-v4 dashboard run record. When true, every remediation entry must match a current-run ALLOW record in `state/CHANGE_AUTHORIZATION_HISTORY.jsonl`; otherwise run validation must fail. If validation fails, do not hide the failure.
 
 ## Phase 8 — Reporting and evidence preservation
 
@@ -307,7 +307,7 @@ Default installed output layout:
 
 A completed primary report is immutable. A second run on the same day uses a time suffix. Reviewer closure/disposition is a separate append-only record.
 
-For schema-v3 run validation, `evidence_refs` and `applicability_evidence` are preserved-runtime references, not labels. They must resolve to existing files under `.comprehensive-qa/evidence`, `artifacts`, `profile`, `reports`, `remediation`, or `dispositions`; path traversal, absolute paths, missing files and symlink escapes are invalid. If the original evidence is a project source file or external response, preserve the decisive output/excerpt/hash/log inside the QA evidence tree and reference that preserved artifact.
+For current run validation, `evidence_refs` and `applicability_evidence` are preserved-runtime references, not labels. They must resolve to existing files under `.comprehensive-qa/evidence`, `artifacts`, `profile`, `reports`, `remediation`, or `dispositions`; path traversal, absolute paths, missing files and symlink escapes are invalid. If the original evidence is a project source file or external response, preserve the decisive output/excerpt/hash/log inside the QA evidence tree and reference that preserved artifact.
 
 The primary report must contain:
 - run identity
@@ -354,7 +354,9 @@ A comprehensive QA cycle is complete only when:
 
 ## Dashboard history contract
 
-After every completed substantive QA cycle, create one immutable structured dashboard run record at `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json` using `templates/DASHBOARD_RUN.json` as the contract. Include project/branch/HEAD identity, all 25 gate statuses, all 9 lens statuses, evidence-assurance summary, finding counts, material finding summaries, and explicit new/resolved/gate/lens-status changes compared with the prior structured run when one exists. Do not overwrite prior run records.
+After every completed substantive QA cycle, create one immutable structured dashboard run record at `reports/dashboard/RUN-YYYYMMDD-HHMMSS.json` using `templates/DASHBOARD_RUN.json` as the contract. New v2.2 runs use schema 4. Include project/branch/HEAD identity, all 25 gate statuses, all 9 lens statuses, evidence-assurance summary, finding counts, material finding summaries, and explicit new/resolved/gate/lens-status changes compared with the prior structured run when one exists. Do not overwrite prior run records.
+
+For every new v2.2 run, capture project identity and freshness evidence. Preserve the Git branch/HEAD used for the run when Git is available. The `project.fingerprint` stored in the final structured run record must represent the final project state that was actually verified: calculate it only after all authorized remediation and required revalidation are complete, immediately before final run validation/report closure. Run the installed `tools/project-fingerprint.ps1`, `.py`, or `.sh` against that final project state and store the exact result. When it succeeds, record `algorithm=PUNTASH_SOURCE_V1`, `available=true`, SHA-256, file count and byte count exactly as returned. If it cannot be calculated safely, record `available=false` with the real reason; never invent a hash. If the project changes again before the run record is finalized, recalculate the fingerprint or fail closed rather than preserving a stale snapshot. The fingerprint is freshness evidence, not a replacement for the 25 gates or 9 lenses. For Git projects, the Dashboard prefers current HEAD + clean working-tree verification; for non-Git projects, the fingerprint is required to prove that the verified scan still covers the current files.
 
 Before treating a v2 structured run as complete, validate it with `tools/validate-run.ps1 -RunPath <run.json>` on PowerShell or `tools/validate-run.sh <run.json>` when the platform dependency is available. A validator failure is a QA record-integrity failure: correct the record/evidence classification rather than bypassing the validator. If the platform validator cannot execute, manually enforce the same 25-gate + 9-lens + PASS-ceiling contract and record the tooling limitation.
 

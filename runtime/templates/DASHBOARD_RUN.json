@@ -1,11 +1,19 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "run_id": "RUN-YYYYMMDD-HHMMSS",
   "project": {
     "name": "",
     "path": "",
     "branch": "",
-    "head": ""
+    "head": "",
+    "fingerprint": {
+      "algorithm": "PUNTASH_SOURCE_V1",
+      "available": false,
+      "sha256": "",
+      "file_count": 0,
+      "byte_count": 0,
+      "reason": "Not calculated yet."
+    }
   },
   "started_at": "",
   "completed_at": "",
